@@ -6,6 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { RootStackScreenProps } from '../navigation/types';
 import { useResponsiveLayout } from '../hooks/useResponsiveLayout';
+import { IMAGE_URLS } from '../constants/Image_Url';
 
 interface OnboardingSlide {
   key: string;
@@ -20,21 +21,21 @@ const slides: OnboardingSlide[] = [
     key: '1',
     title: 'Discover Recipes',
     description: 'Find your next culinary adventure from our curated selection of gourmet recipes and secret chef preparations.',
-    image: 'https://images.unsplash.com/photo-1543083115-6379253748d0?auto=format&fit=crop&q=80&w=600',
+    image: IMAGE_URLS.onboarding.discover,
     icon: 'restaurant-outline',
   },
   {
     key: '2',
     title: 'Cook Like a Pro',
     description: 'Follow clean, step-by-step instructions designed to scale beautifully on both phones and tablets.',
-    image: 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&q=80&w=600',
+    image: IMAGE_URLS.onboarding.cook,
     icon: 'book-outline',
   },
   {
     key: '3',
     title: 'Share Your Creations',
     description: 'Publish your own custom recipes, build your digital cook book, and share the joy of food with others.',
-    image: 'https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&q=80&w=600',
+    image: IMAGE_URLS.onboarding.share,
     icon: 'share-social-outline',
   },
 ];

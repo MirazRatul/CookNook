@@ -8,6 +8,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { IMAGE_URLS } from '../constants/Image_Url';
 
 interface ProfileDrawerProps {
   isOpen: boolean;
@@ -97,7 +98,7 @@ export const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
           <View className="flex-row justify-between items-center">
             <View className="relative">
               <Image
-                source={{ uri: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150' }}
+                source={{ uri: IMAGE_URLS.profiles.chefRatul }}
                 className="w-20 h-20 rounded-full border-4 border-amber-50 shadow-md"
               />
               <View className="absolute bottom-0 right-0 bg-emerald-500 w-5 h-5 rounded-full border-2 border-white items-center justify-center">

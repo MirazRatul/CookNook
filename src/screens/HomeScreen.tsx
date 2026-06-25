@@ -14,6 +14,7 @@ import { CATEGORIES, Recipe } from '../constants/mockData';
 import { useResponsiveLayout } from '../hooks/useResponsiveLayout';
 import { AppTabScreenProps } from '../navigation/types';
 import { Ionicons } from '@expo/vector-icons';
+import { IMAGE_URLS } from '../constants/Image_Url';
 
 type HomeScreenProps = AppTabScreenProps<'Home'>;
 
@@ -74,7 +75,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           activeOpacity={0.85}
         >
           <Image
-            source={{ uri: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150' }}
+            source={{ uri: IMAGE_URLS.profiles.chefRatul }}
             className="w-12 h-12 rounded-full border-2 border-white shadow-sm"
           />
         </TouchableOpacity>

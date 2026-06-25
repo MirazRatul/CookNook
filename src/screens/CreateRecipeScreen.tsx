@@ -8,6 +8,7 @@ import { Button } from '../components/Button';
 import { useResponsiveLayout } from '../hooks/useResponsiveLayout';
 import { AppTabScreenProps } from '../navigation/types';
 import { Ionicons } from '@expo/vector-icons';
+import { IMAGE_URLS } from '../constants/Image_Url';
 
 type CreateRecipeScreenProps = AppTabScreenProps<'Create'>;
 
@@ -68,16 +69,7 @@ export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ navigati
       return;
     }
 
-    // Unsplash sample images for categories
-    const categoryImages: Record<string, string> = {
-      Breakfast: 'https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&q=80&w=600',
-      Italian: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=600',
-      Mexican: 'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?auto=format&fit=crop&q=80&w=600',
-      Desserts: 'https://images.unsplash.com/photo-1587314168485-3236d6710814?auto=format&fit=crop&q=80&w=600',
-      Seafood: 'https://images.unsplash.com/photo-1625938146369-adc83368bda7?auto=format&fit=crop&q=80&w=600',
-      Drinks: 'https://images.unsplash.com/photo-1536256263959-770b48d82b0a?auto=format&fit=crop&q=80&w=600',
-      All: 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&q=80&w=600',
-    };
+    const categoryImages: Record<string, string> = IMAGE_URLS.categories;
 
     const newRecipe: Recipe = {
       id: Date.now().toString(),
@@ -90,7 +82,7 @@ export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ navigati
       rating: 5.0,
       reviewsCount: 1,
       chefName: 'Chef You',
-      chefAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150',
+      chefAvatar: IMAGE_URLS.profiles.chefRatul,
       category,
       ingredients,
       instructions,
