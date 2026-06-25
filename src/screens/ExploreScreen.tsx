@@ -42,7 +42,7 @@ export const ExploreScreen: React.FC<ExploreScreenProps> = ({ navigation }) => {
     <SafeAreaView className="flex-1 bg-white" edges={['top', 'left', 'right']}>
       {/* Header Container */}
       <View
-        className="pt-6 pb-2 border-b border-gray-100 bg-white"
+        className="pt-2 pb-2 border-b border-gray-100 bg-white"
         style={{
           paddingHorizontal: layout.spacing.screen,
           width: '100%',

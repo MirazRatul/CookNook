@@ -116,7 +116,7 @@ export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ navigati
     <SafeAreaView className="flex-1 bg-white" edges={['top', 'left', 'right']}>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
       <View
-        className="pt-6"
+        className="pt-2"
         style={{
           paddingHorizontal: layout.spacing.screen,
           paddingBottom: insets.bottom + 104,

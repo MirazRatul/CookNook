@@ -46,7 +46,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
       {/* Header */}
       <View
-        className="pt-6 pb-4 flex-row items-center justify-between"
+        className="pt-2 pb-4 flex-row items-center justify-between"
         style={{
           paddingHorizontal: layout.spacing.screen,
           width: '100%',

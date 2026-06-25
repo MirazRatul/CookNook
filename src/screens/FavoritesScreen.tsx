@@ -40,7 +40,7 @@ export function FavoritesScreen({ navigation }: FavoritesScreenProps) {
   return (
     <SafeAreaView className="flex-1 bg-white" edges={["top", "left", "right"]}>
       <View
-        className="pt-6 pb-2 border-b border-gray-100"
+        className="pt-2 pb-2 border-b border-gray-100"
         style={{
           paddingHorizontal: layout.spacing.screen,
           width: "100%",
