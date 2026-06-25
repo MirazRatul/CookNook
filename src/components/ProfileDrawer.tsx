@@ -86,33 +86,32 @@ export const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
             right: 0,
             backgroundColor: '#ffffff',
             width: DRAWER_WIDTH,
-            paddingTop: insets.top + 20,
+            paddingTop: insets.top + 24,
             paddingBottom: insets.bottom + 20,
           },
           drawerStyle,
         ]}
       >
-        {/* Header: Close Button */}
-        <View className="px-6 flex-row justify-end">
-          <TouchableOpacity
-            onPress={onClose}
-            className="p-2 bg-gray-100 rounded-full items-center justify-center"
-            activeOpacity={0.7}
-          >
-            <Ionicons name="close" size={20} color="#374151" />
-          </TouchableOpacity>
-        </View>
-
         {/* Profile Card */}
-        <View className="px-6 mt-6 pb-6 border-b border-gray-100">
-          <View className="relative self-start">
-            <Image
-              source={{ uri: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150' }}
-              className="w-20 h-20 rounded-full border-4 border-amber-50 shadow-md"
-            />
-            <View className="absolute bottom-0 right-0 bg-emerald-500 w-5 h-5 rounded-full border-2 border-white items-center justify-center">
-              <View className="w-1.5 h-1.5 rounded-full bg-white" />
+        <View className="px-6 pb-6 border-b border-gray-100">
+          <View className="flex-row justify-between items-center">
+            <View className="relative">
+              <Image
+                source={{ uri: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150' }}
+                className="w-20 h-20 rounded-full border-4 border-amber-50 shadow-md"
+              />
+              <View className="absolute bottom-0 right-0 bg-emerald-500 w-5 h-5 rounded-full border-2 border-white items-center justify-center">
+                <View className="w-1.5 h-1.5 rounded-full bg-white" />
+              </View>
             </View>
+
+            <TouchableOpacity
+              onPress={onClose}
+              className="p-2 bg-gray-100 rounded-full items-center justify-center"
+              activeOpacity={0.7}
+            >
+              <Ionicons name="close" size={20} color="#374151" />
+            </TouchableOpacity>
           </View>
 
           <Text className="text-xl font-black text-gray-900 mt-4">
