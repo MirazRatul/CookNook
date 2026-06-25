@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, TextInput, TouchableOpacity, Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useDispatch } from 'react-redux';
 import { addRecipe } from '../store/slices/recipesSlice';
 import { Recipe, CATEGORIES } from '../constants/mockData';
 import { Button } from '../components/Button';
 import { useResponsiveLayout } from '../hooks/useResponsiveLayout';
-import { AppTabNavigationProp } from '../navigation/types';
+import { AppTabScreenProps } from '../navigation/types';
 import { Ionicons } from '@expo/vector-icons';
 
-export const CreateRecipeScreen: React.FC = () => {
+type CreateRecipeScreenProps = AppTabScreenProps<'Create'>;
+
+export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ navigation }) => {
   const dispatch = useDispatch();
-  const navigation = useNavigation<AppTabNavigationProp<'Create'>>();
   const insets = useSafeAreaInsets();
   const layout = useResponsiveLayout();
 

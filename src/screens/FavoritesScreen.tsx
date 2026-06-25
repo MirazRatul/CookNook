@@ -1,6 +1,5 @@
 import React from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
-import { useNavigation } from "@react-navigation/native";
 import {
   SafeAreaView,
   useSafeAreaInsets,
@@ -10,16 +9,17 @@ import { useDispatch, useSelector } from "react-redux";
 import { RecipeCard } from "../components/RecipeCard";
 import { Recipe } from "../constants/mockData";
 import { useResponsiveLayout } from "../hooks/useResponsiveLayout";
-import { AppTabNavigationProp } from "../navigation/types";
+import { AppTabScreenProps } from "../navigation/types";
 import { RootState } from "../store/store";
 import {
   setSelectedRecipe,
   toggleFavorite,
 } from "../store/slices/recipesSlice";
 
-export function FavoritesScreen() {
+type FavoritesScreenProps = AppTabScreenProps<"Favorites">;
+
+export function FavoritesScreen({ navigation }: FavoritesScreenProps) {
   const dispatch = useDispatch();
-  const navigation = useNavigation<AppTabNavigationProp<"Favorites">>();
   const insets = useSafeAreaInsets();
   const layout = useResponsiveLayout();
   const { recipes, favorites } = useSelector(
@@ -52,7 +52,7 @@ export function FavoritesScreen() {
           My Favorites
         </Text>
       </View>
-      <View className="flex-1 bg-gray-50/50">
+      <View className="flex-1" style={{ backgroundColor: 'rgba(249, 250, 251, 0.5)' }}>
         {favoriteRecipes.length > 0 ? (
           <ScrollView
             contentContainerStyle={{
@@ -82,7 +82,7 @@ export function FavoritesScreen() {
               name="heart-outline"
               size={64}
               color="#9ca3af"
-              className="opacity-40"
+              style={{ opacity: 0.4 }}
             />
             <Text className="text-gray-900 font-extrabold text-lg mt-4">
               No favorites yet

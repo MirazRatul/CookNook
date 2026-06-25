@@ -51,9 +51,8 @@ export const Button: React.FC<ButtonProps> = ({
     <TouchableOpacity
       onPress={onPress}
       disabled={disabled || loading}
-      className={`flex-row items-center justify-center ${variantStyles[variant]} ${sizeStyles[size]} ${
-        disabled ? 'opacity-50' : 'opacity-100'
-      } ${className}`}
+      className={`flex-row items-center justify-center ${variantStyles[variant]} ${sizeStyles[size]} ${className}`}
+      style={{ opacity: disabled ? 0.5 : 1 }}
       activeOpacity={0.7}
     >
       {loading ? (

@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, Image, TouchableOpacity } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
 import { toggleFavorite } from '../store/slices/recipesSlice';
 import { useResponsiveLayout } from '../hooks/useResponsiveLayout';
-import { RootNavigationProp } from '../navigation/types';
+import { RootStackScreenProps } from '../navigation/types';
 import { Ionicons } from '@expo/vector-icons';
 
-export const RecipeDetailsScreen: React.FC = () => {
+type RecipeDetailsScreenProps = RootStackScreenProps<'RecipeDetails'>;
+
+export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({ navigation }) => {
   const dispatch = useDispatch();
-  const navigation = useNavigation<RootNavigationProp>();
   const insets = useSafeAreaInsets();
   const layout = useResponsiveLayout();
   const selectedRecipe = useSelector((state: RootState) => state.recipes.selectedRecipe);
@@ -41,7 +41,15 @@ export const RecipeDetailsScreen: React.FC = () => {
       >
         <TouchableOpacity
           onPress={() => navigation.goBack()}
-          className="bg-white/90 p-2.5 rounded-full shadow-md items-center justify-center"
+          className="p-2.5 rounded-full items-center justify-center"
+          style={{
+            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.15,
+            shadowRadius: 3.5,
+            elevation: 3,
+          }}
           activeOpacity={0.8}
         >
           <Ionicons name="arrow-back" size={22} color="#1f2937" />
@@ -49,7 +57,15 @@ export const RecipeDetailsScreen: React.FC = () => {
 
         <TouchableOpacity
           onPress={() => dispatch(toggleFavorite(selectedRecipe.id))}
-          className="bg-white/90 p-2.5 rounded-full shadow-md items-center justify-center"
+          className="p-2.5 rounded-full items-center justify-center"
+          style={{
+            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.15,
+            shadowRadius: 3.5,
+            elevation: 3,
+          }}
           activeOpacity={0.8}
         >
           <Ionicons
@@ -108,7 +124,7 @@ export const RecipeDetailsScreen: React.FC = () => {
           </View>
 
           {/* Recipe Meta Stats */}
-          <View className="flex-row items-center justify-between bg-gray-50/70 border border-gray-100 rounded-3xl p-4 my-6">
+          <View className="flex-row items-center justify-between border border-gray-100 rounded-3xl p-4 my-6" style={{ backgroundColor: 'rgba(249, 250, 251, 0.7)' }}>
             <View className="items-center flex-1">
               <View className="bg-amber-100 p-2.5 rounded-full mb-1.5">
                 <Ionicons name="time-outline" size={18} color="#d97706" />
@@ -149,8 +165,19 @@ export const RecipeDetailsScreen: React.FC = () => {
               onPress={() => setActiveTab('ingredients')}
               activeOpacity={0.9}
               className={`flex-1 py-3 rounded-xl items-center ${
-                activeTab === 'ingredients' ? 'bg-white shadow-sm' : 'bg-transparent'
+                activeTab === 'ingredients' ? 'bg-white' : 'bg-transparent'
               }`}
+              style={
+                activeTab === 'ingredients'
+                  ? {
+                      shadowColor: '#000',
+                      shadowOffset: { width: 0, height: 1 },
+                      shadowOpacity: 0.05,
+                      shadowRadius: 2,
+                      elevation: 1,
+                    }
+                  : undefined
+              }
             >
               <Text
                 className={`text-sm font-bold ${
@@ -165,8 +192,19 @@ export const RecipeDetailsScreen: React.FC = () => {
               onPress={() => setActiveTab('instructions')}
               activeOpacity={0.9}
               className={`flex-1 py-3 rounded-xl items-center ${
-                activeTab === 'instructions' ? 'bg-white shadow-sm' : 'bg-transparent'
+                activeTab === 'instructions' ? 'bg-white' : 'bg-transparent'
               }`}
+              style={
+                activeTab === 'instructions'
+                  ? {
+                      shadowColor: '#000',
+                      shadowOffset: { width: 0, height: 1 },
+                      shadowOpacity: 0.05,
+                      shadowRadius: 2,
+                      elevation: 1,
+                    }
+                  : undefined
+              }
             >
               <Text
                 className={`text-sm font-bold ${
@@ -191,7 +229,8 @@ export const RecipeDetailsScreen: React.FC = () => {
               {selectedRecipe.ingredients.map((ing, idx) => (
                 <View
                   key={idx}
-                  className="flex-row items-center bg-gray-50/50 border border-gray-100 rounded-2xl p-4 mb-3"
+                  className="flex-row items-center border border-gray-100 rounded-2xl p-4 mb-3"
+                  style={{ backgroundColor: 'rgba(249, 250, 251, 0.5)' }}
                 >
                   <View className="w-6 h-6 rounded-full bg-amber-50 items-center justify-center mr-3 border border-amber-100">
                     <Ionicons name="checkmark" size={14} color="#d97706" />
@@ -213,7 +252,16 @@ export const RecipeDetailsScreen: React.FC = () => {
                 <View key={idx} className="flex-row mb-6">
                   {/* Step number pillar */}
                   <View className="items-center mr-4">
-                    <View className="w-8 h-8 rounded-full bg-primary-500 items-center justify-center z-10 shadow-sm">
+                    <View
+                      className="w-8 h-8 rounded-full bg-primary-500 items-center justify-center z-10"
+                      style={{
+                        shadowColor: '#000',
+                        shadowOffset: { width: 0, height: 1 },
+                        shadowOpacity: 0.1,
+                        shadowRadius: 1,
+                        elevation: 1,
+                      }}
+                    >
                       <Text className="text-white text-xs font-black">{idx + 1}</Text>
                     </View>
                     {idx !== selectedRecipe.instructions.length - 1 && (

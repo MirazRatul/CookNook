@@ -26,7 +26,14 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({
       <TouchableOpacity
         onPress={onPress}
         activeOpacity={0.9}
-        className="flex-row bg-white rounded-3xl p-3 mb-4 shadow-sm border border-gray-100 items-center"
+        className="flex-row bg-white rounded-3xl p-3 mb-4 border border-gray-100 items-center"
+        style={{
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 1 },
+          shadowOpacity: 0.05,
+          shadowRadius: 2,
+          elevation: 1,
+        }}
       >
         <Image
           source={{ uri: recipe.image }}
@@ -77,8 +84,15 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({
     <TouchableOpacity
       onPress={onPress}
       activeOpacity={0.9}
-      className="bg-white rounded-[32px] overflow-hidden shadow-sm border border-gray-100 mr-5"
-      style={{ width: layout.recipeCard.verticalWidth }}
+      className="bg-white rounded-[32px] overflow-hidden border border-gray-100 mr-5"
+      style={{
+        width: layout.recipeCard.verticalWidth,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.05,
+        shadowRadius: 2,
+        elevation: 1,
+      }}
     >
       <View className="relative">
         <Image
@@ -87,14 +101,25 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({
           style={{ height: layout.recipeCard.verticalImageHeight }}
           resizeMode="cover"
         />
-        <View className="absolute top-4 left-4 bg-white/90 px-3 py-1 rounded-full flex-row items-center">
+        <View
+          className="absolute top-4 left-4 px-3 py-1 rounded-full flex-row items-center"
+          style={{ backgroundColor: 'rgba(255, 255, 255, 0.9)' }}
+        >
           <Ionicons name="star" size={14} color="#f59e0b" />
           <Text className="text-xs font-bold text-gray-800 ml-1">{recipe.rating}</Text>
         </View>
         <TouchableOpacity
           onPress={onToggleFavorite}
           activeOpacity={0.7}
-          className="absolute top-4 right-4 bg-white/90 p-2 rounded-full shadow-sm"
+          className="absolute top-4 right-4 p-2 rounded-full"
+          style={{
+            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 1 },
+            shadowOpacity: 0.1,
+            shadowRadius: 1.5,
+            elevation: 1,
+          }}
         >
           <Ionicons
             name={isFavorite ? 'heart' : 'heart-outline'}

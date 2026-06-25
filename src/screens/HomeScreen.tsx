@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text, ScrollView, Image, TouchableOpacity } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
@@ -10,12 +9,13 @@ import { CategoryBadge } from '../components/CategoryBadge';
 import { RecipeCard } from '../components/RecipeCard';
 import { CATEGORIES, Recipe } from '../constants/mockData';
 import { useResponsiveLayout } from '../hooks/useResponsiveLayout';
-import { AppTabNavigationProp } from '../navigation/types';
+import { AppTabScreenProps } from '../navigation/types';
 import { Ionicons } from '@expo/vector-icons';
 
-export const HomeScreen: React.FC = () => {
+type HomeScreenProps = AppTabScreenProps<'Home'>;
+
+export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const dispatch = useDispatch();
-  const navigation = useNavigation<AppTabNavigationProp<'Home'>>();
   const insets = useSafeAreaInsets();
   const layout = useResponsiveLayout();
   const { recipes, favorites, selectedCategory, searchQuery } = useSelector(
@@ -42,7 +42,7 @@ export const HomeScreen: React.FC = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50/50" edges={['top', 'left', 'right']}>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: 'rgba(249, 250, 251, 0.5)' }} edges={['top', 'left', 'right']}>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
       {/* Header */}
       <View
@@ -171,7 +171,7 @@ export const HomeScreen: React.FC = () => {
           ))
         ) : (
           <View className="bg-white rounded-3xl p-8 border border-gray-100 items-center justify-center">
-            <Ionicons name="fast-food-outline" size={48} color="#d97706" className="opacity-40" />
+            <Ionicons name="fast-food-outline" size={48} color="#d97706" style={{ opacity: 0.4 }} />
             <Text className="text-gray-500 font-semibold mt-3 text-center">
               No recipes found in this category
             </Text>
