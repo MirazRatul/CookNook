@@ -5,6 +5,7 @@ import {
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 import Animated, { FadeInDown, FadeInUp, LinearTransition } from 'react-native-reanimated';
+import { useIsFocused } from '@react-navigation/native';
 import { Ionicons } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { RecipeCard } from "../components/RecipeCard";
@@ -23,6 +24,7 @@ export function FavoritesScreen({ navigation }: FavoritesScreenProps) {
   const dispatch = useDispatch();
   const insets = useSafeAreaInsets();
   const layout = useResponsiveLayout();
+  const isFocused = useIsFocused();
   const { recipes, favorites } = useSelector(
     (state: RootState) => state.recipes,
   );
@@ -41,7 +43,8 @@ export function FavoritesScreen({ navigation }: FavoritesScreenProps) {
   return (
     <SafeAreaView className="flex-1 bg-white" edges={["top", "left", "right"]}>
       <Animated.View
-        entering={FadeInDown.duration(800).springify()}
+        key={`favorites-header-${isFocused}`}
+        entering={isFocused ? FadeInDown.duration(800).springify() : undefined}
         className="pt-2 pb-2 border-b border-gray-100"
         style={{
           paddingHorizontal: layout.spacing.screen,
@@ -69,8 +72,8 @@ export function FavoritesScreen({ navigation }: FavoritesScreenProps) {
           >
             {favoriteRecipes.map((recipe, index) => (
               <Animated.View
-                key={recipe.id}
-                entering={FadeInDown.delay(index * 100).duration(600).springify()}
+                key={`fav-card-${recipe.id}-${isFocused}`}
+                entering={isFocused ? FadeInDown.delay(index * 100).duration(600).springify() : undefined}
                 layout={LinearTransition.springify()}
               >
                 <RecipeCard
@@ -85,7 +88,8 @@ export function FavoritesScreen({ navigation }: FavoritesScreenProps) {
           </ScrollView>
         ) : (
           <Animated.View
-            entering={FadeInUp.duration(500).springify()}
+            key={`fav-empty-${isFocused}`}
+            entering={isFocused ? FadeInUp.duration(500).springify() : undefined}
             className="flex-1 items-center justify-center p-8"
           >
             <Ionicons

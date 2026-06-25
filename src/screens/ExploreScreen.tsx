@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, ScrollView, FlatList, TouchableOpacity } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeInDown, FadeInRight, FadeInUp, LinearTransition } from 'react-native-reanimated';
+import { useIsFocused } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
 import { toggleFavorite, setSelectedRecipe, setSearchQuery, setSelectedCategory } from '../store/slices/recipesSlice';
@@ -19,6 +20,7 @@ export const ExploreScreen: React.FC<ExploreScreenProps> = ({ navigation }) => {
   const dispatch = useDispatch();
   const insets = useSafeAreaInsets();
   const layout = useResponsiveLayout();
+  const isFocused = useIsFocused();
   const { recipes, favorites, searchQuery, selectedCategory } = useSelector(
     (state: RootState) => state.recipes
   );
@@ -43,7 +45,8 @@ export const ExploreScreen: React.FC<ExploreScreenProps> = ({ navigation }) => {
     <SafeAreaView className="flex-1 bg-white" edges={['top', 'left', 'right']}>
       {/* Header Container */}
       <Animated.View
-        entering={FadeInDown.duration(800).springify()}
+        key={`explore-header-${isFocused}`}
+        entering={isFocused ? FadeInDown.duration(800).springify() : undefined}
         className="pt-2 pb-2 border-b border-gray-100 bg-white"
         style={{
           paddingHorizontal: layout.spacing.screen,
@@ -62,7 +65,10 @@ export const ExploreScreen: React.FC<ExploreScreenProps> = ({ navigation }) => {
         />
 
         {/* Categories Carousel */}
-        <Animated.View entering={FadeInRight.duration(850).delay(150).springify()}>
+        <Animated.View
+          key={`explore-categories-${isFocused}`}
+          entering={isFocused ? FadeInRight.duration(850).delay(150).springify() : undefined}
+        >
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -98,7 +104,8 @@ export const ExploreScreen: React.FC<ExploreScreenProps> = ({ navigation }) => {
             showsVerticalScrollIndicator={false}
             renderItem={({ item, index }) => (
               <Animated.View
-                entering={FadeInDown.delay(index * 100).duration(600).springify()}
+                key={`explore-card-${item.id}-${isFocused}`}
+                entering={isFocused ? FadeInDown.delay(index * 100).duration(600).springify() : undefined}
                 layout={LinearTransition.springify()}
               >
                 <RecipeCard
@@ -113,7 +120,8 @@ export const ExploreScreen: React.FC<ExploreScreenProps> = ({ navigation }) => {
           />
         ) : (
           <Animated.View
-            entering={FadeInUp.duration(500).springify()}
+            key={`explore-empty-${isFocused}`}
+            entering={isFocused ? FadeInUp.duration(500).springify() : undefined}
             className="flex-1 items-center justify-center p-8"
           >
             <Ionicons name="search-outline" size={64} color="#9ca3af" style={{ opacity: 0.4 }} />

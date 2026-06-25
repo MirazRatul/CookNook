@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeInDown, FadeInRight, FadeInUp, LinearTransition } from 'react-native-reanimated';
+import { useIsFocused } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
 import { toggleFavorite, setSelectedCategory, setSelectedRecipe, setSearchQuery } from '../store/slices/recipesSlice';
@@ -19,6 +20,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const dispatch = useDispatch();
   const insets = useSafeAreaInsets();
   const layout = useResponsiveLayout();
+  const isFocused = useIsFocused();
   const { recipes, favorites, selectedCategory, searchQuery } = useSelector(
     (state: RootState) => state.recipes
   );
@@ -47,7 +49,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
       {/* Header */}
       <Animated.View
-        entering={FadeInDown.duration(800).springify()}
+        key={`header-${isFocused}`}
+        entering={isFocused ? FadeInDown.duration(800).springify() : undefined}
         className="pt-2 pb-4 flex-row items-center justify-between"
         style={{
           paddingHorizontal: layout.spacing.screen,
@@ -68,7 +71,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 
       {/* Fake SearchBar Container (Tapping redirects to Explore) */}
       <Animated.View
-        entering={FadeInDown.duration(800).delay(150).springify()}
+        key={`search-${isFocused}`}
+        entering={isFocused ? FadeInDown.duration(800).delay(150).springify() : undefined}
         className="my-4"
         style={{
           paddingHorizontal: layout.spacing.screen,
@@ -90,7 +94,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       </Animated.View>
 
       {/* Categories */}
-      <Animated.View entering={FadeInRight.duration(850).delay(250).springify()} className="my-2">
+      <Animated.View
+        key={`categories-${isFocused}`}
+        entering={isFocused ? FadeInRight.duration(850).delay(250).springify() : undefined}
+        className="my-2"
+      >
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -111,7 +119,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       </Animated.View>
 
       {/* Popular Recipes */}
-      <Animated.View entering={FadeInDown.duration(850).delay(350).springify()} className="mt-4">
+      <Animated.View
+        key={`popular-${isFocused}`}
+        entering={isFocused ? FadeInDown.duration(850).delay(350).springify() : undefined}
+        className="mt-4"
+      >
         <View
           className="flex-row items-center justify-between mb-4"
           style={{
@@ -139,8 +151,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         >
           {popularRecipes.map((recipe, index) => (
             <Animated.View
-              key={recipe.id}
-              entering={FadeInRight.delay(400 + index * 120).duration(600).springify()}
+              key={`popular-card-${recipe.id}-${isFocused}`}
+              entering={isFocused ? FadeInRight.delay(400 + index * 120).duration(600).springify() : undefined}
             >
               <RecipeCard
                 recipe={recipe}
@@ -155,7 +167,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 
       {/* Chef Recommendations */}
       <Animated.View
-        entering={FadeInDown.duration(850).delay(500).springify()}
+        key={`recommendations-${isFocused}`}
+        entering={isFocused ? FadeInDown.duration(850).delay(500).springify() : undefined}
         className="mt-4"
         style={{
           paddingHorizontal: layout.spacing.screen,
@@ -169,8 +182,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         {filteredRecipes.length > 0 ? (
           filteredRecipes.map((recipe, index) => (
             <Animated.View
-              key={recipe.id}
-              entering={FadeInDown.delay(index * 120).duration(600).springify()}
+              key={`recommend-card-${recipe.id}-${isFocused}`}
+              entering={isFocused ? FadeInDown.delay(index * 120).duration(600).springify() : undefined}
               layout={LinearTransition.springify()}
             >
               <RecipeCard
@@ -184,7 +197,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           ))
         ) : (
           <Animated.View
-            entering={FadeInUp.duration(500).springify()}
+            key={`recommend-empty-${isFocused}`}
+            entering={isFocused ? FadeInUp.duration(500).springify() : undefined}
             className="bg-white rounded-3xl p-8 border border-gray-100 items-center justify-center"
           >
             <Ionicons name="fast-food-outline" size={48} color="#d97706" style={{ opacity: 0.4 }} />
