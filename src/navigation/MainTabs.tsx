@@ -7,6 +7,7 @@ import { HomeScreen } from '../screens/HomeScreen';
 import { ExploreScreen } from '../screens/ExploreScreen';
 import { CreateRecipeScreen } from '../screens/CreateRecipeScreen';
 import { FavoritesScreen } from '../screens/FavoritesScreen';
+import { useResponsiveLayout } from '../hooks/useResponsiveLayout';
 import { MainTabParamList } from './types';
 
 type IconName = keyof typeof Ionicons.glyphMap;
@@ -54,12 +55,19 @@ const Tab = createBottomTabNavigator<MainTabParamList>();
 
 function CookNookTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
+  const layout = useResponsiveLayout();
   const bottomOffset = Math.max(insets.bottom, 12);
 
   return (
     <View
-      className="absolute left-6 right-6 h-16 bg-gray-900 rounded-[28px] shadow-lg flex-row items-center justify-around px-4 border border-gray-800"
-      style={{ bottom: bottomOffset }}
+      className="absolute bg-gray-900 shadow-lg flex-row items-center justify-around px-4 border border-gray-800"
+      style={{
+        left: layout.tabBar.horizontalInset,
+        right: layout.tabBar.horizontalInset,
+        bottom: bottomOffset,
+        height: layout.tabBar.height,
+        borderRadius: layout.tabBar.radius,
+      }}
     >
       {state.routes.map((route, index) => {
         const options = descriptors[route.key].options;

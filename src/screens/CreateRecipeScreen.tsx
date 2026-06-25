@@ -6,6 +6,7 @@ import { useDispatch } from 'react-redux';
 import { addRecipe } from '../store/slices/recipesSlice';
 import { Recipe, CATEGORIES } from '../constants/mockData';
 import { Button } from '../components/Button';
+import { useResponsiveLayout } from '../hooks/useResponsiveLayout';
 import { AppTabNavigationProp } from '../navigation/types';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -13,6 +14,7 @@ export const CreateRecipeScreen: React.FC = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation<AppTabNavigationProp<'Create'>>();
   const insets = useSafeAreaInsets();
+  const layout = useResponsiveLayout();
 
   // Form State
   const [title, setTitle] = useState('');
@@ -113,7 +115,16 @@ export const CreateRecipeScreen: React.FC = () => {
   return (
     <SafeAreaView className="flex-1 bg-white" edges={['top', 'left', 'right']}>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-      <View className="px-6 pt-6" style={{ paddingBottom: insets.bottom + 104 }}>
+      <View
+        className="pt-6"
+        style={{
+          paddingHorizontal: layout.spacing.screen,
+          paddingBottom: insets.bottom + 104,
+          width: '100%',
+          maxWidth: layout.formMaxWidth,
+          alignSelf: 'center',
+        }}
+      >
         <Text className="text-2xl font-black text-gray-900 mb-6">Create a Recipe</Text>
 
         {/* Recipe Title */}
@@ -171,8 +182,14 @@ export const CreateRecipeScreen: React.FC = () => {
         </View>
 
         {/* Cook Time, Calories, Difficulty Row */}
-        <View className="flex-row mb-6">
-          <View className="flex-1 mr-3">
+        <View
+          className="mb-6"
+          style={{
+            flexDirection: layout.compactFormFields ? 'column' : 'row',
+            gap: layout.compactFormFields ? 14 : 12,
+          }}
+        >
+          <View className="flex-1">
             <Text className="text-sm font-extrabold text-gray-800 mb-2">Cook Time (m)</Text>
             <TextInput
               value={duration}
@@ -184,7 +201,7 @@ export const CreateRecipeScreen: React.FC = () => {
             />
           </View>
 
-          <View className="flex-1 mr-3">
+          <View className="flex-1">
             <Text className="text-sm font-extrabold text-gray-800 mb-2">Calories</Text>
             <TextInput
               value={calories}

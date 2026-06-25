@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Recipe } from '../constants/mockData';
+import { useResponsiveLayout } from '../hooks/useResponsiveLayout';
 
 interface RecipeCardProps {
   recipe: Recipe;
@@ -18,6 +19,8 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({
   onToggleFavorite,
   horizontal = false,
 }) => {
+  const layout = useResponsiveLayout();
+
   if (horizontal) {
     return (
       <TouchableOpacity
@@ -27,7 +30,11 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({
       >
         <Image
           source={{ uri: recipe.image }}
-          className="w-24 h-24 rounded-2xl bg-gray-100"
+          className="rounded-2xl bg-gray-100"
+          style={{
+            width: layout.recipeCard.horizontalImageSize,
+            height: layout.recipeCard.horizontalImageSize,
+          }}
           resizeMode="cover"
         />
         <View className="flex-1 ml-4 pr-1">
@@ -70,12 +77,14 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({
     <TouchableOpacity
       onPress={onPress}
       activeOpacity={0.9}
-      className="bg-white rounded-[32px] overflow-hidden shadow-sm border border-gray-100 w-64 mr-5"
+      className="bg-white rounded-[32px] overflow-hidden shadow-sm border border-gray-100 mr-5"
+      style={{ width: layout.recipeCard.verticalWidth }}
     >
       <View className="relative">
         <Image
           source={{ uri: recipe.image }}
-          className="w-full h-44 bg-gray-100"
+          className="w-full bg-gray-100"
+          style={{ height: layout.recipeCard.verticalImageHeight }}
           resizeMode="cover"
         />
         <View className="absolute top-4 left-4 bg-white/90 px-3 py-1 rounded-full flex-row items-center">

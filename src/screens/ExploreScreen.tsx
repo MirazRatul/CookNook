@@ -9,6 +9,7 @@ import { SearchBar } from '../components/SearchBar';
 import { CategoryBadge } from '../components/CategoryBadge';
 import { RecipeCard } from '../components/RecipeCard';
 import { CATEGORIES, Recipe } from '../constants/mockData';
+import { useResponsiveLayout } from '../hooks/useResponsiveLayout';
 import { AppTabNavigationProp } from '../navigation/types';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -16,6 +17,7 @@ export const ExploreScreen: React.FC = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation<AppTabNavigationProp<'Explore'>>();
   const insets = useSafeAreaInsets();
+  const layout = useResponsiveLayout();
   const { recipes, favorites, searchQuery, selectedCategory } = useSelector(
     (state: RootState) => state.recipes
   );
@@ -39,7 +41,15 @@ export const ExploreScreen: React.FC = () => {
   return (
     <SafeAreaView className="flex-1 bg-white" edges={['top', 'left', 'right']}>
       {/* Header Container */}
-      <View className="px-6 pt-6 pb-2 border-b border-gray-100 bg-white">
+      <View
+        className="pt-6 pb-2 border-b border-gray-100 bg-white"
+        style={{
+          paddingHorizontal: layout.spacing.screen,
+          width: '100%',
+          maxWidth: layout.contentMaxWidth,
+          alignSelf: 'center',
+        }}
+      >
         <Text className="text-2xl font-black text-gray-900 mb-4">Explore Recipes</Text>
         
         <SearchBar
@@ -73,9 +83,12 @@ export const ExploreScreen: React.FC = () => {
             data={filteredRecipes}
             keyExtractor={(item) => item.id}
             contentContainerStyle={{
-              paddingHorizontal: 24,
+              paddingHorizontal: layout.spacing.screen,
               paddingTop: 20,
               paddingBottom: insets.bottom + 104,
+              width: '100%',
+              maxWidth: layout.listMaxWidth,
+              alignSelf: 'center',
             }}
             showsVerticalScrollIndicator={false}
             renderItem={({ item }) => (

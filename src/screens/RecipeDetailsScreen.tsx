@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, Image, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
 import { toggleFavorite } from '../store/slices/recipesSlice';
+import { useResponsiveLayout } from '../hooks/useResponsiveLayout';
 import { RootNavigationProp } from '../navigation/types';
 import { Ionicons } from '@expo/vector-icons';
-
-const { width } = Dimensions.get('window');
 
 export const RecipeDetailsScreen: React.FC = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation<RootNavigationProp>();
   const insets = useSafeAreaInsets();
+  const layout = useResponsiveLayout();
   const selectedRecipe = useSelector((state: RootState) => state.recipes.selectedRecipe);
   const favorites = useSelector((state: RootState) => state.recipes.favorites);
 
@@ -64,14 +64,20 @@ export const RecipeDetailsScreen: React.FC = () => {
         {/* Banner Image */}
         <Image
           source={{ uri: selectedRecipe.image }}
-          className="w-full h-80 bg-gray-100"
+          className="w-full bg-gray-100"
+          style={{ height: layout.details.heroHeight }}
           resizeMode="cover"
         />
 
         {/* Content Container */}
         <View
           className="bg-white rounded-t-[40px] -mt-10 px-6 pt-8"
-          style={{ paddingBottom: insets.bottom + 40 }}
+          style={{
+            paddingBottom: insets.bottom + 40,
+            width: '100%',
+            maxWidth: layout.details.contentMaxWidth,
+            alignSelf: 'center',
+          }}
         >
           {/* Category & Title */}
           <View className="flex-row items-center justify-between">

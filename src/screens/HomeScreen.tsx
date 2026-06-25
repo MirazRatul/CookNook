@@ -9,6 +9,7 @@ import { SearchBar } from '../components/SearchBar';
 import { CategoryBadge } from '../components/CategoryBadge';
 import { RecipeCard } from '../components/RecipeCard';
 import { CATEGORIES, Recipe } from '../constants/mockData';
+import { useResponsiveLayout } from '../hooks/useResponsiveLayout';
 import { AppTabNavigationProp } from '../navigation/types';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -16,6 +17,7 @@ export const HomeScreen: React.FC = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation<AppTabNavigationProp<'Home'>>();
   const insets = useSafeAreaInsets();
+  const layout = useResponsiveLayout();
   const { recipes, favorites, selectedCategory, searchQuery } = useSelector(
     (state: RootState) => state.recipes
   );
@@ -43,7 +45,15 @@ export const HomeScreen: React.FC = () => {
     <SafeAreaView className="flex-1 bg-gray-50/50" edges={['top', 'left', 'right']}>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
       {/* Header */}
-      <View className="px-6 pt-6 pb-4 flex-row items-center justify-between">
+      <View
+        className="pt-6 pb-4 flex-row items-center justify-between"
+        style={{
+          paddingHorizontal: layout.spacing.screen,
+          width: '100%',
+          maxWidth: layout.contentMaxWidth,
+          alignSelf: 'center',
+        }}
+      >
         <View>
           <Text className="text-gray-400 text-sm font-semibold tracking-wide">HELLO, CHEF!</Text>
           <Text className="text-2xl font-extrabold text-gray-900 mt-0.5">What are we cooking?</Text>
@@ -55,7 +65,15 @@ export const HomeScreen: React.FC = () => {
       </View>
 
       {/* Fake SearchBar Container (Tapping redirects to Explore) */}
-      <View className="px-6 my-4">
+      <View
+        className="my-4"
+        style={{
+          paddingHorizontal: layout.spacing.screen,
+          width: '100%',
+          maxWidth: layout.contentMaxWidth,
+          alignSelf: 'center',
+        }}
+      >
         <TouchableOpacity activeOpacity={0.9} onPress={handleSearchFocus}>
           <SearchBar
             value={searchQuery}
@@ -73,7 +91,10 @@ export const HomeScreen: React.FC = () => {
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 24, paddingVertical: 8 }}
+          contentContainerStyle={{
+            paddingHorizontal: layout.spacing.screen,
+            paddingVertical: 8,
+          }}
         >
           {CATEGORIES.map((cat) => (
             <CategoryBadge
@@ -88,7 +109,15 @@ export const HomeScreen: React.FC = () => {
 
       {/* Popular Recipes */}
       <View className="mt-4">
-        <View className="px-6 flex-row items-center justify-between mb-4">
+        <View
+          className="flex-row items-center justify-between mb-4"
+          style={{
+            paddingHorizontal: layout.spacing.screen,
+            width: '100%',
+            maxWidth: layout.contentMaxWidth,
+            alignSelf: 'center',
+          }}
+        >
           <Text className="text-xl font-black text-gray-800">Popular Recipes</Text>
           <TouchableOpacity onPress={() => navigation.navigate('Explore')} className="flex-row items-center">
             <Text className="text-primary-600 font-bold text-sm mr-0.5">See All</Text>
@@ -99,7 +128,11 @@ export const HomeScreen: React.FC = () => {
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingLeft: 24, paddingRight: 4, paddingBottom: 16 }}
+          contentContainerStyle={{
+            paddingLeft: layout.spacing.screen,
+            paddingRight: 4,
+            paddingBottom: 16,
+          }}
         >
           {popularRecipes.map((recipe) => (
             <RecipeCard
@@ -114,7 +147,16 @@ export const HomeScreen: React.FC = () => {
       </View>
 
       {/* Chef Recommendations */}
-      <View className="px-6 mt-4" style={{ paddingBottom: insets.bottom + 104 }}>
+      <View
+        className="mt-4"
+        style={{
+          paddingHorizontal: layout.spacing.screen,
+          paddingBottom: insets.bottom + 104,
+          width: '100%',
+          maxWidth: layout.listMaxWidth,
+          alignSelf: 'center',
+        }}
+      >
         <Text className="text-xl font-black text-gray-800 mb-4">Chef Recommendations</Text>
         {filteredRecipes.length > 0 ? (
           filteredRecipes.map((recipe) => (
