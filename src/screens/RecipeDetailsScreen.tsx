@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
 import { toggleFavorite } from '../store/slices/recipesSlice';
@@ -78,7 +79,8 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({ naviga
 
       <ScrollView showsVerticalScrollIndicator={false} className="flex-1">
         {/* Banner Image */}
-        <Image
+        <Animated.Image
+          entering={FadeIn.duration(400)}
           source={{ uri: selectedRecipe.image }}
           className="w-full bg-gray-100"
           style={{ height: layout.details.heroHeight }}
@@ -86,7 +88,8 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({ naviga
         />
 
         {/* Content Container */}
-        <View
+        <Animated.View
+          entering={FadeInDown.duration(500).springify()}
           className="bg-white rounded-t-[40px] -mt-10 px-6 pt-8"
           style={{
             paddingBottom: insets.bottom + 40,
@@ -218,7 +221,10 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({ naviga
 
           {/* Tab Content */}
           {activeTab === 'ingredients' ? (
-            <View>
+            <Animated.View
+              key="ingredients-list"
+              entering={FadeInDown.duration(400).springify()}
+            >
               <View className="flex-row items-center justify-between mb-4">
                 <Text className="text-lg font-black text-gray-800">Ingredients list</Text>
                 <Text className="text-xs text-gray-400 font-semibold">
@@ -238,9 +244,12 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({ naviga
                   <Text className="text-sm font-semibold text-gray-700 flex-1">{ing}</Text>
                 </View>
               ))}
-            </View>
+            </Animated.View>
           ) : (
-            <View>
+            <Animated.View
+              key="instructions-list"
+              entering={FadeInDown.duration(400).springify()}
+            >
               <View className="flex-row items-center justify-between mb-4">
                 <Text className="text-lg font-black text-gray-800">Cooking steps</Text>
                 <Text className="text-xs text-gray-400 font-semibold">
@@ -275,9 +284,9 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({ naviga
                   </View>
                 </View>
               ))}
-            </View>
+            </Animated.View>
           )}
-        </View>
+        </Animated.View>
       </ScrollView>
     </View>
   );

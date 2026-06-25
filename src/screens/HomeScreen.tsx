@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import Animated, { FadeInDown, FadeInRight, FadeInUp, LinearTransition } from 'react-native-reanimated';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
 import { toggleFavorite, setSelectedCategory, setSelectedRecipe, setSearchQuery } from '../store/slices/recipesSlice';
@@ -45,7 +46,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     <SafeAreaView className="flex-1" style={{ backgroundColor: 'rgba(249, 250, 251, 0.5)' }} edges={['top', 'left', 'right']}>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
       {/* Header */}
-      <View
+      <Animated.View
+        entering={FadeInDown.duration(500).springify()}
         className="pt-2 pb-4 flex-row items-center justify-between"
         style={{
           paddingHorizontal: layout.spacing.screen,
@@ -62,10 +64,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           source={{ uri: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150' }}
           className="w-12 h-12 rounded-full border-2 border-white shadow-sm"
         />
-      </View>
+      </Animated.View>
 
       {/* Fake SearchBar Container (Tapping redirects to Explore) */}
-      <View
+      <Animated.View
+        entering={FadeInDown.duration(500).delay(100).springify()}
         className="my-4"
         style={{
           paddingHorizontal: layout.spacing.screen,
@@ -84,10 +87,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             placeholder="Search recipes, ingredients..."
           />
         </TouchableOpacity>
-      </View>
+      </Animated.View>
 
       {/* Categories */}
-      <View className="my-2">
+      <Animated.View entering={FadeInRight.duration(600).delay(150).springify()} className="my-2">
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -105,10 +108,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             />
           ))}
         </ScrollView>
-      </View>
+      </Animated.View>
 
       {/* Popular Recipes */}
-      <View className="mt-4">
+      <Animated.View entering={FadeInDown.duration(600).delay(200).springify()} className="mt-4">
         <View
           className="flex-row items-center justify-between mb-4"
           style={{
@@ -134,20 +137,25 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             paddingBottom: 16,
           }}
         >
-          {popularRecipes.map((recipe) => (
-            <RecipeCard
+          {popularRecipes.map((recipe, index) => (
+            <Animated.View
               key={recipe.id}
-              recipe={recipe}
-              isFavorite={favorites.includes(recipe.id)}
-              onPress={() => handleRecipePress(recipe)}
-              onToggleFavorite={() => dispatch(toggleFavorite(recipe.id))}
-            />
+              entering={FadeInRight.delay(250 + index * 100).duration(400).springify()}
+            >
+              <RecipeCard
+                recipe={recipe}
+                isFavorite={favorites.includes(recipe.id)}
+                onPress={() => handleRecipePress(recipe)}
+                onToggleFavorite={() => dispatch(toggleFavorite(recipe.id))}
+              />
+            </Animated.View>
           ))}
         </ScrollView>
-      </View>
+      </Animated.View>
 
       {/* Chef Recommendations */}
-      <View
+      <Animated.View
+        entering={FadeInDown.duration(600).delay(350).springify()}
         className="mt-4"
         style={{
           paddingHorizontal: layout.spacing.screen,
@@ -159,25 +167,33 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       >
         <Text className="text-xl font-black text-gray-800 mb-4">Chef Recommendations</Text>
         {filteredRecipes.length > 0 ? (
-          filteredRecipes.map((recipe) => (
-            <RecipeCard
+          filteredRecipes.map((recipe, index) => (
+            <Animated.View
               key={recipe.id}
-              recipe={recipe}
-              isFavorite={favorites.includes(recipe.id)}
-              onPress={() => handleRecipePress(recipe)}
-              onToggleFavorite={() => dispatch(toggleFavorite(recipe.id))}
-              horizontal
-            />
+              entering={FadeInDown.delay(index * 80).duration(400).springify()}
+              layout={LinearTransition.springify()}
+            >
+              <RecipeCard
+                recipe={recipe}
+                isFavorite={favorites.includes(recipe.id)}
+                onPress={() => handleRecipePress(recipe)}
+                onToggleFavorite={() => dispatch(toggleFavorite(recipe.id))}
+                horizontal
+              />
+            </Animated.View>
           ))
         ) : (
-          <View className="bg-white rounded-3xl p-8 border border-gray-100 items-center justify-center">
+          <Animated.View
+            entering={FadeInUp.duration(300).springify()}
+            className="bg-white rounded-3xl p-8 border border-gray-100 items-center justify-center"
+          >
             <Ionicons name="fast-food-outline" size={48} color="#d97706" style={{ opacity: 0.4 }} />
             <Text className="text-gray-500 font-semibold mt-3 text-center">
               No recipes found in this category
             </Text>
-          </View>
+          </Animated.View>
         )}
-      </View>
+      </Animated.View>
       </ScrollView>
     </SafeAreaView>
   );

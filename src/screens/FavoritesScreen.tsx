@@ -4,6 +4,7 @@ import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
+import Animated, { FadeInDown, FadeInUp, LinearTransition } from 'react-native-reanimated';
 import { Ionicons } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { RecipeCard } from "../components/RecipeCard";
@@ -39,7 +40,8 @@ export function FavoritesScreen({ navigation }: FavoritesScreenProps) {
 
   return (
     <SafeAreaView className="flex-1 bg-white" edges={["top", "left", "right"]}>
-      <View
+      <Animated.View
+        entering={FadeInDown.duration(450).springify()}
         className="pt-2 pb-2 border-b border-gray-100"
         style={{
           paddingHorizontal: layout.spacing.screen,
@@ -51,7 +53,7 @@ export function FavoritesScreen({ navigation }: FavoritesScreenProps) {
         <Text className="text-2xl font-black text-gray-900 mb-2">
           My Favorites
         </Text>
-      </View>
+      </Animated.View>
       <View className="flex-1" style={{ backgroundColor: 'rgba(249, 250, 251, 0.5)' }}>
         {favoriteRecipes.length > 0 ? (
           <ScrollView
@@ -65,19 +67,27 @@ export function FavoritesScreen({ navigation }: FavoritesScreenProps) {
             }}
             showsVerticalScrollIndicator={false}
           >
-            {favoriteRecipes.map((recipe) => (
-              <RecipeCard
+            {favoriteRecipes.map((recipe, index) => (
+              <Animated.View
                 key={recipe.id}
-                recipe={recipe}
-                isFavorite={true}
-                onPress={() => handleRecipePress(recipe)}
-                onToggleFavorite={() => dispatch(toggleFavorite(recipe.id))}
-                horizontal
-              />
+                entering={FadeInDown.delay(index * 60).duration(350).springify()}
+                layout={LinearTransition.springify()}
+              >
+                <RecipeCard
+                  recipe={recipe}
+                  isFavorite={true}
+                  onPress={() => handleRecipePress(recipe)}
+                  onToggleFavorite={() => dispatch(toggleFavorite(recipe.id))}
+                  horizontal
+                />
+              </Animated.View>
             ))}
           </ScrollView>
         ) : (
-          <View className="flex-1 items-center justify-center p-8">
+          <Animated.View
+            entering={FadeInUp.duration(300).springify()}
+            className="flex-1 items-center justify-center p-8"
+          >
             <Ionicons
               name="heart-outline"
               size={64}
@@ -97,7 +107,7 @@ export function FavoritesScreen({ navigation }: FavoritesScreenProps) {
             >
               <Text className="text-white font-bold text-sm">Find Recipes</Text>
             </TouchableOpacity>
-          </View>
+          </Animated.View>
         )}
       </View>
     </SafeAreaView>
