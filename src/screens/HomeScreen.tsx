@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, ScrollView, Image, TouchableOpacity } from 'react-native';
+import { ProfileDrawer } from '../components/ProfileDrawer';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeInDown, FadeInRight, FadeInUp, LinearTransition } from 'react-native-reanimated';
 import { useIsFocused } from '@react-navigation/native';
@@ -24,6 +25,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const { recipes, favorites, selectedCategory, searchQuery } = useSelector(
     (state: RootState) => state.recipes
   );
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   // Filter recipes based on category
   const filteredRecipes = recipes.filter((recipe) => {
@@ -45,7 +47,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView className="flex-1" style={{ backgroundColor: 'rgba(249, 250, 251, 0.5)' }} edges={['top', 'left', 'right']}>
+    <View style={{ flex: 1, backgroundColor: 'rgba(249, 250, 251, 0.5)' }}>
+      <SafeAreaView className="flex-1" edges={['top', 'left', 'right']}>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
       {/* Header */}
       <Animated.View
@@ -63,10 +66,18 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           <Text className="text-gray-400 text-sm font-semibold tracking-wide">HELLO, CHEF!</Text>
           <Text className="text-2xl font-extrabold text-gray-900 mt-0.5">What are we cooking?</Text>
         </View>
-        <Image
-          source={{ uri: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150' }}
-          className="w-12 h-12 rounded-full border-2 border-white shadow-sm"
-        />
+        <TouchableOpacity
+          onPress={() => {
+            console.log('Profile picture clicked, opening drawer');
+            setIsDrawerOpen(true);
+          }}
+          activeOpacity={0.85}
+        >
+          <Image
+            source={{ uri: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150' }}
+            className="w-12 h-12 rounded-full border-2 border-white shadow-sm"
+          />
+        </TouchableOpacity>
       </Animated.View>
 
       {/* Fake SearchBar Container (Tapping redirects to Explore) */}
@@ -209,6 +220,12 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         )}
       </Animated.View>
       </ScrollView>
-    </SafeAreaView>
+      </SafeAreaView>
+      <ProfileDrawer
+        isOpen={isDrawerOpen}
+        onClose={() => setIsDrawerOpen(false)}
+        onNavigateToCreate={() => navigation.navigate('Create')}
+      />
+    </View>
   );
 };
