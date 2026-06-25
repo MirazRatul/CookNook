@@ -3,6 +3,7 @@ import { View, Text, Image, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Recipe } from '../constants/mockData';
 import { useResponsiveLayout } from '../hooks/useResponsiveLayout';
+import { HeartButton } from './HeartButton';
 
 interface RecipeCardProps {
   recipe: Recipe;
@@ -42,13 +43,11 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({
             <Text className="text-xs font-semibold text-primary-600 bg-amber-50 px-2 py-0.5 rounded-md">
               {recipe.category}
             </Text>
-            <TouchableOpacity onPress={onToggleFavorite} activeOpacity={0.7} className="p-1">
-              <Ionicons
-                name={isFavorite ? 'heart' : 'heart-outline'}
-                size={20}
-                color={isFavorite ? '#ef4444' : '#9ca3af'}
-              />
-            </TouchableOpacity>
+            <HeartButton
+              isFavorite={isFavorite}
+              onPress={onToggleFavorite}
+              size={20}
+            />
           </View>
           <Text className="text-base font-bold text-gray-800 mt-1" numberOfLines={1}>
             {recipe.title}
@@ -96,20 +95,20 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({
           <Ionicons name="star" size={14} color="#f59e0b" />
           <Text className="text-xs font-bold text-gray-800 ml-1">{recipe.rating}</Text>
         </View>
-        <TouchableOpacity
-          onPress={onToggleFavorite}
-          activeOpacity={0.7}
+        <View
           className="absolute top-4 right-4 p-2 rounded-full border border-gray-100"
           style={{
             backgroundColor: 'rgba(255, 255, 255, 0.9)',
           }}
         >
-          <Ionicons
-            name={isFavorite ? 'heart' : 'heart-outline'}
+          <HeartButton
+            isFavorite={isFavorite}
+            onPress={onToggleFavorite}
             size={18}
-            color={isFavorite ? '#ef4444' : '#4b5563'}
+            colorActive="#ef4444"
+            colorInactive="#4b5563"
           />
-        </TouchableOpacity>
+        </View>
       </View>
 
       <View className="p-5">

@@ -1,30 +1,52 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView, Image, TouchableOpacity } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../store/store';
-import { toggleFavorite } from '../store/slices/recipesSlice';
-import { useResponsiveLayout } from '../hooks/useResponsiveLayout';
-import { RootStackScreenProps } from '../navigation/types';
-import { Ionicons } from '@expo/vector-icons';
+import React, { useState } from "react";
+import { View, Text, ScrollView, Image, TouchableOpacity } from "react-native";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
+import Animated, {
+  FadeIn,
+  FadeInDown,
+  FadeInLeft,
+} from "react-native-reanimated";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "../store/store";
+import { toggleFavorite } from "../store/slices/recipesSlice";
+import { useResponsiveLayout } from "../hooks/useResponsiveLayout";
+import { RootStackScreenProps } from "../navigation/types";
+import { Ionicons } from "@expo/vector-icons";
+import { HeartButton } from "../components/HeartButton";
 
-type RecipeDetailsScreenProps = RootStackScreenProps<'RecipeDetails'>;
+type RecipeDetailsScreenProps = RootStackScreenProps<"RecipeDetails">;
 
-export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({ navigation }) => {
+export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({
+  navigation,
+}) => {
   const dispatch = useDispatch();
   const insets = useSafeAreaInsets();
   const layout = useResponsiveLayout();
-  const selectedRecipe = useSelector((state: RootState) => state.recipes.selectedRecipe);
+  const selectedRecipe = useSelector(
+    (state: RootState) => state.recipes.selectedRecipe,
+  );
   const favorites = useSelector((state: RootState) => state.recipes.favorites);
 
-  const [activeTab, setActiveTab] = useState<'ingredients' | 'instructions'>('ingredients');
+  const [activeTab, setActiveTab] = useState<"ingredients" | "instructions">(
+    "ingredients",
+  );
 
   if (!selectedRecipe) {
     return (
-      <SafeAreaView className="flex-1 bg-white items-center justify-center p-6" edges={['top', 'right', 'bottom', 'left']}>
-        <Text className="text-gray-500 font-bold text-lg text-center">No recipe selected</Text>
-        <TouchableOpacity onPress={() => navigation.goBack()} className="mt-4 bg-primary-500 px-6 py-3 rounded-full">
+      <SafeAreaView
+        className="flex-1 bg-white items-center justify-center p-6"
+        edges={["top", "right", "bottom", "left"]}
+      >
+        <Text className="text-gray-500 font-bold text-lg text-center">
+          No recipe selected
+        </Text>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          className="mt-4 bg-primary-500 px-6 py-3 rounded-full"
+        >
           <Text className="text-white font-bold">Go Back</Text>
         </TouchableOpacity>
       </SafeAreaView>
@@ -44,8 +66,8 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({ naviga
           onPress={() => navigation.goBack()}
           className="p-2.5 rounded-full items-center justify-center"
           style={{
-            backgroundColor: 'rgba(255, 255, 255, 0.9)',
-            shadowColor: '#000',
+            backgroundColor: "rgba(255, 255, 255, 0.9)",
+            shadowColor: "#000",
             shadowOffset: { width: 0, height: 2 },
             shadowOpacity: 0.15,
             shadowRadius: 3.5,
@@ -56,31 +78,31 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({ naviga
           <Ionicons name="arrow-back" size={22} color="#1f2937" />
         </TouchableOpacity>
 
-        <TouchableOpacity
-          onPress={() => dispatch(toggleFavorite(selectedRecipe.id))}
+        <View
           className="p-2.5 rounded-full items-center justify-center"
           style={{
-            backgroundColor: 'rgba(255, 255, 255, 0.9)',
-            shadowColor: '#000',
+            backgroundColor: "rgba(255, 255, 255, 0.9)",
+            shadowColor: "#000",
             shadowOffset: { width: 0, height: 2 },
             shadowOpacity: 0.15,
             shadowRadius: 3.5,
             elevation: 3,
           }}
-          activeOpacity={0.8}
         >
-          <Ionicons
-            name={isFav ? 'heart' : 'heart-outline'}
+          <HeartButton
+            isFavorite={isFav}
+            onPress={() => dispatch(toggleFavorite(selectedRecipe.id))}
             size={22}
-            color={isFav ? '#ef4444' : '#1f2937'}
+            colorActive="#ef4444"
+            colorInactive="#1f2937"
           />
-        </TouchableOpacity>
+        </View>
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false} className="flex-1">
         {/* Banner Image */}
         <Animated.Image
-          entering={FadeIn.duration(600)}
+          entering={FadeInLeft.delay(200).duration(1200)}
           source={{ uri: selectedRecipe.image }}
           className="w-full bg-gray-100"
           style={{ height: layout.details.heroHeight }}
@@ -89,13 +111,13 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({ naviga
 
         {/* Content Container */}
         <Animated.View
-          entering={FadeInDown.duration(800).springify()}
+          entering={FadeInDown.delay(400).duration(1200)}
           className="bg-white rounded-t-[40px] -mt-10 px-6 pt-8"
           style={{
             paddingBottom: insets.bottom + 40,
-            width: '100%',
+            width: "100%",
             maxWidth: layout.details.contentMaxWidth,
-            alignSelf: 'center',
+            alignSelf: "center",
           }}
         >
           {/* Category & Title */}
@@ -105,8 +127,12 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({ naviga
             </Text>
             <View className="flex-row items-center bg-gray-50 px-3 py-1 rounded-full">
               <Ionicons name="star" size={14} color="#f59e0b" />
-              <Text className="text-xs font-bold text-gray-700 ml-1">{selectedRecipe.rating}</Text>
-              <Text className="text-xs text-gray-400 ml-0.5">({selectedRecipe.reviewsCount})</Text>
+              <Text className="text-xs font-bold text-gray-700 ml-1">
+                {selectedRecipe.rating}
+              </Text>
+              <Text className="text-xs text-gray-400 ml-0.5">
+                ({selectedRecipe.reviewsCount})
+              </Text>
             </View>
           </View>
 
@@ -121,19 +147,30 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({ naviga
               className="w-9 h-9 rounded-full bg-gray-100"
             />
             <View className="ml-3">
-              <Text className="text-xs text-gray-400 font-semibold">RECIPE BY</Text>
-              <Text className="text-sm font-bold text-gray-800">{selectedRecipe.chefName}</Text>
+              <Text className="text-xs text-gray-400 font-semibold">
+                RECIPE BY
+              </Text>
+              <Text className="text-sm font-bold text-gray-800">
+                {selectedRecipe.chefName}
+              </Text>
             </View>
           </View>
 
           {/* Recipe Meta Stats */}
-          <View className="flex-row items-center justify-between border border-gray-100 rounded-3xl p-4 my-6" style={{ backgroundColor: 'rgba(249, 250, 251, 0.7)' }}>
+          <View
+            className="flex-row items-center justify-between border border-gray-100 rounded-3xl p-4 my-6"
+            style={{ backgroundColor: "rgba(249, 250, 251, 0.7)" }}
+          >
             <View className="items-center flex-1">
               <View className="bg-amber-100 p-2.5 rounded-full mb-1.5">
                 <Ionicons name="time-outline" size={18} color="#d97706" />
               </View>
-              <Text className="text-[10px] text-gray-400 font-semibold uppercase">Cook Time</Text>
-              <Text className="text-sm font-black text-gray-800 mt-0.5">{selectedRecipe.duration}m</Text>
+              <Text className="text-[10px] text-gray-400 font-semibold uppercase">
+                Cook Time
+              </Text>
+              <Text className="text-sm font-black text-gray-800 mt-0.5">
+                {selectedRecipe.duration}m
+              </Text>
             </View>
 
             <View className="w-[1px] h-10 bg-gray-200" />
@@ -142,8 +179,12 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({ naviga
               <View className="bg-amber-100 p-2.5 rounded-full mb-1.5">
                 <Ionicons name="bar-chart-outline" size={18} color="#d97706" />
               </View>
-              <Text className="text-[10px] text-gray-400 font-semibold uppercase">Difficulty</Text>
-              <Text className="text-sm font-black text-gray-800 mt-0.5">{selectedRecipe.difficulty}</Text>
+              <Text className="text-[10px] text-gray-400 font-semibold uppercase">
+                Difficulty
+              </Text>
+              <Text className="text-sm font-black text-gray-800 mt-0.5">
+                {selectedRecipe.difficulty}
+              </Text>
             </View>
 
             <View className="w-[1px] h-10 bg-gray-200" />
@@ -152,8 +193,12 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({ naviga
               <View className="bg-amber-100 p-2.5 rounded-full mb-1.5">
                 <Ionicons name="flame-outline" size={18} color="#d97706" />
               </View>
-              <Text className="text-[10px] text-gray-400 font-semibold uppercase">Calories</Text>
-              <Text className="text-sm font-black text-gray-800 mt-0.5">{selectedRecipe.calories} kcal</Text>
+              <Text className="text-[10px] text-gray-400 font-semibold uppercase">
+                Calories
+              </Text>
+              <Text className="text-sm font-black text-gray-800 mt-0.5">
+                {selectedRecipe.calories} kcal
+              </Text>
             </View>
           </View>
 
@@ -165,15 +210,15 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({ naviga
           {/* Segmented Control / Tab Switcher */}
           <View className="flex-row bg-gray-100 p-1.5 rounded-2xl mb-6">
             <TouchableOpacity
-              onPress={() => setActiveTab('ingredients')}
+              onPress={() => setActiveTab("ingredients")}
               activeOpacity={0.9}
               className={`flex-1 py-3 rounded-xl items-center ${
-                activeTab === 'ingredients' ? 'bg-white' : 'bg-transparent'
+                activeTab === "ingredients" ? "bg-white" : "bg-transparent"
               }`}
               style={
-                activeTab === 'ingredients'
+                activeTab === "ingredients"
                   ? {
-                      shadowColor: '#000',
+                      shadowColor: "#000",
                       shadowOffset: { width: 0, height: 1 },
                       shadowOpacity: 0.05,
                       shadowRadius: 2,
@@ -184,7 +229,9 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({ naviga
             >
               <Text
                 className={`text-sm font-bold ${
-                  activeTab === 'ingredients' ? 'text-gray-800' : 'text-gray-500'
+                  activeTab === "ingredients"
+                    ? "text-gray-800"
+                    : "text-gray-500"
                 }`}
               >
                 Ingredients
@@ -192,15 +239,15 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({ naviga
             </TouchableOpacity>
 
             <TouchableOpacity
-              onPress={() => setActiveTab('instructions')}
+              onPress={() => setActiveTab("instructions")}
               activeOpacity={0.9}
               className={`flex-1 py-3 rounded-xl items-center ${
-                activeTab === 'instructions' ? 'bg-white' : 'bg-transparent'
+                activeTab === "instructions" ? "bg-white" : "bg-transparent"
               }`}
               style={
-                activeTab === 'instructions'
+                activeTab === "instructions"
                   ? {
-                      shadowColor: '#000',
+                      shadowColor: "#000",
                       shadowOffset: { width: 0, height: 1 },
                       shadowOpacity: 0.05,
                       shadowRadius: 2,
@@ -211,7 +258,9 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({ naviga
             >
               <Text
                 className={`text-sm font-bold ${
-                  activeTab === 'instructions' ? 'text-gray-800' : 'text-gray-500'
+                  activeTab === "instructions"
+                    ? "text-gray-800"
+                    : "text-gray-500"
                 }`}
               >
                 Instructions
@@ -220,13 +269,15 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({ naviga
           </View>
 
           {/* Tab Content */}
-          {activeTab === 'ingredients' ? (
+          {activeTab === "ingredients" ? (
             <Animated.View
               key="ingredients-list"
               entering={FadeInDown.duration(600).springify()}
             >
               <View className="flex-row items-center justify-between mb-4">
-                <Text className="text-lg font-black text-gray-800">Ingredients list</Text>
+                <Text className="text-lg font-black text-gray-800">
+                  Ingredients list
+                </Text>
                 <Text className="text-xs text-gray-400 font-semibold">
                   {selectedRecipe.ingredients.length} items
                 </Text>
@@ -236,12 +287,14 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({ naviga
                 <View
                   key={idx}
                   className="flex-row items-center border border-gray-100 rounded-2xl p-4 mb-3"
-                  style={{ backgroundColor: 'rgba(249, 250, 251, 0.5)' }}
+                  style={{ backgroundColor: "rgba(249, 250, 251, 0.5)" }}
                 >
                   <View className="w-6 h-6 rounded-full bg-amber-50 items-center justify-center mr-3 border border-amber-100">
                     <Ionicons name="checkmark" size={14} color="#d97706" />
                   </View>
-                  <Text className="text-sm font-semibold text-gray-700 flex-1">{ing}</Text>
+                  <Text className="text-sm font-semibold text-gray-700 flex-1">
+                    {ing}
+                  </Text>
                 </View>
               ))}
             </Animated.View>
@@ -251,7 +304,9 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({ naviga
               entering={FadeInDown.duration(600).springify()}
             >
               <View className="flex-row items-center justify-between mb-4">
-                <Text className="text-lg font-black text-gray-800">Cooking steps</Text>
+                <Text className="text-lg font-black text-gray-800">
+                  Cooking steps
+                </Text>
                 <Text className="text-xs text-gray-400 font-semibold">
                   {selectedRecipe.instructions.length} steps
                 </Text>
@@ -264,14 +319,16 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({ naviga
                     <View
                       className="w-8 h-8 rounded-full bg-primary-500 items-center justify-center z-10"
                       style={{
-                        shadowColor: '#000',
+                        shadowColor: "#000",
                         shadowOffset: { width: 0, height: 1 },
                         shadowOpacity: 0.1,
                         shadowRadius: 1,
                         elevation: 1,
                       }}
                     >
-                      <Text className="text-white text-xs font-black">{idx + 1}</Text>
+                      <Text className="text-white text-xs font-black">
+                        {idx + 1}
+                      </Text>
                     </View>
                     {idx !== selectedRecipe.instructions.length - 1 && (
                       <View className="w-[1.5px] bg-amber-100 flex-1 mt-1" />
@@ -280,7 +337,9 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({ naviga
 
                   {/* Step detail card */}
                   <View className="flex-1 bg-gray-50 border border-gray-100 rounded-2xl p-4">
-                    <Text className="text-sm leading-6 font-semibold text-gray-700">{step}</Text>
+                    <Text className="text-sm leading-6 font-semibold text-gray-700">
+                      {step}
+                    </Text>
                   </View>
                 </View>
               ))}
