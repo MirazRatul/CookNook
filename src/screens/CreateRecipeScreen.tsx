@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useDispatch } from 'react-redux';
 import { addRecipe } from '../store/slices/recipesSlice';
 import { Recipe, CATEGORIES } from '../constants/mockData';
 import { Button } from '../components/Button';
+import { AppTabNavigationProp } from '../navigation/types';
 import { Ionicons } from '@expo/vector-icons';
 
-interface CreateRecipeScreenProps {
-  onNavigate: (screen: string) => void;
-}
-
-export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ onNavigate }) => {
+export const CreateRecipeScreen: React.FC = () => {
   const dispatch = useDispatch();
+  const navigation = useNavigation<AppTabNavigationProp<'Create'>>();
+  const insets = useSafeAreaInsets();
 
   // Form State
   const [title, setTitle] = useState('');
@@ -106,12 +107,13 @@ export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ onNaviga
     setInstructions([]);
 
     Alert.alert('Success', 'Your delicious recipe has been shared!');
-    onNavigate('Home');
+    navigation.navigate('Home');
   };
 
   return (
-    <ScrollView className="flex-1 bg-white" showsVerticalScrollIndicator={false}>
-      <View className="px-6 pt-6 pb-24">
+    <SafeAreaView className="flex-1 bg-white" edges={['top', 'left', 'right']}>
+      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+      <View className="px-6 pt-6" style={{ paddingBottom: insets.bottom + 104 }}>
         <Text className="text-2xl font-black text-gray-900 mb-6">Create a Recipe</Text>
 
         {/* Recipe Title */}
@@ -291,6 +293,7 @@ export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ onNaviga
         {/* SUBMIT BUTTON */}
         <Button title="Share Recipe" onPress={handleCreate} size="lg" className="rounded-2xl" />
       </View>
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 };

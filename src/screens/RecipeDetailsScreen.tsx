@@ -1,18 +1,19 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, Image, TouchableOpacity, Dimensions } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
 import { toggleFavorite } from '../store/slices/recipesSlice';
+import { RootNavigationProp } from '../navigation/types';
 import { Ionicons } from '@expo/vector-icons';
-
-interface RecipeDetailsScreenProps {
-  onBack: () => void;
-}
 
 const { width } = Dimensions.get('window');
 
-export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({ onBack }) => {
+export const RecipeDetailsScreen: React.FC = () => {
   const dispatch = useDispatch();
+  const navigation = useNavigation<RootNavigationProp>();
+  const insets = useSafeAreaInsets();
   const selectedRecipe = useSelector((state: RootState) => state.recipes.selectedRecipe);
   const favorites = useSelector((state: RootState) => state.recipes.favorites);
 
@@ -20,12 +21,12 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({ onBack
 
   if (!selectedRecipe) {
     return (
-      <View className="flex-1 bg-white items-center justify-center p-6">
+      <SafeAreaView className="flex-1 bg-white items-center justify-center p-6" edges={['top', 'right', 'bottom', 'left']}>
         <Text className="text-gray-500 font-bold text-lg text-center">No recipe selected</Text>
-        <TouchableOpacity onPress={onBack} className="mt-4 bg-primary-500 px-6 py-3 rounded-full">
+        <TouchableOpacity onPress={() => navigation.goBack()} className="mt-4 bg-primary-500 px-6 py-3 rounded-full">
           <Text className="text-white font-bold">Go Back</Text>
         </TouchableOpacity>
-      </View>
+      </SafeAreaView>
     );
   }
 
@@ -34,9 +35,12 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({ onBack
   return (
     <View className="flex-1 bg-white">
       {/* Absolute Header Overlay */}
-      <View className="absolute top-6 left-0 right-0 z-10 px-6 flex-row items-center justify-between">
+      <View
+        className="absolute left-0 right-0 z-10 px-6 flex-row items-center justify-between"
+        style={{ top: insets.top + 12 }}
+      >
         <TouchableOpacity
-          onPress={onBack}
+          onPress={() => navigation.goBack()}
           className="bg-white/90 p-2.5 rounded-full shadow-md items-center justify-center"
           activeOpacity={0.8}
         >
@@ -65,7 +69,10 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({ onBack
         />
 
         {/* Content Container */}
-        <View className="bg-white rounded-t-[40px] -mt-10 px-6 pt-8 pb-32">
+        <View
+          className="bg-white rounded-t-[40px] -mt-10 px-6 pt-8"
+          style={{ paddingBottom: insets.bottom + 40 }}
+        >
           {/* Category & Title */}
           <View className="flex-row items-center justify-between">
             <Text className="text-xs font-black tracking-widest text-primary-600 bg-amber-50 px-3 py-1 rounded-full uppercase">

@@ -1,20 +1,21 @@
 import React from 'react';
 import { View, Text, ScrollView, Image, TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
 import { toggleFavorite, setSelectedCategory, setSelectedRecipe, setSearchQuery } from '../store/slices/recipesSlice';
 import { SearchBar } from '../components/SearchBar';
 import { CategoryBadge } from '../components/CategoryBadge';
 import { RecipeCard } from '../components/RecipeCard';
-import { CATEGORIES } from '../constants/mockData';
+import { CATEGORIES, Recipe } from '../constants/mockData';
+import { AppTabNavigationProp } from '../navigation/types';
 import { Ionicons } from '@expo/vector-icons';
 
-interface HomeScreenProps {
-  onNavigate: (screen: string) => void;
-}
-
-export const HomeScreen: React.FC<HomeScreenProps> = ({ onNavigate }) => {
+export const HomeScreen: React.FC = () => {
   const dispatch = useDispatch();
+  const navigation = useNavigation<AppTabNavigationProp<'Home'>>();
+  const insets = useSafeAreaInsets();
   const { recipes, favorites, selectedCategory, searchQuery } = useSelector(
     (state: RootState) => state.recipes
   );
@@ -29,17 +30,18 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ onNavigate }) => {
     .sort((a, b) => b.rating - a.rating)
     .slice(0, 4);
 
-  const handleRecipePress = (recipe: any) => {
+  const handleRecipePress = (recipe: Recipe) => {
     dispatch(setSelectedRecipe(recipe));
-    onNavigate('Details');
+    navigation.navigate('RecipeDetails');
   };
 
   const handleSearchFocus = () => {
-    onNavigate('Explore');
+    navigation.navigate('Explore');
   };
 
   return (
-    <ScrollView className="flex-1 bg-gray-50/50" showsVerticalScrollIndicator={false}>
+    <SafeAreaView className="flex-1 bg-gray-50/50" edges={['top', 'left', 'right']}>
+      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
       {/* Header */}
       <View className="px-6 pt-6 pb-4 flex-row items-center justify-between">
         <View>
@@ -59,7 +61,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ onNavigate }) => {
             value={searchQuery}
             onChangeText={(text) => {
               dispatch(setSearchQuery(text));
-              onNavigate('Explore');
+              navigation.navigate('Explore');
             }}
             placeholder="Search recipes, ingredients..."
           />
@@ -88,7 +90,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ onNavigate }) => {
       <View className="mt-4">
         <View className="px-6 flex-row items-center justify-between mb-4">
           <Text className="text-xl font-black text-gray-800">Popular Recipes</Text>
-          <TouchableOpacity onPress={() => onNavigate('Explore')} className="flex-row items-center">
+          <TouchableOpacity onPress={() => navigation.navigate('Explore')} className="flex-row items-center">
             <Text className="text-primary-600 font-bold text-sm mr-0.5">See All</Text>
             <Ionicons name="chevron-forward" size={16} color="#d97706" />
           </TouchableOpacity>
@@ -112,7 +114,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ onNavigate }) => {
       </View>
 
       {/* Chef Recommendations */}
-      <View className="px-6 mt-4 pb-24">
+      <View className="px-6 mt-4" style={{ paddingBottom: insets.bottom + 104 }}>
         <Text className="text-xl font-black text-gray-800 mb-4">Chef Recommendations</Text>
         {filteredRecipes.length > 0 ? (
           filteredRecipes.map((recipe) => (
@@ -134,6 +136,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ onNavigate }) => {
           </View>
         )}
       </View>
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 };

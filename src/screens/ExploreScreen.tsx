@@ -1,20 +1,21 @@
 import React from 'react';
 import { View, Text, ScrollView, FlatList, TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
 import { toggleFavorite, setSelectedRecipe, setSearchQuery, setSelectedCategory } from '../store/slices/recipesSlice';
 import { SearchBar } from '../components/SearchBar';
 import { CategoryBadge } from '../components/CategoryBadge';
 import { RecipeCard } from '../components/RecipeCard';
-import { CATEGORIES } from '../constants/mockData';
+import { CATEGORIES, Recipe } from '../constants/mockData';
+import { AppTabNavigationProp } from '../navigation/types';
 import { Ionicons } from '@expo/vector-icons';
 
-interface ExploreScreenProps {
-  onNavigate: (screen: string) => void;
-}
-
-export const ExploreScreen: React.FC<ExploreScreenProps> = ({ onNavigate }) => {
+export const ExploreScreen: React.FC = () => {
   const dispatch = useDispatch();
+  const navigation = useNavigation<AppTabNavigationProp<'Explore'>>();
+  const insets = useSafeAreaInsets();
   const { recipes, favorites, searchQuery, selectedCategory } = useSelector(
     (state: RootState) => state.recipes
   );
@@ -30,13 +31,13 @@ export const ExploreScreen: React.FC<ExploreScreenProps> = ({ onNavigate }) => {
     return matchesCategory && matchesSearch;
   });
 
-  const handleRecipePress = (recipe: any) => {
+  const handleRecipePress = (recipe: Recipe) => {
     dispatch(setSelectedRecipe(recipe));
-    onNavigate('Details');
+    navigation.navigate('RecipeDetails');
   };
 
   return (
-    <View className="flex-1 bg-white">
+    <SafeAreaView className="flex-1 bg-white" edges={['top', 'left', 'right']}>
       {/* Header Container */}
       <View className="px-6 pt-6 pb-2 border-b border-gray-100 bg-white">
         <Text className="text-2xl font-black text-gray-900 mb-4">Explore Recipes</Text>
@@ -71,7 +72,11 @@ export const ExploreScreen: React.FC<ExploreScreenProps> = ({ onNavigate }) => {
           <FlatList
             data={filteredRecipes}
             keyExtractor={(item) => item.id}
-            contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 20, paddingBottom: 100 }}
+            contentContainerStyle={{
+              paddingHorizontal: 24,
+              paddingTop: 20,
+              paddingBottom: insets.bottom + 104,
+            }}
             showsVerticalScrollIndicator={false}
             renderItem={({ item }) => (
               <RecipeCard
@@ -102,6 +107,6 @@ export const ExploreScreen: React.FC<ExploreScreenProps> = ({ onNavigate }) => {
           </View>
         )}
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
