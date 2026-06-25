@@ -1,0 +1,162 @@
+import React from 'react';
+import { View, Text, Image } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import AppIntroSlider from 'react-native-app-intro-slider';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Ionicons } from '@expo/vector-icons';
+import { RootStackScreenProps } from '../navigation/types';
+import { useResponsiveLayout } from '../hooks/useResponsiveLayout';
+
+interface OnboardingSlide {
+  key: string;
+  title: string;
+  description: string;
+  image: string;
+  icon: string;
+}
+
+const slides: OnboardingSlide[] = [
+  {
+    key: '1',
+    title: 'Discover Recipes',
+    description: 'Find your next culinary adventure from our curated selection of gourmet recipes and secret chef preparations.',
+    image: 'https://images.unsplash.com/photo-1543083115-6379253748d0?auto=format&fit=crop&q=80&w=600',
+    icon: 'restaurant-outline',
+  },
+  {
+    key: '2',
+    title: 'Cook Like a Pro',
+    description: 'Follow clean, step-by-step instructions designed to scale beautifully on both phones and tablets.',
+    image: 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&q=80&w=600',
+    icon: 'book-outline',
+  },
+  {
+    key: '3',
+    title: 'Share Your Creations',
+    description: 'Publish your own custom recipes, build your digital cook book, and share the joy of food with others.',
+    image: 'https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&q=80&w=600',
+    icon: 'share-social-outline',
+  },
+];
+
+export const OnboardingScreen: React.FC<RootStackScreenProps<'Onboarding'>> = ({ navigation }) => {
+  const layout = useResponsiveLayout();
+  const imageHeight = layout.height * 0.52;
+  const iconSize = layout.scale(28);
+  const titleSize = layout.scale(26);
+  const descSize = layout.scale(14);
+  const buttonSize = layout.scale(48);
+  const buttonIconSize = layout.scale(22);
+  const skipTextSize = layout.scale(15);
+
+  const handleFinish = async () => {
+    try {
+      await AsyncStorage.setItem('HAS_SEEN_ONBOARDING', 'true');
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'MainTabs' }],
+      });
+    } catch (error) {
+      console.error('Error completing onboarding:', error);
+      // Fallback navigation in case storage fails
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'MainTabs' }],
+      });
+    }
+  };
+
+  const renderSlide = ({ item }: { item: OnboardingSlide }) => {
+    return (
+      <View className="flex-1 bg-white">
+        {/* Curved Header Image */}
+        <View style={{ height: imageHeight }} className="w-full rounded-b-[40px] overflow-hidden bg-gray-100">
+          <Image source={{ uri: item.image }} className="w-full h-full" resizeMode="cover" />
+        </View>
+
+        {/* Description & Icon Card */}
+        <View 
+          style={{ 
+            paddingHorizontal: layout.spacing.screen, 
+            maxWidth: layout.isTablet ? 480 : undefined 
+          }} 
+          className="flex-1 pt-9 items-center self-center"
+        >
+          <View 
+            style={{ width: layout.scale(60), height: layout.scale(60), borderRadius: layout.scale(30) }} 
+            className="bg-amber-50 justify-center items-center mb-4"
+          >
+            <Ionicons name={item.icon as any} size={iconSize} color="#d97706" />
+          </View>
+          <Text style={{ fontSize: titleSize }} className="font-black text-gray-800 text-center mb-3">
+            {item.title}
+          </Text>
+          <Text style={{ fontSize: descSize, lineHeight: layout.scale(22) }} className="text-gray-500 text-center font-medium">
+            {item.description}
+          </Text>
+        </View>
+      </View>
+    );
+  };
+
+  const renderNextButton = () => (
+    <View 
+      style={{ width: buttonSize, height: buttonSize, borderRadius: buttonSize / 2 }} 
+      className="bg-amber-600 justify-center items-center mr-1 shadow-md"
+    >
+      <Ionicons name="arrow-forward" size={buttonIconSize} color="#ffffff" />
+    </View>
+  );
+
+  const renderDoneButton = () => (
+    <View 
+      style={{ width: buttonSize, height: buttonSize, borderRadius: buttonSize / 2 }} 
+      className="bg-amber-600 justify-center items-center mr-1 shadow-md"
+    >
+      <Ionicons name="checkmark" size={buttonIconSize} color="#ffffff" />
+    </View>
+  );
+
+  const renderSkipButton = () => (
+    <View style={{ height: buttonSize }} className="justify-center items-center ml-1">
+      <Text style={{ fontSize: skipTextSize }} className="text-gray-500 font-bold">Skip</Text>
+    </View>
+  );
+
+  const dotWidth = layout.scale(8);
+  const activeDotWidth = layout.scale(24);
+  const dotHeight = layout.scale(8);
+
+  const dotStyle = {
+    backgroundColor: '#e5e7eb',
+    width: dotWidth,
+    height: dotHeight,
+    borderRadius: dotHeight / 2,
+    marginHorizontal: 4,
+  };
+
+  const activeDotStyle = {
+    backgroundColor: '#d97706',
+    width: activeDotWidth,
+    height: dotHeight,
+    borderRadius: dotHeight / 2,
+    marginHorizontal: 4,
+  };
+
+  return (
+    <SafeAreaView className="flex-1 bg-white" edges={['top', 'bottom', 'left', 'right']}>
+      <AppIntroSlider
+        data={slides}
+        renderItem={renderSlide}
+        onDone={handleFinish}
+        onSkip={handleFinish}
+        showSkipButton
+        renderNextButton={renderNextButton}
+        renderDoneButton={renderDoneButton}
+        renderSkipButton={renderSkipButton}
+        dotStyle={dotStyle}
+        activeDotStyle={activeDotStyle}
+      />
+    </SafeAreaView>
+  );
+};
