@@ -8,7 +8,13 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export function RootNavigator() {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+        animation: 'slide_from_right',
+        contentStyle: { backgroundColor: '#ffffff' },
+      }}
+    >
       <Stack.Screen name="MainTabs" component={MainTabs} />
       <Stack.Screen name="RecipeDetails" component={RecipeDetailsScreen} />
     </Stack.Navigator>

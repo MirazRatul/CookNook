@@ -47,7 +47,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
       {/* Header */}
       <Animated.View
-        entering={FadeInDown.duration(500).springify()}
+        entering={FadeInDown.duration(800).springify()}
         className="pt-2 pb-4 flex-row items-center justify-between"
         style={{
           paddingHorizontal: layout.spacing.screen,
@@ -68,7 +68,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 
       {/* Fake SearchBar Container (Tapping redirects to Explore) */}
       <Animated.View
-        entering={FadeInDown.duration(500).delay(100).springify()}
+        entering={FadeInDown.duration(800).delay(150).springify()}
         className="my-4"
         style={{
           paddingHorizontal: layout.spacing.screen,
@@ -90,7 +90,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       </Animated.View>
 
       {/* Categories */}
-      <Animated.View entering={FadeInRight.duration(600).delay(150).springify()} className="my-2">
+      <Animated.View entering={FadeInRight.duration(850).delay(250).springify()} className="my-2">
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -111,7 +111,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       </Animated.View>
 
       {/* Popular Recipes */}
-      <Animated.View entering={FadeInDown.duration(600).delay(200).springify()} className="mt-4">
+      <Animated.View entering={FadeInDown.duration(850).delay(350).springify()} className="mt-4">
         <View
           className="flex-row items-center justify-between mb-4"
           style={{
@@ -140,7 +140,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           {popularRecipes.map((recipe, index) => (
             <Animated.View
               key={recipe.id}
-              entering={FadeInRight.delay(250 + index * 100).duration(400).springify()}
+              entering={FadeInRight.delay(400 + index * 120).duration(600).springify()}
             >
               <RecipeCard
                 recipe={recipe}
@@ -155,7 +155,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 
       {/* Chef Recommendations */}
       <Animated.View
-        entering={FadeInDown.duration(600).delay(350).springify()}
+        entering={FadeInDown.duration(850).delay(500).springify()}
         className="mt-4"
         style={{
           paddingHorizontal: layout.spacing.screen,
@@ -170,7 +170,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           filteredRecipes.map((recipe, index) => (
             <Animated.View
               key={recipe.id}
-              entering={FadeInDown.delay(index * 80).duration(400).springify()}
+              entering={FadeInDown.delay(index * 120).duration(600).springify()}
               layout={LinearTransition.springify()}
             >
               <RecipeCard
@@ -184,7 +184,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           ))
         ) : (
           <Animated.View
-            entering={FadeInUp.duration(300).springify()}
+            entering={FadeInUp.duration(500).springify()}
             className="bg-white rounded-3xl p-8 border border-gray-100 items-center justify-center"
           >
             <Ionicons name="fast-food-outline" size={48} color="#d97706" style={{ opacity: 0.4 }} />

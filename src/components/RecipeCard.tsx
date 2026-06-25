@@ -26,14 +26,7 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({
       <TouchableOpacity
         onPress={onPress}
         activeOpacity={0.9}
-        className="flex-row bg-white rounded-3xl p-3 mb-4 border border-gray-100 items-center"
-        style={{
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 1 },
-          shadowOpacity: 0.05,
-          shadowRadius: 2,
-          elevation: 1,
-        }}
+        className="flex-row bg-white rounded-3xl p-3 mb-4 border border-gray-200 items-center"
       >
         <Image
           source={{ uri: recipe.image }}
@@ -84,14 +77,9 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({
     <TouchableOpacity
       onPress={onPress}
       activeOpacity={0.9}
-      className="bg-white rounded-[32px] overflow-hidden border border-gray-100 mr-5"
+      className="bg-white rounded-[32px] overflow-hidden border border-gray-200 mr-5"
       style={{
         width: layout.recipeCard.verticalWidth,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.05,
-        shadowRadius: 2,
-        elevation: 1,
       }}
     >
       <View className="relative">
@@ -111,14 +99,9 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({
         <TouchableOpacity
           onPress={onToggleFavorite}
           activeOpacity={0.7}
-          className="absolute top-4 right-4 p-2 rounded-full"
+          className="absolute top-4 right-4 p-2 rounded-full border border-gray-100"
           style={{
             backgroundColor: 'rgba(255, 255, 255, 0.9)',
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 1 },
-            shadowOpacity: 0.1,
-            shadowRadius: 1.5,
-            elevation: 1,
           }}
         >
           <Ionicons

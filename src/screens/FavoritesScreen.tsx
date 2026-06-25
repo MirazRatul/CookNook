@@ -41,7 +41,7 @@ export function FavoritesScreen({ navigation }: FavoritesScreenProps) {
   return (
     <SafeAreaView className="flex-1 bg-white" edges={["top", "left", "right"]}>
       <Animated.View
-        entering={FadeInDown.duration(450).springify()}
+        entering={FadeInDown.duration(800).springify()}
         className="pt-2 pb-2 border-b border-gray-100"
         style={{
           paddingHorizontal: layout.spacing.screen,
@@ -70,7 +70,7 @@ export function FavoritesScreen({ navigation }: FavoritesScreenProps) {
             {favoriteRecipes.map((recipe, index) => (
               <Animated.View
                 key={recipe.id}
-                entering={FadeInDown.delay(index * 60).duration(350).springify()}
+                entering={FadeInDown.delay(index * 100).duration(600).springify()}
                 layout={LinearTransition.springify()}
               >
                 <RecipeCard
@@ -85,7 +85,7 @@ export function FavoritesScreen({ navigation }: FavoritesScreenProps) {
           </ScrollView>
         ) : (
           <Animated.View
-            entering={FadeInUp.duration(300).springify()}
+            entering={FadeInUp.duration(500).springify()}
             className="flex-1 items-center justify-center p-8"
           >
             <Ionicons

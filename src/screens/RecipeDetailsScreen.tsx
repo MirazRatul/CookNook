@@ -80,7 +80,7 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({ naviga
       <ScrollView showsVerticalScrollIndicator={false} className="flex-1">
         {/* Banner Image */}
         <Animated.Image
-          entering={FadeIn.duration(400)}
+          entering={FadeIn.duration(600)}
           source={{ uri: selectedRecipe.image }}
           className="w-full bg-gray-100"
           style={{ height: layout.details.heroHeight }}
@@ -89,7 +89,7 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({ naviga
 
         {/* Content Container */}
         <Animated.View
-          entering={FadeInDown.duration(500).springify()}
+          entering={FadeInDown.duration(800).springify()}
           className="bg-white rounded-t-[40px] -mt-10 px-6 pt-8"
           style={{
             paddingBottom: insets.bottom + 40,
@@ -223,7 +223,7 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({ naviga
           {activeTab === 'ingredients' ? (
             <Animated.View
               key="ingredients-list"
-              entering={FadeInDown.duration(400).springify()}
+              entering={FadeInDown.duration(600).springify()}
             >
               <View className="flex-row items-center justify-between mb-4">
                 <Text className="text-lg font-black text-gray-800">Ingredients list</Text>
@@ -248,7 +248,7 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({ naviga
           ) : (
             <Animated.View
               key="instructions-list"
-              entering={FadeInDown.duration(400).springify()}
+              entering={FadeInDown.duration(600).springify()}
             >
               <View className="flex-row items-center justify-between mb-4">
                 <Text className="text-lg font-black text-gray-800">Cooking steps</Text>

@@ -43,7 +43,7 @@ export const ExploreScreen: React.FC<ExploreScreenProps> = ({ navigation }) => {
     <SafeAreaView className="flex-1 bg-white" edges={['top', 'left', 'right']}>
       {/* Header Container */}
       <Animated.View
-        entering={FadeInDown.duration(450).springify()}
+        entering={FadeInDown.duration(800).springify()}
         className="pt-2 pb-2 border-b border-gray-100 bg-white"
         style={{
           paddingHorizontal: layout.spacing.screen,
@@ -62,7 +62,7 @@ export const ExploreScreen: React.FC<ExploreScreenProps> = ({ navigation }) => {
         />
 
         {/* Categories Carousel */}
-        <Animated.View entering={FadeInRight.duration(500).delay(100).springify()}>
+        <Animated.View entering={FadeInRight.duration(850).delay(150).springify()}>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -98,7 +98,7 @@ export const ExploreScreen: React.FC<ExploreScreenProps> = ({ navigation }) => {
             showsVerticalScrollIndicator={false}
             renderItem={({ item, index }) => (
               <Animated.View
-                entering={FadeInDown.delay(index * 60).duration(350).springify()}
+                entering={FadeInDown.delay(index * 100).duration(600).springify()}
                 layout={LinearTransition.springify()}
               >
                 <RecipeCard
@@ -113,7 +113,7 @@ export const ExploreScreen: React.FC<ExploreScreenProps> = ({ navigation }) => {
           />
         ) : (
           <Animated.View
-            entering={FadeInUp.duration(300).springify()}
+            entering={FadeInUp.duration(500).springify()}
             className="flex-1 items-center justify-center p-8"
           >
             <Ionicons name="search-outline" size={64} color="#9ca3af" style={{ opacity: 0.4 }} />
