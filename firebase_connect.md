@@ -386,3 +386,35 @@ If your app crashes immediately after signing in with Google:
   import { initializeAuth, getReactNativePersistence } from "firebase/auth";
   ```
   And make sure you pass `AsyncStorage` from `@react-native-async-storage/async-storage` as the persistence parameter inside `initializeAuth`. Do not use `getAuth()` if you want persistence to work in React Native.
+
+### 4. Customizing Firebase Verification Emails & Avoiding Spam
+
+When you set up email verification for the first time, Firebase sends emails using default configuration settings. This often results in emails going to **Spam** and displaying unbranded project numbers/IDs (e.g., `verify your email for project-383657712113`).
+
+To resolve this and make your emails look professional, customize your project branding and email templates directly inside the **Firebase Console**:
+
+1. **Change the Public-Facing Project Name:**
+   * In the [Firebase Console](https://console.firebase.google.com/), click the gear icon (Settings) next to **Project Overview** -> **Project Settings**.
+   * Under the **General** tab, set the **Public-facing name** to `CookNook` (or your preferred app name).
+   * This automatically replaces the auto-generated project ID in your emails' sender title and subject template.
+
+2. **Customize the Email Template:**
+   * Go to **Authentication** (in the left-hand sidebar) -> **Templates** tab.
+   * Select **Email address verification**.
+   * Click the edit icon (pencil) to customize:
+     * **Sender name** (e.g., `CookNook Support`)
+     * **Subject line** (e.g., `Verify your email for CookNook 🍳`)
+     * **Message body** (ensure you keep the `%LINK%` placeholder intact).
+
+   > [!NOTE]
+   > **Why is editing locked?**
+   > If you see the message *"This template cannot be edited. For more information, contact Firebase support"*, this is a standard Firebase security measure to prevent phishing. Firebase disables template body modifications for projects using the default shared `<project-id>.firebaseapp.com` sender domain.
+   > 
+   > To unlock template editing, you must first complete **Step 3 (Configure a Custom Sender Domain)** or set up a **Custom SMTP Server** in the Authentication templates settings. Once Google verifies ownership of your custom sending domain, editing will be unlocked!
+
+3. **Configure a Custom Sender Domain (Best way to prevent Spam filters):**
+   * By default, emails are sent from `noreply@<project-id>.firebaseapp.com`. Because this domain is shared among many free Firebase apps, mail providers (like Gmail and Yahoo) often flag it as suspicious or spam.
+   * In the **Authentication** -> **Templates** page, edit your **Email address verification** template, look for the **Sender email** line, and click **customize domain**.
+   * Enter your custom website domain (e.g. `cooknook.com` or `yourdomain.com`).
+   * Firebase will generate SPF/DKIM TXT DNS records. Add these records to your domain provider's DNS panel (Cloudflare, GoDaddy, Namecheap, etc.).
+   * Once verified by Google, emails will be delivered from `noreply@yourdomain.com` securely, ensuring high deliverability directly to users' primary inboxes.

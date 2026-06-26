@@ -16,27 +16,31 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { RootStackScreenProps } from '../../navigation/types';
 import { useResponsiveLayout } from '../../hooks/useResponsiveLayout';
-import { Input } from '../../components/Input';
+import { FormInput } from '../../components/FormInput';
 import { Button } from '../../components/Button';
 import { SocialButton } from '../../components/SocialButton';
 import { LoadingIndicator } from '../../components/LoadingIndicator';
 import { signUpWithEmail, signInWithGoogle } from '../../services/authService';
 import { IMAGE_URLS } from '../../constants/Image_Url';
+import { signUpSchema } from '../../utils/validationSchemas';
 
 export const SignUpScreen: React.FC<RootStackScreenProps<'SignUp'>> = ({ navigation }) => {
   const layout = useResponsiveLayout();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   
-  // Errors state
-  const [emailError, setEmailError] = useState('');
-  const [passwordError, setPasswordError] = useState('');
-  const [confirmPasswordError, setConfirmPasswordError] = useState('');
+  const { control, handleSubmit } = useForm({
+    resolver: yupResolver(signUpSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+      confirmPassword: '',
+    },
+  });
+
   const [generalError, setGeneralError] = useState('');
-  
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
 
@@ -77,52 +81,16 @@ export const SignUpScreen: React.FC<RootStackScreenProps<'SignUp'>> = ({ navigat
     }));
   }, []);
 
-  const validateForm = (): boolean => {
-    let isValid = true;
-    setEmailError('');
-    setPasswordError('');
-    setConfirmPasswordError('');
-    setGeneralError('');
-
-    if (!email) {
-      setEmailError('Email address is required');
-      isValid = false;
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      setEmailError('Please enter a valid email address');
-      isValid = false;
-    }
-
-    if (!password) {
-      setPasswordError('Password is required');
-      isValid = false;
-    } else if (password.length < 6) {
-      setPasswordError('Password must be at least 6 characters');
-      isValid = false;
-    }
-
-    if (!confirmPassword) {
-      setConfirmPasswordError('Please confirm your password');
-      isValid = false;
-    } else if (password !== confirmPassword) {
-      setConfirmPasswordError('Passwords do not match');
-      isValid = false;
-    }
-
-    return isValid;
-  };
-
-  const handleSignUp = async () => {
-    if (!validateForm()) return;
-
+  const handleSignUp = async (data: any) => {
     setLoading(true);
     setGeneralError('');
     try {
-      await signUpWithEmail(email, password);
+      await signUpWithEmail(data.email, data.password);
       navigation.reset({
         index: 0,
         routes: [{
           name: 'SignIn',
-          params: { email, showVerificationAlert: true }
+          params: { email: data.email, showVerificationAlert: true }
         }],
       });
     } catch (error: any) {
@@ -217,42 +185,39 @@ export const SignUpScreen: React.FC<RootStackScreenProps<'SignUp'>> = ({ navigat
                   </View>
                 ) : null}
 
-                <Input
+                <FormInput
+                  control={control}
+                  name="email"
                   label="Email Address"
                   placeholder="Enter your email"
                   iconName="mail-outline"
-                  value={email}
-                  onChangeText={setEmail}
-                  error={emailError}
                   autoCapitalize="none"
                   keyboardType="email-address"
                 />
 
-                <Input
+                <FormInput
+                  control={control}
+                  name="password"
                   label="Password"
                   placeholder="Create a password"
                   iconName="lock-closed-outline"
-                  value={password}
-                  onChangeText={setPassword}
-                  error={passwordError}
                   isPassword
                   autoCapitalize="none"
                 />
 
-                <Input
+                <FormInput
+                  control={control}
+                  name="confirmPassword"
                   label="Confirm Password"
                   placeholder="Confirm your password"
                   iconName="lock-closed-outline"
-                  value={confirmPassword}
-                  onChangeText={setConfirmPassword}
-                  error={confirmPasswordError}
                   isPassword
                   autoCapitalize="none"
                 />
 
                 <Button
                   title="Sign Up"
-                  onPress={handleSignUp}
+                  onPress={handleSubmit(handleSignUp)}
                   loading={loading}
                   className="mt-2 mb-4 py-3.5 rounded-xl shadow-sm bg-primary-500"
                 />

@@ -16,20 +16,30 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { RootStackScreenProps } from '../../navigation/types';
 import { useResponsiveLayout } from '../../hooks/useResponsiveLayout';
-import { Input } from '../../components/Input';
+import { FormInput } from '../../components/FormInput';
 import { Button } from '../../components/Button';
 import { SocialButton } from '../../components/SocialButton';
 import { LoadingIndicator } from '../../components/LoadingIndicator';
 import { logInWithEmail, signInWithGoogle } from '../../services/authService';
 import { IMAGE_URLS } from '../../constants/Image_Url';
 import { useAlert } from '../../context/CustomAlertContext';
+import { signInSchema } from '../../utils/validationSchemas';
 
 export const SignInScreen: React.FC<RootStackScreenProps<'SignIn'>> = ({ navigation, route }) => {
   const layout = useResponsiveLayout();
   const { showAlert } = useAlert();
-  const [email, setEmail] = useState('');
+  
+  const { control, handleSubmit, setValue } = useForm({
+    resolver: yupResolver(signInSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  });
 
   const params = route.params;
 
@@ -42,18 +52,13 @@ export const SignInScreen: React.FC<RootStackScreenProps<'SignIn'>> = ({ navigat
         'success'
       );
       if (params.email) {
-        setEmail(params.email);
+        setValue('email', params.email);
       }
       navigation.setParams({ showVerificationAlert: undefined, email: undefined });
     }
   }, [params]);
-  const [password, setPassword] = useState('');
   
-  // Errors state
-  const [emailError, setEmailError] = useState('');
-  const [passwordError, setPasswordError] = useState('');
   const [generalError, setGeneralError] = useState('');
-  
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
 
@@ -94,38 +99,11 @@ export const SignInScreen: React.FC<RootStackScreenProps<'SignIn'>> = ({ navigat
     }));
   }, []);
 
-  const validateForm = (): boolean => {
-    let isValid = true;
-    setEmailError('');
-    setPasswordError('');
-    setGeneralError('');
-
-    if (!email) {
-      setEmailError('Email address is required');
-      isValid = false;
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      setEmailError('Please enter a valid email address');
-      isValid = false;
-    }
-
-    if (!password) {
-      setPasswordError('Password is required');
-      isValid = false;
-    } else if (password.length < 6) {
-      setPasswordError('Password must be at least 6 characters');
-      isValid = false;
-    }
-
-    return isValid;
-  };
-
-  const handleLogin = async () => {
-    if (!validateForm()) return;
-
+  const handleLogin = async (data: any) => {
     setLoading(true);
     setGeneralError('');
     try {
-      await logInWithEmail(email, password);
+      await logInWithEmail(data.email, data.password);
       navigation.reset({
         index: 0,
         routes: [{ name: 'MainTabs' }],
@@ -231,24 +209,22 @@ export const SignInScreen: React.FC<RootStackScreenProps<'SignIn'>> = ({ navigat
                   </View>
                 ) : null}
 
-                <Input
+                <FormInput
+                  control={control}
+                  name="email"
                   label="Email Address"
                   placeholder="Enter your email"
                   iconName="mail-outline"
-                  value={email}
-                  onChangeText={setEmail}
-                  error={emailError}
                   autoCapitalize="none"
                   keyboardType="email-address"
                 />
 
-                <Input
+                <FormInput
+                  control={control}
+                  name="password"
                   label="Password"
                   placeholder="Enter your password"
                   iconName="lock-closed-outline"
-                  value={password}
-                  onChangeText={setPassword}
-                  error={passwordError}
                   isPassword
                   autoCapitalize="none"
                 />
@@ -265,7 +241,7 @@ export const SignInScreen: React.FC<RootStackScreenProps<'SignIn'>> = ({ navigat
 
                 <Button
                   title="Sign In"
-                  onPress={handleLogin}
+                  onPress={handleSubmit(handleLogin)}
                   loading={loading}
                   className="mb-4 py-3.5 rounded-xl shadow-sm bg-primary-500"
                 />
