@@ -31,7 +31,7 @@ export const LanguageBottomSheet: React.FC<LanguageBottomSheetProps> = ({ isOpen
       isOpen={isOpen}
       onClose={onClose}
       title={t('drawer.select_language')}
-      sheetHeight={280}
+      sheetHeight={350}
     >
       <View>
         {/* English Option */}
@@ -76,6 +76,29 @@ export const LanguageBottomSheet: React.FC<LanguageBottomSheetProps> = ({ isOpen
             {t('drawer.spanish')}
           </Text>
           {currentLang.startsWith('es') && (
+            <Ionicons name="checkmark-circle" size={20} color={Colors.primary[600]} />
+          )}
+        </TouchableOpacity>
+
+        {/* Bangla Option */}
+        <TouchableOpacity
+          onPress={() => handleLanguageChange('bn')}
+          className={`flex-row items-center p-4 rounded-2xl border mt-3 ${
+            currentLang.startsWith('bn')
+              ? 'border-amber-500 bg-amber-50/40'
+              : 'border-gray-100 bg-gray-50/50'
+          }`}
+          activeOpacity={0.7}
+        >
+          <View className="w-8 h-8 rounded-full bg-green-50 items-center justify-center mr-4">
+            <Text className="text-base">🇧🇩</Text>
+          </View>
+          <Text className={`text-sm font-extrabold flex-1 ${
+            currentLang.startsWith('bn') ? 'text-amber-600' : 'text-gray-700'
+          }`}>
+            {t('drawer.bangla')}
+          </Text>
+          {currentLang.startsWith('bn') && (
             <Ionicons name="checkmark-circle" size={20} color={Colors.primary[600]} />
           )}
         </TouchableOpacity>

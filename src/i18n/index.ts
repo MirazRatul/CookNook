@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import en from './locales/en.json';
 import es from './locales/es.json';
+import bn from './locales/bn.json';
 
 const locales = Localization.getLocales();
 const deviceLanguage = locales && locales.length > 0 ? locales[0].languageCode ?? 'en' : 'en';
@@ -16,6 +17,7 @@ i18n
     resources: {
       en: { translation: en },
       es: { translation: es },
+      bn: { translation: bn },
     },
     lng: deviceLanguage,
     fallbackLng: 'en',
