@@ -65,8 +65,7 @@ export const Input: React.FC<InputProps> = ({
         )}
 
         <TextInput
-          className="flex-1 text-gray-800 text-sm h-full py-0"
-          textAlignVertical="center"
+          className="flex-1 text-gray-800 text-[14px] p-0"
           placeholderTextColor={Colors.gray[400]}
           secureTextEntry={isSecure}
           onFocus={handleFocus}

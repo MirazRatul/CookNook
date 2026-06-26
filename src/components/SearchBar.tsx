@@ -20,7 +20,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
     <View className={`flex-row items-center bg-gray-100 border border-gray-200 rounded-2xl px-4 py-2.5 ${className}`}>
       <Ionicons name="search-outline" size={20} color={Colors.gray[400]} className="mr-2" />
       <TextInput
-        className="flex-1 text-gray-800 text-base font-normal p-0"
+        className="flex-1 text-gray-800 text-[16px] font-normal p-0"
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
