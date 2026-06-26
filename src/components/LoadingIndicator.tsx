@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -9,6 +9,7 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
+import { BlurView } from 'expo-blur';
 import { useResponsiveLayout } from '../hooks/useResponsiveLayout';
 
 interface LoadingIndicatorProps {
@@ -98,7 +99,13 @@ export const LoadingIndicator: React.FC<LoadingIndicatorProps> = ({
       </View>
 
       {message ? (
-        <Text className="text-amber-700 font-bold mt-5 text-sm tracking-wide bg-amber-50/80 px-4 py-1.5 rounded-full border border-amber-100/40">
+        <Text
+          className={
+            fullscreen
+              ? "text-white font-extrabold mt-6 text-base tracking-wider text-center"
+              : "text-amber-700 font-bold mt-5 text-sm tracking-wide bg-amber-50/80 px-4 py-1.5 rounded-full border border-amber-100/40"
+          }
+        >
           {message}
         </Text>
       ) : null}
@@ -107,10 +114,13 @@ export const LoadingIndicator: React.FC<LoadingIndicatorProps> = ({
 
   if (fullscreen) {
     return (
-      <View className="absolute inset-0 bg-black/40 justify-center items-center z-[99999]">
-        <View className="bg-white/95 border border-white/20 p-8 rounded-3xl items-center justify-center shadow-2xl">
-          {indicatorContent}
-        </View>
+      <View style={StyleSheet.absoluteFill} className="justify-center items-center z-[99999]">
+        <BlurView
+          intensity={85}
+          tint="dark"
+          style={StyleSheet.absoluteFill}
+        />
+        {indicatorContent}
       </View>
     );
   }

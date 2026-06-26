@@ -14,7 +14,7 @@ export default function App() {
       <SafeAreaProvider>
         <CustomAlertProvider>
           <NavigationContainer>
-            <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
+            <StatusBar barStyle="dark-content" backgroundColor="transparent" />
             <RootNavigator />
           </NavigationContainer>
         </CustomAlertProvider>
