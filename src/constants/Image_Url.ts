@@ -1,7 +1,7 @@
 export const IMAGE_URLS = {
   // Onboarding Slides
   onboarding: {
-    discover: 'https://images.unsplash.com/photo-1543083115-6379253748d0?auto=format&fit=crop&q=80&w=600',
+    discover: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&q=80&w=600',
     cook: 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&q=80&w=600',
     share: 'https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&q=80&w=600',
   },
