@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, Image } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AppIntroSlider from 'react-native-app-intro-slider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
+import Animated, { FadeInDown, ZoomIn } from 'react-native-reanimated';
 import { RootStackScreenProps } from '../navigation/types';
 import { Colors } from '../constants/Colors';
 import { useResponsiveLayout } from '../hooks/useResponsiveLayout';
@@ -45,6 +46,7 @@ const slides: OnboardingSlide[] = [
 export const OnboardingScreen: React.FC<RootStackScreenProps<'Onboarding'>> = ({ navigation }) => {
   const { t } = useTranslation();
   const layout = useResponsiveLayout();
+  const [activeIndex, setActiveIndex] = useState(0);
   const imageHeight = layout.height * 0.52;
   const iconSize = layout.scale(28);
   const titleSize = layout.scale(26);
@@ -70,12 +72,20 @@ export const OnboardingScreen: React.FC<RootStackScreenProps<'Onboarding'>> = ({
     }
   };
 
-  const renderSlide = ({ item }: { item: OnboardingSlide }) => {
+  const renderSlide = ({ item, index }: { item: OnboardingSlide; index: number }) => {
+    const isActive = index === activeIndex;
+
     return (
       <View className="flex-1 bg-white">
         {/* Curved Header Image */}
         <View style={{ height: imageHeight }} className="w-full rounded-b-[40px] overflow-hidden bg-gray-100">
-          <Image source={{ uri: item.image }} className="w-full h-full" resizeMode="cover" />
+          <Animated.Image 
+            key={`slide-image-${item.key}-${isActive}`}
+            entering={isActive ? ZoomIn.delay(100).duration(600) : undefined}
+            source={{ uri: item.image }} 
+            className="w-full h-full" 
+            resizeMode="cover" 
+          />
         </View>
 
         {/* Description & Icon Card */}
@@ -86,18 +96,30 @@ export const OnboardingScreen: React.FC<RootStackScreenProps<'Onboarding'>> = ({
           }} 
           className="flex-1 pt-9 items-center self-center"
         >
-          <View 
+          <Animated.View 
+            key={`slide-icon-${item.key}-${isActive}`}
+            entering={isActive ? FadeInDown.delay(100).duration(500).springify() : undefined}
             style={{ width: layout.scale(60), height: layout.scale(60), borderRadius: layout.scale(30) }} 
             className="bg-amber-50 justify-center items-center mb-4"
           >
             <Ionicons name={item.icon as any} size={iconSize} color={Colors.primary[600]} />
-          </View>
-          <Text style={{ fontSize: titleSize }} className="font-black text-gray-800 text-center mb-3">
+          </Animated.View>
+          <Animated.Text 
+            key={`slide-title-${item.key}-${isActive}`}
+            entering={isActive ? FadeInDown.delay(200).duration(500).springify() : undefined}
+            style={{ fontSize: titleSize }} 
+            className="font-black text-gray-800 text-center mb-3"
+          >
             {t(`onboarding.slide${item.key}_title`)}
-          </Text>
-          <Text style={{ fontSize: descSize, lineHeight: layout.scale(22) }} className="text-gray-500 text-center font-medium">
+          </Animated.Text>
+          <Animated.Text 
+            key={`slide-desc-${item.key}-${isActive}`}
+            entering={isActive ? FadeInDown.delay(300).duration(500).springify() : undefined}
+            style={{ fontSize: descSize, lineHeight: layout.scale(22) }} 
+            className="text-gray-500 text-center font-medium"
+          >
             {t(`onboarding.slide${item.key}_desc`)}
-          </Text>
+          </Animated.Text>
         </View>
       </View>
     );
@@ -160,6 +182,8 @@ export const OnboardingScreen: React.FC<RootStackScreenProps<'Onboarding'>> = ({
         renderSkipButton={renderSkipButton}
         dotStyle={dotStyle}
         activeDotStyle={activeDotStyle}
+        onSlideChange={setActiveIndex}
+        extraData={activeIndex}
       />
     </SafeAreaView>
   );
