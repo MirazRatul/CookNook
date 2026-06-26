@@ -20,3 +20,5 @@ export const IMAGE_URLS = {
     All: 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&q=80&w=600',
   },
 };
+
+export const LOGO_IMAGE = require('./logo.png');

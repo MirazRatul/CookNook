@@ -7,6 +7,7 @@ import {
   Platform,
   TouchableOpacity,
   ImageBackground,
+  Image,
 } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -25,7 +26,7 @@ import { Button } from '../../components/Button';
 import { SocialButton } from '../../components/SocialButton';
 import { LoadingIndicator } from '../../components/LoadingIndicator';
 import { logInWithEmail, signInWithGoogle } from '../../services/authService';
-import { IMAGE_URLS } from '../../constants/Image_Url';
+import { IMAGE_URLS, LOGO_IMAGE } from '../../constants/Image_Url';
 import { useAlert } from '../../context/CustomAlertContext';
 import { signInSchema } from '../../utils/validationSchemas';
 
@@ -169,10 +170,14 @@ export const SignInScreen: React.FC<RootStackScreenProps<'SignIn'>> = ({ navigat
               {/* Logo & Header */}
               <Animated.View style={headerAnimatedStyle} className="items-center mb-6">
                 <View 
-                  style={{ width: layout.scale(64), height: layout.scale(64), borderRadius: layout.scale(32) }} 
-                  className="bg-white/15 backdrop-blur-md justify-center items-center mb-2 shadow-inner border border-white/20"
+                  style={{ width: layout.scale(64), height: layout.scale(64), borderRadius: layout.scale(14) }} 
+                  className="bg-white/15 backdrop-blur-md justify-center items-center mb-2 shadow-inner border border-white/20 overflow-hidden"
                 >
-                  <Ionicons name="restaurant" size={layout.scale(28)} color="#fbbf24" />
+                  <Image 
+                    source={LOGO_IMAGE} 
+                    style={{ width: layout.scale(64), height: layout.scale(64) }}
+                    resizeMode="contain"
+                  />
                 </View>
                 <Text className="text-3xl font-black text-white tracking-wider">
                   CookNook

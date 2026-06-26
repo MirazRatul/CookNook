@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -8,9 +8,9 @@ import Animated, {
   withSequence,
   Easing,
 } from 'react-native-reanimated';
-import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { useResponsiveLayout } from '../hooks/useResponsiveLayout';
+import { LOGO_IMAGE } from '../constants/Image_Url';
 
 interface LoadingIndicatorProps {
   message?: string;
@@ -88,13 +88,17 @@ export const LoadingIndicator: React.FC<LoadingIndicatorProps> = ({
         <View
           style={{
             position: 'absolute',
-            width: layout.scale(54),
-            height: layout.scale(54),
-            borderRadius: layout.scale(27),
+            width: layout.scale(50),
+            height: layout.scale(50),
+            borderRadius: layout.scale(10),
           }}
-          className="bg-white justify-center items-center shadow-md"
+          className="bg-white justify-center items-center shadow-md overflow-hidden"
         >
-          <Ionicons name="restaurant" size={layout.scale(26)} color="#d97706" />
+          <Image 
+            source={LOGO_IMAGE} 
+            style={{ width: layout.scale(40), height: layout.scale(40) }}
+            resizeMode="contain"
+          />
         </View>
       </View>
 

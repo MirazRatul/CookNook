@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SplashScreen from 'expo-splash-screen';
 import Animated, {
@@ -10,9 +10,9 @@ import Animated, {
   withTiming,
   runOnJS,
 } from 'react-native-reanimated';
-import { Ionicons } from '@expo/vector-icons';
 import { RootStackScreenProps } from '../navigation/types';
 import { useResponsiveLayout } from '../hooks/useResponsiveLayout';
+import { LOGO_IMAGE } from '../constants/Image_Url';
 
 import { auth } from '../services/firebase';
 
@@ -124,10 +124,14 @@ export const SplashScreenView: React.FC<RootStackScreenProps<'Splash'>> = ({ nav
       <View className="items-center">
         {/* Animated Custom Logo */}
         <Animated.View 
-          style={[logoStyle, { width: logoSize, height: logoSize, borderRadius: logoSize / 2 }]}
-          className="bg-amber-50 justify-center items-center mb-6"
+          style={[logoStyle, { width: logoSize, height: logoSize }]}
+          className="justify-center items-center mb-6"
         >
-          <Ionicons name="restaurant" size={iconSize} color="#d97706" />
+          <Image 
+            source={LOGO_IMAGE} 
+            style={{ width: logoSize, height: logoSize, borderRadius: logoSize / 5 }}
+            resizeMode="contain"
+          />
         </Animated.View>
 
         {/* Animated App Brand Name */}

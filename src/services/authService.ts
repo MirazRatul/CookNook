@@ -11,6 +11,42 @@ GoogleSignin.configure({
 });
 
 /**
+ * Maps standard Firebase Auth error codes to user-friendly messages.
+ */
+const getFriendlyAuthError = (error: any): string => {
+  const code = error?.code || '';
+  const message = error?.message || '';
+
+  if (code) {
+    switch (code) {
+      case 'auth/invalid-credential':
+        return 'The email or password you entered is incorrect. Please check and try again.';
+      case 'auth/wrong-password':
+        return 'The password you entered is incorrect. Please check and try again.';
+      case 'auth/user-not-found':
+        return 'No account was found matching this email address.';
+      case 'auth/email-already-in-use':
+        return 'This email address is already in use by another account. Please sign in instead.';
+      case 'auth/invalid-email':
+        return 'Please enter a valid email address.';
+      case 'auth/weak-password':
+        return 'Your password must be stronger. Please enter at least 6 characters.';
+      case 'auth/network-request-failed':
+        return 'Network error. Please check your internet connection and try again.';
+      case 'auth/too-many-requests':
+        return 'Too many failed login attempts. Access has been temporarily blocked. Please try again later.';
+      case 'auth/user-disabled':
+        return 'This user account has been disabled. Please contact support.';
+      default:
+        // Strip off the default '[auth/code]' prefix if present
+        return message.replace(/\[auth\/.*?\]\s*/, '');
+    }
+  }
+
+  return message || 'An unexpected authentication error occurred.';
+};
+
+/**
  * Register a new user using email & password, send verification email, and sign out
  */
 export const signUpWithEmail = async (
@@ -28,7 +64,7 @@ export const signUpWithEmail = async (
     }
   } catch (error: any) {
     console.error("Sign up error: ", error.message);
-    throw new Error(error.message || "Failed to register account.");
+    throw new Error(getFriendlyAuthError(error));
   }
 };
 
@@ -58,7 +94,7 @@ export const logInWithEmail = async (
     if (error.message === "verification-pending") {
       throw new Error("Verification pending. A verification link has been sent to your email. Please verify your email before signing in.");
     }
-    throw new Error(error.message || "Failed to log in.");
+    throw new Error(getFriendlyAuthError(error));
   }
 };
 
@@ -125,9 +161,7 @@ export const signInWithGoogle = async (): Promise<FirebaseAuthTypes.User> => {
       throw new Error("Google Play Services are not available on this device.");
     } else {
       console.error("Google Sign-In Error: ", error);
-      throw new Error(
-        error.message || "An unexpected error occurred during Google Sign-In.",
-      );
+      throw new Error(getFriendlyAuthError(error));
     }
   }
 };
