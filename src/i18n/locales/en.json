@@ -32,7 +32,20 @@
     "signing_in": "Signing In...",
     "verify_email_title": "Verify Your Email",
     "verify_email_desc": "A verification link has been sent to {{email}}. Please verify your email before logging in.",
-    "reset_password_desc": "An email password reset link will be sent in the future."
+    "reset_password_desc": "An email password reset link will be sent in the future.",
+    "errors": {
+      "invalid_credential": "The email or password you entered is incorrect. Please check and try again.",
+      "wrong_password": "The password you entered is incorrect. Please check and try again.",
+      "user_not_found": "No account was found matching this email address.",
+      "email_already_in_use": "This email address is already in use by another account. Please sign in instead.",
+      "invalid_email": "Please enter a valid email address.",
+      "weak_password": "Your password must be stronger. Please enter at least 6 characters.",
+      "network_request_failed": "Network error. Please check your internet connection and try again.",
+      "too_many_requests": "Too many failed login attempts. Access has been temporarily blocked. Please try again later.",
+      "user_disabled": "This user account has been disabled. Please contact support.",
+      "default": "An unexpected authentication error occurred.",
+      "email_not_verified": "Please verify your email address before logging in. We have sent another verification email to {{email}}."
+    }
   },
   "home": {
     "hello_chef": "HELLO, CHEF!",

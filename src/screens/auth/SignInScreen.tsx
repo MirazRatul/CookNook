@@ -113,15 +113,15 @@ export const SignInScreen: React.FC<RootStackScreenProps<'SignIn'>> = ({ navigat
         routes: [{ name: 'MainTabs' }],
       });
     } catch (error: any) {
-      if (error.message && error.message.includes('Verification pending')) {
+      if (error.message === 'verification-pending') {
         showAlert(
-          'Email Verification',
-          error.message,
+          t('auth.verify_email_title', 'Verify Your Email'),
+          t('auth.errors.email_not_verified', { email: data.email }),
           undefined,
           'warning'
         );
       } else {
-        setGeneralError(error.message || 'Login failed. Please check your credentials.');
+        setGeneralError(error.message || t('auth.errors.default', 'Login failed. Please check your credentials.'));
       }
     } finally {
       setLoading(false);

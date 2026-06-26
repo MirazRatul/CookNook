@@ -32,7 +32,20 @@
     "signing_in": "Iniciando Sesión...",
     "verify_email_title": "Verifica tu correo electrónico",
     "verify_email_desc": "Se ha enviado un enlace de verificación a {{email}}. Por favor verifica tu correo antes de iniciar sesión.",
-    "reset_password_desc": "Se enviará un enlace de restablecimiento de contraseña en el futuro."
+    "reset_password_desc": "Se enviará un enlace de restablecimiento de contraseña en el futuro.",
+    "errors": {
+      "invalid_credential": "El correo electrónico o la contraseña que ingresó es incorrecto. Por favor, verifique e intente de nuevo.",
+      "wrong_password": "La contraseña que ingresó es incorrecta. Por favor, verifique e intente de nuevo.",
+      "user_not_found": "No se encontró ninguna cuenta con esta dirección de correo electrónico.",
+      "email_already_in_use": "Esta dirección de correo electrónico ya está siendo utilizada por otra cuenta. Inicie sesión en su lugar.",
+      "invalid_email": "Por favor, introduzca una dirección de correo electrónico válida.",
+      "weak_password": "Su contraseña debe ser más fuerte. Por favor, introduzca al menos 6 caracteres.",
+      "network_request_failed": "Error de red. Por favor, verifique su conexión a Internet e intente de nuevo.",
+      "too_many_requests": "Demasiados intentos de inicio de sesión fallidos. El acceso ha sido bloqueado temporalmente. Intente más tarde.",
+      "user_disabled": "Esta cuenta de usuario ha sido desactivada. Por favor, póngase en contacto con el soporte técnico.",
+      "default": "Ocurrió un error de autenticación inesperado.",
+      "email_not_verified": "Por favor, verifique su dirección de correo electrónico antes de iniciar sesión. Le hemos enviado otro correo de verificación a {{email}}."
+    }
   },
   "home": {
     "hello_chef": "¡HOLA, CHEF!",

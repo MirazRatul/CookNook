@@ -3,6 +3,7 @@ import {
   statusCodes,
 } from "@react-native-google-signin/google-signin";
 import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
+import i18n from '../i18n';
 
 // Configure Google Sign-In with the Web Client ID from google-services.json (client_type: 3)
 GoogleSignin.configure({
@@ -20,30 +21,30 @@ const getFriendlyAuthError = (error: any): string => {
   if (code) {
     switch (code) {
       case 'auth/invalid-credential':
-        return 'The email or password you entered is incorrect. Please check and try again.';
+        return i18n.t('auth.errors.invalid_credential');
       case 'auth/wrong-password':
-        return 'The password you entered is incorrect. Please check and try again.';
+        return i18n.t('auth.errors.wrong_password');
       case 'auth/user-not-found':
-        return 'No account was found matching this email address.';
+        return i18n.t('auth.errors.user_not_found');
       case 'auth/email-already-in-use':
-        return 'This email address is already in use by another account. Please sign in instead.';
+        return i18n.t('auth.errors.email_already_in_use');
       case 'auth/invalid-email':
-        return 'Please enter a valid email address.';
+        return i18n.t('auth.errors.invalid_email');
       case 'auth/weak-password':
-        return 'Your password must be stronger. Please enter at least 6 characters.';
+        return i18n.t('auth.errors.weak_password');
       case 'auth/network-request-failed':
-        return 'Network error. Please check your internet connection and try again.';
+        return i18n.t('auth.errors.network_request_failed');
       case 'auth/too-many-requests':
-        return 'Too many failed login attempts. Access has been temporarily blocked. Please try again later.';
+        return i18n.t('auth.errors.too_many_requests');
       case 'auth/user-disabled':
-        return 'This user account has been disabled. Please contact support.';
+        return i18n.t('auth.errors.user_disabled');
       default:
         // Strip off the default '[auth/code]' prefix if present
         return message.replace(/\[auth\/.*?\]\s*/, '');
     }
   }
 
-  return message || 'An unexpected authentication error occurred.';
+  return message || i18n.t('auth.errors.default');
 };
 
 /**
@@ -92,7 +93,7 @@ export const logInWithEmail = async (
   } catch (error: any) {
     console.error("Login error: ", error.message);
     if (error.message === "verification-pending") {
-      throw new Error("Verification pending. A verification link has been sent to your email. Please verify your email before signing in.");
+      throw new Error("verification-pending");
     }
     throw new Error(getFriendlyAuthError(error));
   }
