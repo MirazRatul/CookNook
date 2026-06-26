@@ -148,7 +148,7 @@ export const OnboardingScreen: React.FC<RootStackScreenProps<'Onboarding'>> = ({
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={['top', 'bottom', 'left', 'right']}>
+    <SafeAreaView className="flex-1 bg-white" edges={['bottom', 'left', 'right']}>
       <AppIntroSlider
         data={slides}
         renderItem={renderSlide}
