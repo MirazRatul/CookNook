@@ -14,11 +14,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "383657712113-c6l4t4abjnal0siu0a6gclsi8qmns6p4.apps.googleusercontent.com",
+          "client_id": "383657712113-52p4mj5h2ag2dh6vtbgj4fo83ek3r4ts.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.mirajulislam.cooknook",
-            "certificate_hash": "35e9c8d11b3c0d21792250baed1ecf44aba37613"
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
           }
         },
         {
@@ -37,6 +37,13 @@
             {
               "client_id": "383657712113-osmsunj6qn3iclsbsbgfvtjd8bkjb1g4.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "383657712113-gcq68k256o2op348s7khak74m4unbbnl.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mirajulislam.cooknook"
+              }
             }
           ]
         }

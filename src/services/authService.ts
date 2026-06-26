@@ -87,16 +87,16 @@ export const signInWithGoogle = async (): Promise<FirebaseAuthTypes.User> => {
     await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
 
     // Start Google authentication
-    const response = await GoogleSignin.signIn();
+    await GoogleSignin.signIn();
 
-    // Retrieve the idToken
-    const idToken = response.data?.idToken;
-    if (!idToken) {
-      throw new Error("No ID Token returned from Google Sign-In.");
+    // Retrieve both tokens to satisfy the JNI HostFunction requirement
+    const { idToken, accessToken } = await GoogleSignin.getTokens();
+    if (!idToken || !accessToken) {
+      throw new Error("Missing ID Token or Access Token from Google Sign-In.");
     }
 
-    // Authenticate with Firebase using the Google credential
-    const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+    // Authenticate with Firebase using the Google credential (both arguments required)
+    const googleCredential = auth.GoogleAuthProvider.credential(idToken, accessToken);
     const userCredential = await auth().signInWithCredential(googleCredential);
     return userCredential.user;
   } catch (error: any) {

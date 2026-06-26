@@ -14,6 +14,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { RootStackScreenProps } from '../navigation/types';
 import { useResponsiveLayout } from '../hooks/useResponsiveLayout';
 
+import { auth } from '../services/firebase';
+
 // Prevent the native splash screen from hiding automatically
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
@@ -55,7 +57,7 @@ export const SplashScreenView: React.FC<RootStackScreenProps<'Splash'>> = ({ nav
     opacity.value = withTiming(1, { duration: 800 });
     scale.value = withSpring(1.0, { damping: 12, stiffness: 90 });
 
-    // 3. Animate app title and subtitle with a minor delay
+    // 3. Animate app title and subtitle with a delay
     textOpacity.value = withDelay(400, withTiming(1, { duration: 600 }));
 
     // 4. Query storage for onboarding state
@@ -78,9 +80,16 @@ export const SplashScreenView: React.FC<RootStackScreenProps<'Splash'>> = ({ nav
     };
 
     const navigateNext = (onboarded: boolean) => {
+      const isLoggedIn = auth().currentUser !== null;
+      let nextScreen: 'Onboarding' | 'SignIn' | 'MainTabs' = 'Onboarding';
+
+      if (onboarded) {
+        nextScreen = isLoggedIn ? 'MainTabs' : 'SignIn';
+      }
+
       navigation.reset({
         index: 0,
-        routes: [{ name: onboarded ? 'MainTabs' : 'Onboarding' }],
+        routes: [{ name: nextScreen }],
       });
     };
 

@@ -55,14 +55,14 @@ export const OnboardingScreen: React.FC<RootStackScreenProps<'Onboarding'>> = ({
       await AsyncStorage.setItem('HAS_SEEN_ONBOARDING', 'true');
       navigation.reset({
         index: 0,
-        routes: [{ name: 'MainTabs' }],
+        routes: [{ name: 'SignIn' }],
       });
     } catch (error) {
       console.error('Error completing onboarding:', error);
       // Fallback navigation in case storage fails
       navigation.reset({
         index: 0,
-        routes: [{ name: 'MainTabs' }],
+        routes: [{ name: 'SignIn' }],
       });
     }
   };
