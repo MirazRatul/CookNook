@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, ScrollView, TextInput, TouchableOpacity } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useDispatch } from 'react-redux';
 import { addRecipe } from '../store/slices/recipesSlice';
@@ -9,6 +9,7 @@ import { useResponsiveLayout } from '../hooks/useResponsiveLayout';
 import { AppTabScreenProps } from '../navigation/types';
 import { Ionicons } from '@expo/vector-icons';
 import { IMAGE_URLS } from '../constants/Image_Url';
+import { useAlert } from '../context/CustomAlertContext';
 
 type CreateRecipeScreenProps = AppTabScreenProps<'Create'>;
 
@@ -16,6 +17,7 @@ export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ navigati
   const dispatch = useDispatch();
   const insets = useSafeAreaInsets();
   const layout = useResponsiveLayout();
+  const { showAlert } = useAlert();
 
   // Form State
   const [title, setTitle] = useState('');
@@ -55,17 +57,17 @@ export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ navigati
 
   const handleCreate = () => {
     if (!title.trim() || !description.trim() || !duration || !calories) {
-      Alert.alert('Error', 'Please fill in all core fields.');
+      showAlert('Error', 'Please fill in all core fields.', undefined, 'error');
       return;
     }
 
     if (ingredients.length === 0) {
-      Alert.alert('Error', 'Please add at least one ingredient.');
+      showAlert('Error', 'Please add at least one ingredient.', undefined, 'error');
       return;
     }
 
     if (instructions.length === 0) {
-      Alert.alert('Error', 'Please add at least one instruction step.');
+      showAlert('Error', 'Please add at least one instruction step.', undefined, 'error');
       return;
     }
 
@@ -100,8 +102,17 @@ export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ navigati
     setIngredients([]);
     setInstructions([]);
 
-    Alert.alert('Success', 'Your delicious recipe has been shared!');
-    navigation.navigate('Home');
+    showAlert(
+      'Success',
+      'Your delicious recipe has been shared!',
+      [
+        {
+          text: 'OK',
+          onPress: () => navigation.navigate('Home'),
+        },
+      ],
+      'success'
+    );
   };
 
   return (

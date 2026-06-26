@@ -6,7 +6,6 @@ import {
   ScrollView,
   Platform,
   TouchableOpacity,
-  Alert,
   ImageBackground,
 } from 'react-native';
 import Animated, {
@@ -25,9 +24,11 @@ import { SocialButton } from '../../components/SocialButton';
 import { LoadingIndicator } from '../../components/LoadingIndicator';
 import { logInWithEmail, signInWithGoogle } from '../../services/authService';
 import { IMAGE_URLS } from '../../constants/Image_Url';
+import { useAlert } from '../../context/CustomAlertContext';
 
 export const SignInScreen: React.FC<RootStackScreenProps<'SignIn'>> = ({ navigation }) => {
   const layout = useResponsiveLayout();
+  const { showAlert } = useAlert();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   
@@ -229,7 +230,7 @@ export const SignInScreen: React.FC<RootStackScreenProps<'SignIn'>> = ({ navigat
                 <TouchableOpacity 
                   activeOpacity={0.7} 
                   className="self-end mb-5"
-                  onPress={() => Alert.alert('Reset Password', 'An email password reset link will be sent in the future.')}
+                  onPress={() => showAlert('Reset Password', 'An email password reset link will be sent in the future.', undefined, 'info')}
                 >
                   <Text className="text-right font-bold text-primary-600 text-sm">
                     Forgot Password?
