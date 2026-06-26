@@ -60,60 +60,69 @@ export const SplashScreenView: React.FC<RootStackScreenProps<'Splash'>> = ({ nav
     // 3. Animate app title and subtitle with a delay
     textOpacity.value = withDelay(400, withTiming(1, { duration: 600 }));
 
-    // 4. Query storage for onboarding state
-    const checkOnboarding = async () => {
+    // Pre-calculate target screen during the animation delay
+    let resolvedNextScreen: 'Onboarding' | 'SignIn' | 'MainTabs' = 'Onboarding';
+
+    const performInit = async () => {
       try {
         const hasSeenOnboarding = await AsyncStorage.getItem('HAS_SEEN_ONBOARDING');
-        
-        // Wait at least 2.2 seconds to allow the splash animations to shine
-        setTimeout(() => {
-          containerOpacity.value = withTiming(0, { duration: 400 }, (finished) => {
-            if (finished) {
-              runOnJS(navigateNext)(hasSeenOnboarding === 'true');
+        const user = auth().currentUser;
+        let isLoggedIn = false;
+
+        if (user) {
+          try {
+            // Reload user state to get the latest emailVerified field from Firebase
+            await user.reload();
+            const updatedUser = auth().currentUser;
+            isLoggedIn = updatedUser !== null && updatedUser.emailVerified;
+            
+            if (!isLoggedIn) {
+              await auth().signOut();
             }
-          });
-        }, 2200);
+          } catch (error) {
+            console.error('Error verifying user session at splash:', error);
+            try {
+              await auth().signOut();
+            } catch (e) {}
+          }
+        }
+
+        if (hasSeenOnboarding === 'true') {
+          resolvedNextScreen = isLoggedIn ? 'MainTabs' : 'SignIn';
+        } else {
+          resolvedNextScreen = 'Onboarding';
+        }
       } catch (error) {
-        console.error('Error fetching onboarding status:', error);
-        navigateNext(false);
+        console.error('Error during splash init check:', error);
+        resolvedNextScreen = 'Onboarding';
       }
     };
 
-    const navigateNext = async (onboarded: boolean) => {
-      const user = auth().currentUser;
-      let isLoggedIn = false;
+    // Start background check immediately on mount
+    const initPromise = performInit();
 
-      if (user) {
-        try {
-          // Reload user state to get the latest emailVerified field from Firebase
-          await user.reload();
-          const updatedUser = auth().currentUser;
-          isLoggedIn = updatedUser !== null && updatedUser.emailVerified;
-          
-          if (!isLoggedIn) {
-            await auth().signOut();
-          }
-        } catch (error) {
-          console.error('Error verifying user session at splash:', error);
-          try {
-            await auth().signOut();
-          } catch (e) {}
+    // Wait at least 2.2 seconds to allow the splash animations to play
+    const splashTimer = setTimeout(async () => {
+      // Ensure the background session resolution is complete before starting fade-out
+      await initPromise;
+
+      containerOpacity.value = withTiming(0, { duration: 400 }, (finished) => {
+        if (finished) {
+          runOnJS(navigateToTarget)();
         }
-      }
+      });
+    }, 2200);
 
-      let nextScreen: 'Onboarding' | 'SignIn' | 'MainTabs' = 'Onboarding';
-
-      if (onboarded) {
-        nextScreen = isLoggedIn ? 'MainTabs' : 'SignIn';
-      }
-
+    const navigateToTarget = () => {
       navigation.reset({
         index: 0,
-        routes: [{ name: nextScreen }],
+        routes: [{ name: resolvedNextScreen }],
       });
     };
 
-    checkOnboarding();
+    return () => {
+      clearTimeout(splashTimer);
+    };
   }, []);
 
   return (
