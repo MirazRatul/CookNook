@@ -79,8 +79,28 @@ export const SplashScreenView: React.FC<RootStackScreenProps<'Splash'>> = ({ nav
       }
     };
 
-    const navigateNext = (onboarded: boolean) => {
-      const isLoggedIn = auth().currentUser !== null;
+    const navigateNext = async (onboarded: boolean) => {
+      const user = auth().currentUser;
+      let isLoggedIn = false;
+
+      if (user) {
+        try {
+          // Reload user state to get the latest emailVerified field from Firebase
+          await user.reload();
+          const updatedUser = auth().currentUser;
+          isLoggedIn = updatedUser !== null && updatedUser.emailVerified;
+          
+          if (!isLoggedIn) {
+            await auth().signOut();
+          }
+        } catch (error) {
+          console.error('Error verifying user session at splash:', error);
+          try {
+            await auth().signOut();
+          } catch (e) {}
+        }
+      }
+
       let nextScreen: 'Onboarding' | 'SignIn' | 'MainTabs' = 'Onboarding';
 
       if (onboarded) {

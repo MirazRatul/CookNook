@@ -26,10 +26,27 @@ import { logInWithEmail, signInWithGoogle } from '../../services/authService';
 import { IMAGE_URLS } from '../../constants/Image_Url';
 import { useAlert } from '../../context/CustomAlertContext';
 
-export const SignInScreen: React.FC<RootStackScreenProps<'SignIn'>> = ({ navigation }) => {
+export const SignInScreen: React.FC<RootStackScreenProps<'SignIn'>> = ({ navigation, route }) => {
   const layout = useResponsiveLayout();
   const { showAlert } = useAlert();
   const [email, setEmail] = useState('');
+
+  const params = route.params;
+
+  useEffect(() => {
+    if (params?.showVerificationAlert) {
+      showAlert(
+        'Verify Your Email',
+        `A verification link has been sent to ${params.email}. Please verify your email before logging in.`,
+        undefined,
+        'success'
+      );
+      if (params.email) {
+        setEmail(params.email);
+      }
+      navigation.setParams({ showVerificationAlert: undefined, email: undefined });
+    }
+  }, [params]);
   const [password, setPassword] = useState('');
   
   // Errors state
@@ -114,7 +131,16 @@ export const SignInScreen: React.FC<RootStackScreenProps<'SignIn'>> = ({ navigat
         routes: [{ name: 'MainTabs' }],
       });
     } catch (error: any) {
-      setGeneralError(error.message || 'Login failed. Please check your credentials.');
+      if (error.message && error.message.includes('Verification pending')) {
+        showAlert(
+          'Email Verification',
+          error.message,
+          undefined,
+          'warning'
+        );
+      } else {
+        setGeneralError(error.message || 'Login failed. Please check your credentials.');
+      }
     } finally {
       setLoading(false);
     }

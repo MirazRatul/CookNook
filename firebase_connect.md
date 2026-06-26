@@ -159,18 +159,21 @@ Create an auth service file: `src/services/authService.ts`
 import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
 
 /**
- * Register a new user using email & password
+ * Register a new user using email & password, send verification email, and sign out
  */
 export const signUpWithEmail = async (
   email: string,
   password: string,
-): Promise<FirebaseAuthTypes.User> => {
+): Promise<void> => {
   try {
     const userCredential = await auth().createUserWithEmailAndPassword(
       email,
       password,
     );
-    return userCredential.user;
+    if (userCredential.user) {
+      await userCredential.user.sendEmailVerification();
+      await auth().signOut();
+    }
   } catch (error: any) {
     console.error("Sign up error: ", error.message);
     throw new Error(error.message || "Failed to register account.");
@@ -178,7 +181,7 @@ export const signUpWithEmail = async (
 };
 
 /**
- * Log in an existing user with email & password
+ * Log in an existing user and block if their email is not verified
  */
 export const logInWithEmail = async (
   email: string,
@@ -189,9 +192,20 @@ export const logInWithEmail = async (
       email,
       password,
     );
-    return userCredential.user;
+    const user = userCredential.user;
+    if (user && !user.emailVerified) {
+      // Re-send verification link
+      await user.sendEmailVerification();
+      // Sign out immediately so session is clean
+      await auth().signOut();
+      throw new Error("verification-pending");
+    }
+    return user;
   } catch (error: any) {
     console.error("Login error: ", error.message);
+    if (error.message === "verification-pending") {
+      throw new Error("Verification pending. A verification link has been sent to your email. Please verify your email before signing in.");
+    }
     throw new Error(error.message || "Failed to log in.");
   }
 };

@@ -120,7 +120,10 @@ export const SignUpScreen: React.FC<RootStackScreenProps<'SignUp'>> = ({ navigat
       await signUpWithEmail(email, password);
       navigation.reset({
         index: 0,
-        routes: [{ name: 'MainTabs' }],
+        routes: [{
+          name: 'SignIn',
+          params: { email, showVerificationAlert: true }
+        }],
       });
     } catch (error: any) {
       setGeneralError(error.message || 'Registration failed. Please try again.');
