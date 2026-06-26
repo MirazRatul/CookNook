@@ -10,6 +10,7 @@ import { AppTabScreenProps } from '../navigation/types';
 import { Ionicons } from '@expo/vector-icons';
 import { IMAGE_URLS } from '../constants/Image_Url';
 import { useAlert } from '../context/CustomAlertContext';
+import { Colors } from '../constants/Colors';
 
 type CreateRecipeScreenProps = AppTabScreenProps<'Create'>;
 
@@ -138,7 +139,7 @@ export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ navigati
             onChangeText={setTitle}
             placeholder="e.g. Creamy Tuscan Pasta"
             className="w-full bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3.5 text-gray-800"
-            placeholderTextColor="#9ca3af"
+            placeholderTextColor={Colors.gray[400]}
           />
         </View>
 
@@ -152,7 +153,7 @@ export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ navigati
             multiline
             numberOfLines={3}
             className="w-full bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3.5 text-gray-800 text-left h-24"
-            placeholderTextColor="#9ca3af"
+            placeholderTextColor={Colors.gray[400]}
             style={{ textAlignVertical: 'top' }}
           />
         </View>
@@ -200,7 +201,7 @@ export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ navigati
               placeholder="e.g. 25"
               keyboardType="number-pad"
               className="bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3.5 text-gray-800 text-center font-bold"
-              placeholderTextColor="#9ca3af"
+              placeholderTextColor={Colors.gray[400]}
             />
           </View>
 
@@ -212,7 +213,7 @@ export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ navigati
               placeholder="e.g. 350"
               keyboardType="number-pad"
               className="bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3.5 text-gray-800 text-center font-bold"
-              placeholderTextColor="#9ca3af"
+              placeholderTextColor={Colors.gray[400]}
             />
           </View>
 
@@ -250,7 +251,7 @@ export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ navigati
               onChangeText={setNewIngredient}
               placeholder="e.g. 2 cloves garlic, minced"
               className="flex-1 bg-gray-50 border border-gray-200 rounded-l-2xl px-4 py-3.5 text-gray-800"
-              placeholderTextColor="#9ca3af"
+              placeholderTextColor={Colors.gray[400]}
             />
             <TouchableOpacity
               onPress={handleAddIngredient}
@@ -269,7 +270,7 @@ export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ navigati
             >
               <Text className="text-sm font-medium text-gray-700 flex-1">{ing}</Text>
               <TouchableOpacity onPress={() => handleRemoveIngredient(idx)}>
-                <Ionicons name="trash-outline" size={16} color="#ef4444" />
+                <Ionicons name="trash-outline" size={16} color={Colors.danger} />
               </TouchableOpacity>
             </View>
           ))}
@@ -284,7 +285,7 @@ export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ navigati
               onChangeText={setNewInstruction}
               placeholder="e.g. Heat butter in a pan over medium heat."
               className="flex-1 bg-gray-50 border border-gray-200 rounded-l-2xl px-4 py-3.5 text-gray-800"
-              placeholderTextColor="#9ca3af"
+              placeholderTextColor={Colors.gray[400]}
             />
             <TouchableOpacity
               onPress={handleAddInstruction}
@@ -304,7 +305,7 @@ export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ navigati
               <Text className="text-sm font-bold text-primary-600 mr-2">{idx + 1}.</Text>
               <Text className="text-sm font-medium text-gray-700 flex-1">{step}</Text>
               <TouchableOpacity onPress={() => handleRemoveInstruction(idx)} className="mt-0.5 ml-2">
-                <Ionicons name="trash-outline" size={16} color="#ef4444" />
+                <Ionicons name="trash-outline" size={16} color={Colors.danger} />
               </TouchableOpacity>
             </View>
           ))}

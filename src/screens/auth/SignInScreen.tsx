@@ -23,6 +23,7 @@ import { RootStackScreenProps } from '../../navigation/types';
 import { useResponsiveLayout } from '../../hooks/useResponsiveLayout';
 import { FormInput } from '../../components/FormInput';
 import { Button } from '../../components/Button';
+import { Colors } from '../../constants/Colors';
 import { SocialButton } from '../../components/SocialButton';
 import { LoadingIndicator } from '../../components/LoadingIndicator';
 import { logInWithEmail, signInWithGoogle } from '../../services/authService';
@@ -192,7 +193,7 @@ export const SignInScreen: React.FC<RootStackScreenProps<'SignIn'>> = ({ navigat
                 style={[
                   cardAnimatedStyle,
                   {
-                    shadowColor: '#000000',
+                    shadowColor: Colors.black,
                     shadowOffset: { width: 0, height: 10 },
                     shadowOpacity: 0.15,
                     shadowRadius: 15,
@@ -207,7 +208,7 @@ export const SignInScreen: React.FC<RootStackScreenProps<'SignIn'>> = ({ navigat
 
                 {generalError ? (
                   <View className="bg-red-50 border border-red-200 rounded-xl p-3.5 mb-4 flex-row items-center">
-                    <Ionicons name="alert-circle" size={20} color="#ef4444" style={{ marginRight: 8 }} />
+                    <Ionicons name="alert-circle" size={20} color={Colors.danger} style={{ marginRight: 8 }} />
                     <Text className="text-red-700 flex-1 font-medium text-xs">
                       {generalError}
                     </Text>
@@ -265,7 +266,7 @@ export const SignInScreen: React.FC<RootStackScreenProps<'SignIn'>> = ({ navigat
                   title="Sign in with Google"
                   onPress={handleGoogleLogin}
                   iconName="logo-google"
-                  iconColor="#EA4335"
+                  iconColor={Colors.googleRed}
                   loading={googleLoading}
                   className="mb-5 shadow-sm"
                 />

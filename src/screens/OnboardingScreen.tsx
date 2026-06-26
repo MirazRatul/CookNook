@@ -5,6 +5,7 @@ import AppIntroSlider from 'react-native-app-intro-slider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { RootStackScreenProps } from '../navigation/types';
+import { Colors } from '../constants/Colors';
 import { useResponsiveLayout } from '../hooks/useResponsiveLayout';
 import { IMAGE_URLS } from '../constants/Image_Url';
 
@@ -87,7 +88,7 @@ export const OnboardingScreen: React.FC<RootStackScreenProps<'Onboarding'>> = ({
             style={{ width: layout.scale(60), height: layout.scale(60), borderRadius: layout.scale(30) }} 
             className="bg-amber-50 justify-center items-center mb-4"
           >
-            <Ionicons name={item.icon as any} size={iconSize} color="#d97706" />
+            <Ionicons name={item.icon as any} size={iconSize} color={Colors.primary[600]} />
           </View>
           <Text style={{ fontSize: titleSize }} className="font-black text-gray-800 text-center mb-3">
             {item.title}
@@ -105,7 +106,7 @@ export const OnboardingScreen: React.FC<RootStackScreenProps<'Onboarding'>> = ({
       style={{ width: buttonSize, height: buttonSize, borderRadius: buttonSize / 2 }} 
       className="bg-amber-600 justify-center items-center mr-1 shadow-md"
     >
-      <Ionicons name="arrow-forward" size={buttonIconSize} color="#ffffff" />
+      <Ionicons name="arrow-forward" size={buttonIconSize} color={Colors.white} />
     </View>
   );
 
@@ -114,7 +115,7 @@ export const OnboardingScreen: React.FC<RootStackScreenProps<'Onboarding'>> = ({
       style={{ width: buttonSize, height: buttonSize, borderRadius: buttonSize / 2 }} 
       className="bg-amber-600 justify-center items-center mr-1 shadow-md"
     >
-      <Ionicons name="checkmark" size={buttonIconSize} color="#ffffff" />
+      <Ionicons name="checkmark" size={buttonIconSize} color={Colors.white} />
     </View>
   );
 
@@ -129,7 +130,7 @@ export const OnboardingScreen: React.FC<RootStackScreenProps<'Onboarding'>> = ({
   const dotHeight = layout.scale(8);
 
   const dotStyle = {
-    backgroundColor: '#e5e7eb',
+    backgroundColor: Colors.gray[200],
     width: dotWidth,
     height: dotHeight,
     borderRadius: dotHeight / 2,
@@ -137,7 +138,7 @@ export const OnboardingScreen: React.FC<RootStackScreenProps<'Onboarding'>> = ({
   };
 
   const activeDotStyle = {
-    backgroundColor: '#d97706',
+    backgroundColor: Colors.primary[600],
     width: activeDotWidth,
     height: dotHeight,
     borderRadius: dotHeight / 2,

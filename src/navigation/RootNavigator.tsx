@@ -7,6 +7,7 @@ import { SignUpScreen } from "../screens/auth/SignUpScreen";
 import { RecipeDetailsScreen } from "../screens/RecipeDetailsScreen";
 import { MainTabs } from "./MainTabs";
 import { RootStackParamList } from "./types";
+import { Colors } from "../constants/Colors";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -17,7 +18,7 @@ export function RootNavigator() {
       screenOptions={{
         headerShown: false,
         animation: "slide_from_right",
-        contentStyle: { backgroundColor: "#ffffff" },
+        contentStyle: { backgroundColor: Colors.white },
       }}
     >
       <Stack.Screen name="Splash" component={SplashScreenView} />

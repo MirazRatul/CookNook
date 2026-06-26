@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { Colors } from '../constants/Colors';
 import { Recipe } from '../constants/mockData';
 import { useResponsiveLayout } from '../hooks/useResponsiveLayout';
 import { HeartButton } from './HeartButton';
@@ -55,15 +56,15 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({
           <Text className="text-xs text-gray-500 mt-0.5">by {recipe.chefName}</Text>
           <View className="flex-row items-center justify-between mt-2">
             <View className="flex-row items-center">
-              <Ionicons name="star" size={13} color="#f59e0b" />
+              <Ionicons name="star" size={13} color={Colors.primary[500]} />
               <Text className="text-xs font-bold text-gray-700 ml-1">{recipe.rating}</Text>
             </View>
             <View className="flex-row items-center">
-              <Ionicons name="time-outline" size={13} color="#6b7280" />
+              <Ionicons name="time-outline" size={13} color={Colors.gray[500]} />
               <Text className="text-xs text-gray-500 ml-1">{recipe.duration}m</Text>
             </View>
             <View className="flex-row items-center">
-              <Ionicons name="flame-outline" size={13} color="#6b7280" />
+              <Ionicons name="flame-outline" size={13} color={Colors.gray[500]} />
               <Text className="text-xs text-gray-500 ml-1">{recipe.calories} kcal</Text>
             </View>
           </View>
@@ -90,23 +91,23 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({
         />
         <View
           className="absolute top-4 left-4 px-3 py-1 rounded-full flex-row items-center"
-          style={{ backgroundColor: 'rgba(255, 255, 255, 0.9)' }}
+          style={{ backgroundColor: Colors.whiteOpacity }}
         >
-          <Ionicons name="star" size={14} color="#f59e0b" />
+          <Ionicons name="star" size={14} color={Colors.primary[500]} />
           <Text className="text-xs font-bold text-gray-800 ml-1">{recipe.rating}</Text>
         </View>
         <View
           className="absolute top-4 right-4 p-2 rounded-full border border-gray-100"
           style={{
-            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+            backgroundColor: Colors.whiteOpacity,
           }}
         >
           <HeartButton
             isFavorite={isFavorite}
             onPress={onToggleFavorite}
             size={18}
-            colorActive="#ef4444"
-            colorInactive="#4b5563"
+            colorActive={Colors.danger}
+            colorInactive={Colors.gray[600]}
           />
         </View>
       </View>
@@ -121,11 +122,11 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({
         <Text className="text-xs text-gray-500 mt-1">by {recipe.chefName}</Text>
         <View className="flex-row items-center justify-between border-t border-gray-100 pt-3.5 mt-4">
           <View className="flex-row items-center">
-            <Ionicons name="time-outline" size={14} color="#6b7280" />
+            <Ionicons name="time-outline" size={14} color={Colors.gray[500]} />
             <Text className="text-xs text-gray-600 font-semibold ml-1">{recipe.duration} mins</Text>
           </View>
           <View className="flex-row items-center">
-            <Ionicons name="flame-outline" size={14} color="#6b7280" />
+            <Ionicons name="flame-outline" size={14} color={Colors.gray[500]} />
             <Text className="text-xs text-gray-600 font-semibold ml-1">{recipe.calories} kcal</Text>
           </View>
         </View>

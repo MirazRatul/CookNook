@@ -8,6 +8,7 @@ import Animated, {
   withDelay,
 } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
+import { Colors } from '../constants/Colors';
 
 interface HeartButtonProps {
   isFavorite: boolean;
@@ -21,8 +22,8 @@ export const HeartButton: React.FC<HeartButtonProps> = ({
   isFavorite,
   onPress,
   size = 20,
-  colorActive = '#ef4444',
-  colorInactive = '#9ca3af',
+  colorActive = Colors.danger,
+  colorInactive = Colors.gray[400],
 }) => {
   const scale = useSharedValue(1);
 

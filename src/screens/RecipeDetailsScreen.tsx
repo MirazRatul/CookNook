@@ -16,6 +16,7 @@ import { useResponsiveLayout } from "../hooks/useResponsiveLayout";
 import { RootStackScreenProps } from "../navigation/types";
 import { Ionicons } from "@expo/vector-icons";
 import { HeartButton } from "../components/HeartButton";
+import { Colors } from "../constants/Colors";
 
 type RecipeDetailsScreenProps = RootStackScreenProps<"RecipeDetails">;
 
@@ -66,8 +67,8 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({
           onPress={() => navigation.goBack()}
           className="p-2.5 rounded-full items-center justify-center"
           style={{
-            backgroundColor: "rgba(255, 255, 255, 0.9)",
-            shadowColor: "#000",
+            backgroundColor: Colors.whiteOpacity,
+            shadowColor: Colors.black,
             shadowOffset: { width: 0, height: 2 },
             shadowOpacity: 0.15,
             shadowRadius: 3.5,
@@ -75,14 +76,14 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({
           }}
           activeOpacity={0.8}
         >
-          <Ionicons name="arrow-back" size={22} color="#1f2937" />
+          <Ionicons name="arrow-back" size={22} color={Colors.gray[800]} />
         </TouchableOpacity>
 
         <View
           className="p-2.5 rounded-full items-center justify-center"
           style={{
-            backgroundColor: "rgba(255, 255, 255, 0.9)",
-            shadowColor: "#000",
+            backgroundColor: Colors.whiteOpacity,
+            shadowColor: Colors.black,
             shadowOffset: { width: 0, height: 2 },
             shadowOpacity: 0.15,
             shadowRadius: 3.5,
@@ -93,8 +94,8 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({
             isFavorite={isFav}
             onPress={() => dispatch(toggleFavorite(selectedRecipe.id))}
             size={22}
-            colorActive="#ef4444"
-            colorInactive="#1f2937"
+            colorActive={Colors.danger}
+            colorInactive={Colors.gray[800]}
           />
         </View>
       </View>
@@ -126,7 +127,7 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({
               {selectedRecipe.category}
             </Text>
             <View className="flex-row items-center bg-gray-50 px-3 py-1 rounded-full">
-              <Ionicons name="star" size={14} color="#f59e0b" />
+              <Ionicons name="star" size={14} color={Colors.primary[500]} />
               <Text className="text-xs font-bold text-gray-700 ml-1">
                 {selectedRecipe.rating}
               </Text>
@@ -159,11 +160,11 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({
           {/* Recipe Meta Stats */}
           <View
             className="flex-row items-center justify-between border border-gray-100 rounded-3xl p-4 my-6"
-            style={{ backgroundColor: "rgba(249, 250, 251, 0.7)" }}
+            style={{ backgroundColor: Colors.bgLight70 }}
           >
             <View className="items-center flex-1">
               <View className="bg-amber-100 p-2.5 rounded-full mb-1.5">
-                <Ionicons name="time-outline" size={18} color="#d97706" />
+                <Ionicons name="time-outline" size={18} color={Colors.primary[600]} />
               </View>
               <Text className="text-[10px] text-gray-400 font-semibold uppercase">
                 Cook Time
@@ -177,7 +178,7 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({
 
             <View className="items-center flex-1">
               <View className="bg-amber-100 p-2.5 rounded-full mb-1.5">
-                <Ionicons name="bar-chart-outline" size={18} color="#d97706" />
+                <Ionicons name="bar-chart-outline" size={18} color={Colors.primary[600]} />
               </View>
               <Text className="text-[10px] text-gray-400 font-semibold uppercase">
                 Difficulty
@@ -191,7 +192,7 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({
 
             <View className="items-center flex-1">
               <View className="bg-amber-100 p-2.5 rounded-full mb-1.5">
-                <Ionicons name="flame-outline" size={18} color="#d97706" />
+                <Ionicons name="flame-outline" size={18} color={Colors.primary[600]} />
               </View>
               <Text className="text-[10px] text-gray-400 font-semibold uppercase">
                 Calories
@@ -218,7 +219,7 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({
               style={
                 activeTab === "ingredients"
                   ? {
-                      shadowColor: "#000",
+                      shadowColor: Colors.black,
                       shadowOffset: { width: 0, height: 1 },
                       shadowOpacity: 0.05,
                       shadowRadius: 2,
@@ -247,7 +248,7 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({
               style={
                 activeTab === "instructions"
                   ? {
-                      shadowColor: "#000",
+                      shadowColor: Colors.black,
                       shadowOffset: { width: 0, height: 1 },
                       shadowOpacity: 0.05,
                       shadowRadius: 2,
@@ -287,10 +288,10 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({
                 <View
                   key={idx}
                   className="flex-row items-center border border-gray-100 rounded-2xl p-4 mb-3"
-                  style={{ backgroundColor: "rgba(249, 250, 251, 0.5)" }}
+                  style={{ backgroundColor: Colors.bgLight }}
                 >
                   <View className="w-6 h-6 rounded-full bg-amber-50 items-center justify-center mr-3 border border-amber-100">
-                    <Ionicons name="checkmark" size={14} color="#d97706" />
+                    <Ionicons name="checkmark" size={14} color={Colors.primary[600]} />
                   </View>
                   <Text className="text-sm font-semibold text-gray-700 flex-1">
                     {ing}
@@ -319,7 +320,7 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({
                     <View
                       className="w-8 h-8 rounded-full bg-primary-500 items-center justify-center z-10"
                       style={{
-                        shadowColor: "#000",
+                        shadowColor: Colors.black,
                         shadowOffset: { width: 0, height: 1 },
                         shadowOpacity: 0.1,
                         shadowRadius: 1,

@@ -13,6 +13,7 @@ import { CATEGORIES, Recipe } from '../constants/mockData';
 import { useResponsiveLayout } from '../hooks/useResponsiveLayout';
 import { AppTabScreenProps } from '../navigation/types';
 import { Ionicons } from '@expo/vector-icons';
+import { Colors } from '../constants/Colors';
 
 type ExploreScreenProps = AppTabScreenProps<'Explore'>;
 
@@ -88,7 +89,7 @@ export const ExploreScreen: React.FC<ExploreScreenProps> = ({ navigation }) => {
       </Animated.View>
 
       {/* Grid List */}
-      <View className="flex-1" style={{ backgroundColor: 'rgba(249, 250, 251, 0.5)' }}>
+      <View className="flex-1" style={{ backgroundColor: Colors.bgLight }}>
         {filteredRecipes.length > 0 ? (
           <FlatList
             data={filteredRecipes}
@@ -124,7 +125,7 @@ export const ExploreScreen: React.FC<ExploreScreenProps> = ({ navigation }) => {
             entering={isFocused ? FadeInUp.duration(500).springify() : undefined}
             className="flex-1 items-center justify-center p-8"
           >
-            <Ionicons name="search-outline" size={64} color="#9ca3af" style={{ opacity: 0.4 }} />
+            <Ionicons name="search-outline" size={64} color={Colors.gray[400]} style={{ opacity: 0.4 }} />
             <Text className="text-gray-900 font-extrabold text-lg mt-4">No results found</Text>
             <Text className="text-gray-400 text-sm mt-1 text-center max-w-[240px]">
               We couldn't find any recipes matching "{searchQuery}" in category "{selectedCategory}"

@@ -7,6 +7,7 @@ import {
 import Animated, { FadeInDown, FadeInUp, LinearTransition } from 'react-native-reanimated';
 import { useIsFocused } from '@react-navigation/native';
 import { Ionicons } from "@expo/vector-icons";
+import { Colors } from "../constants/Colors";
 import { useDispatch, useSelector } from "react-redux";
 import { RecipeCard } from "../components/RecipeCard";
 import { Recipe } from "../constants/mockData";
@@ -57,7 +58,7 @@ export function FavoritesScreen({ navigation }: FavoritesScreenProps) {
           My Favorites
         </Text>
       </Animated.View>
-      <View className="flex-1" style={{ backgroundColor: 'rgba(249, 250, 251, 0.5)' }}>
+      <View className="flex-1" style={{ backgroundColor: Colors.bgLight }}>
         {favoriteRecipes.length > 0 ? (
           <ScrollView
             contentContainerStyle={{
@@ -95,7 +96,7 @@ export function FavoritesScreen({ navigation }: FavoritesScreenProps) {
             <Ionicons
               name="heart-outline"
               size={64}
-              color="#9ca3af"
+              color={Colors.gray[400]}
               style={{ opacity: 0.4 }}
             />
             <Text className="text-gray-900 font-extrabold text-lg mt-4">

@@ -15,6 +15,7 @@ import { useResponsiveLayout } from '../hooks/useResponsiveLayout';
 import { AppTabScreenProps } from '../navigation/types';
 import { Ionicons } from '@expo/vector-icons';
 import { IMAGE_URLS } from '../constants/Image_Url';
+import { Colors } from '../constants/Colors';
 
 type HomeScreenProps = AppTabScreenProps<'Home'>;
 
@@ -48,7 +49,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: 'rgba(249, 250, 251, 0.5)' }}>
+    <View style={{ flex: 1, backgroundColor: Colors.bgLight }}>
       <SafeAreaView className="flex-1" edges={['top', 'left', 'right']}>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
       {/* Header */}
@@ -148,7 +149,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           <Text className="text-xl font-black text-gray-800">Popular Recipes</Text>
           <TouchableOpacity onPress={() => navigation.navigate('Explore')} className="flex-row items-center">
             <Text className="text-primary-600 font-bold text-sm mr-0.5">See All</Text>
-            <Ionicons name="chevron-forward" size={16} color="#d97706" />
+            <Ionicons name="chevron-forward" size={16} color={Colors.primary[600]} />
           </TouchableOpacity>
         </View>
         
@@ -213,7 +214,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             entering={isFocused ? FadeInUp.duration(500).springify() : undefined}
             className="bg-white rounded-3xl p-8 border border-gray-100 items-center justify-center"
           >
-            <Ionicons name="fast-food-outline" size={48} color="#d97706" style={{ opacity: 0.4 }} />
+            <Ionicons name="fast-food-outline" size={48} color={Colors.primary[600]} style={{ opacity: 0.4 }} />
             <Text className="text-gray-500 font-semibold mt-3 text-center">
               No recipes found in this category
             </Text>

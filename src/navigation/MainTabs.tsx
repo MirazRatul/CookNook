@@ -3,6 +3,7 @@ import { Text, TouchableOpacity, View } from 'react-native';
 import { createBottomTabNavigator, BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { Colors } from '../constants/Colors';
 import { HomeScreen } from '../screens/HomeScreen';
 import { ExploreScreen } from '../screens/ExploreScreen';
 import { CreateRecipeScreen } from '../screens/CreateRecipeScreen';
@@ -102,7 +103,7 @@ function CookNookTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
             <Ionicons
               name={isFocused ? config?.activeIcon ?? 'ellipse' : config?.icon ?? 'ellipse-outline'}
               size={route.name === 'Create' ? 24 : 22}
-              color={isFocused ? '#f59e0b' : '#9ca3af'}
+              color={isFocused ? Colors.primary[500] : Colors.gray[400]}
             />
             <Text
               className={`text-[10px] mt-0.5 font-bold ${
@@ -125,7 +126,7 @@ export function MainTabs() {
       tabBar={(props) => <CookNookTabBar {...props} />}
       screenOptions={{
         headerShown: false,
-        sceneStyle: { backgroundColor: '#ffffff' },
+        sceneStyle: { backgroundColor: Colors.white },
         tabBarHideOnKeyboard: true,
       }}
     >

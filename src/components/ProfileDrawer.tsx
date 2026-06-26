@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, Pressable, StyleSheet, Dimensions } from 'react-native';
+import { Colors } from '../constants/Colors';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -100,7 +101,7 @@ export const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
     <View style={[StyleSheet.absoluteFill, { zIndex: 9999 }]} pointerEvents="box-none">
       {/* Dimmed Backdrop */}
       <Animated.View
-        style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0, 0, 0, 0.45)' }, backdropStyle]}
+        style={[StyleSheet.absoluteFill, { backgroundColor: Colors.backdrop }, backdropStyle]}
       >
         <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
       </Animated.View>
@@ -114,7 +115,7 @@ export const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
             top: 0,
             bottom: 0,
             right: 0,
-            backgroundColor: '#ffffff',
+            backgroundColor: Colors.white,
             width: DRAWER_WIDTH,
             paddingTop: insets.top + 24,
             paddingBottom: insets.bottom + 20,
@@ -140,7 +141,7 @@ export const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
               className="p-2 bg-gray-100 rounded-full items-center justify-center"
               activeOpacity={0.7}
             >
-              <Ionicons name="close" size={20} color="#374151" />
+              <Ionicons name="close" size={20} color={Colors.gray[700]} />
             </TouchableOpacity>
           </View>
 
@@ -187,7 +188,7 @@ export const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
                   <Ionicons
                     name={item.icon as any}
                     size={18}
-                    color={item.isDanger ? '#ef4444' : '#d97706'}
+                    color={item.isDanger ? Colors.danger : Colors.primary[600]}
                   />
                 </View>
                 <Text
@@ -200,7 +201,7 @@ export const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
                 <Ionicons
                   name="chevron-forward"
                   size={14}
-                  color={item.isDanger ? '#fca5a5' : '#9ca3af'}
+                  color={item.isDanger ? Colors.dangerLight : Colors.gray[400]}
                 />
               </TouchableOpacity>
             </View>

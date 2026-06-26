@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TextInputProps, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { Colors } from '../constants/Colors';
 
 interface InputProps extends TextInputProps {
   label?: string;
@@ -58,14 +59,14 @@ export const Input: React.FC<InputProps> = ({
           <Ionicons
             name={iconName as any}
             size={20}
-            color={error ? '#ef4444' : isFocused ? '#f59e0b' : '#9ca3af'}
+            color={error ? Colors.danger : isFocused ? Colors.primary[500] : Colors.gray[400]}
             style={{ marginRight: 10 }}
           />
         )}
 
         <TextInput
           className="flex-1 text-gray-800 text-sm h-full"
-          placeholderTextColor="#9ca3af"
+          placeholderTextColor={Colors.gray[400]}
           secureTextEntry={isSecure}
           onFocus={handleFocus}
           onBlur={handleBlur}
@@ -77,7 +78,7 @@ export const Input: React.FC<InputProps> = ({
             <Ionicons
               name={isSecure ? 'eye-off-outline' : 'eye-outline'}
               size={20}
-              color="#9ca3af"
+              color={Colors.gray[400]}
             />
           </TouchableOpacity>
         )}

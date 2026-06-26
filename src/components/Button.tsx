@@ -1,5 +1,6 @@
 import React from 'react';
 import { TouchableOpacity, Text, ActivityIndicator } from 'react-native';
+import { Colors } from '../constants/Colors';
 
 interface ButtonProps {
   title: string;
@@ -58,7 +59,7 @@ export const Button: React.FC<ButtonProps> = ({
       {loading ? (
         <ActivityIndicator
           size="small"
-          color={variant === 'outline' || variant === 'secondary' ? '#d97706' : '#ffffff'}
+          color={variant === 'outline' || variant === 'secondary' ? Colors.primary[600] : Colors.white}
         />
       ) : (
         <Text className={`${textStyles[variant]} ${textSizeStyles[size]} text-center`}>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { TouchableOpacity, Text, ActivityIndicator, View, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { Colors } from '../constants/Colors';
 
 interface SocialButtonProps {
   title: string;
@@ -16,7 +17,7 @@ export const SocialButton: React.FC<SocialButtonProps> = ({
   title,
   onPress,
   iconName,
-  iconColor = '#4285F4', // default Google Blue
+  iconColor = Colors.googleBlue, // default Google Blue
   loading = false,
   disabled = false,
   className = '',
@@ -30,7 +31,7 @@ export const SocialButton: React.FC<SocialButtonProps> = ({
       activeOpacity={0.7}
     >
       {loading ? (
-        <ActivityIndicator size="small" color="#6b7280" />
+        <ActivityIndicator size="small" color={Colors.gray[500]} />
       ) : (
         <View className="flex-row items-center justify-center">
           {iconName === 'logo-google' ? (
