@@ -8,7 +8,12 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigation/types';
 import { IMAGE_URLS } from '../constants/Image_Url';
+import { auth } from '../services/firebase';
+import { logOutUser } from '../services/authService';
 
 interface ProfileDrawerProps {
   isOpen: boolean;
@@ -25,8 +30,15 @@ export const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
   onNavigateToCreate,
 }) => {
   const insets = useSafeAreaInsets();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const progress = useSharedValue(0);
   const [shouldRender, setShouldRender] = React.useState(isOpen);
+
+  // Get current Firebase user details
+  const currentUser = auth().currentUser;
+  const userDisplayName = currentUser?.displayName || currentUser?.email?.split('@')[0] || 'Chef User';
+  const userEmail = currentUser?.email || 'user@cooknook.com';
+  const userPhoto = currentUser?.photoURL ? { uri: currentUser.photoURL } : { uri: IMAGE_URLS.profiles.chefRatul };
 
   React.useEffect(() => {
     if (isOpen) {
@@ -64,7 +76,24 @@ export const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
     { id: 2, label: 'Create New Recipe', icon: 'add-circle-outline', onPress: () => { onClose(); onNavigateToCreate(); } },
     { id: 3, label: 'Settings', icon: 'settings-outline', onPress: onClose },
     { id: 4, label: 'Help & Feedback', icon: 'help-circle-outline', onPress: onClose },
-    { id: 5, label: 'Logout', icon: 'log-out-outline', onPress: onClose, isDanger: true },
+    {
+      id: 5,
+      label: 'Logout',
+      icon: 'log-out-outline',
+      onPress: async () => {
+        onClose();
+        try {
+          await logOutUser();
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'SignIn' }],
+          });
+        } catch (error) {
+          console.error('Logout error:', error);
+        }
+      },
+      isDanger: true,
+    },
   ];
 
   return (
@@ -98,7 +127,7 @@ export const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
           <View className="flex-row justify-between items-center">
             <View className="relative">
               <Image
-                source={{ uri: IMAGE_URLS.profiles.chefRatul }}
+                source={userPhoto}
                 className="w-20 h-20 rounded-full border-4 border-amber-50 shadow-md"
               />
               <View className="absolute bottom-0 right-0 bg-emerald-500 w-5 h-5 rounded-full border-2 border-white items-center justify-center">
@@ -116,10 +145,10 @@ export const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
           </View>
 
           <Text className="text-xl font-black text-gray-900 mt-4">
-            Chef Ratul
+            {userDisplayName}
           </Text>
           <Text className="text-xs font-semibold text-gray-400 mt-0.5">
-            ratul.chef@cooknook.com
+            {userEmail}
           </Text>
         </View>
 
