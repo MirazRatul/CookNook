@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "383657712113",
+    "project_id": "cooknook-98da8",
+    "storage_bucket": "cooknook-98da8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:383657712113:android:7ec2219f6a595e1ec64c50",
+        "android_client_info": {
+          "package_name": "com.mirajulislam.cooknook"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "383657712113-c6l4t4abjnal0siu0a6gclsi8qmns6p4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mirajulislam.cooknook",
+            "certificate_hash": "35e9c8d11b3c0d21792250baed1ecf44aba37613"
+          }
+        },
+        {
+          "client_id": "383657712113-osmsunj6qn3iclsbsbgfvtjd8bkjb1g4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCoMFC15y0Vdxb70zPOjIWSQj-OkitrxHk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "383657712113-osmsunj6qn3iclsbsbgfvtjd8bkjb1g4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
