@@ -154,8 +154,8 @@ export const SignUpScreen: React.FC<RootStackScreenProps<'SignUp'>> = ({ navigat
                 >
                   <Image 
                     source={LOGO_IMAGE} 
-                    style={{ width: layout.scale(64), height: layout.scale(64) }}
-                    resizeMode="contain"
+                    style={{ width: '100%', height: '100%' }}
+                    resizeMode="cover"
                   />
                 </View>
                 <Text className="text-3xl font-black text-white tracking-wider">
