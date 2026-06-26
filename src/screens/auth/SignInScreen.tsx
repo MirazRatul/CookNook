@@ -22,6 +22,7 @@ import { useResponsiveLayout } from '../../hooks/useResponsiveLayout';
 import { Input } from '../../components/Input';
 import { Button } from '../../components/Button';
 import { SocialButton } from '../../components/SocialButton';
+import { LoadingIndicator } from '../../components/LoadingIndicator';
 import { logInWithEmail, signInWithGoogle } from '../../services/authService';
 import { IMAGE_URLS } from '../../constants/Image_Url';
 
@@ -135,29 +136,30 @@ export const SignInScreen: React.FC<RootStackScreenProps<'SignIn'>> = ({ navigat
   };
 
   return (
-    <ImageBackground
-      source={{ uri: IMAGE_URLS.onboarding.cook }}
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       className="flex-1"
-      resizeMode="cover"
     >
-      {/* Darkened overlay to make elements pop */}
-      <View className="flex-1 bg-black/45">
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          className="flex-1"
-        >
+      <ImageBackground
+        source={{ uri: IMAGE_URLS.onboarding.cook }}
+        className="flex-1"
+        resizeMode="cover"
+      >
+        {/* Darkened overlay to make elements pop */}
+        <View className="flex-1 bg-black/45">
           <ScrollView
             contentContainerStyle={{
               flexGrow: 1,
               justifyContent: 'center',
               paddingHorizontal: layout.spacing.screen,
+              paddingVertical: layout.scale(20),
             }}
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
           >
             <View 
               style={{ maxWidth: layout.isTablet ? 460 : undefined }} 
-              className="w-full self-center py-10"
+              className="w-full self-center py-4"
             >
               {/* Logo & Header */}
               <Animated.View style={headerAnimatedStyle} className="items-center mb-6">
@@ -277,8 +279,13 @@ export const SignInScreen: React.FC<RootStackScreenProps<'SignIn'>> = ({ navigat
               </Animated.View>
             </View>
           </ScrollView>
-        </KeyboardAvoidingView>
-      </View>
-    </ImageBackground>
+        </View>
+      </ImageBackground>
+
+      {/* Custom Fullscreen Loading Indicator */}
+      {(loading || googleLoading) && (
+        <LoadingIndicator message="Signing In..." />
+      )}
+    </KeyboardAvoidingView>
   );
 };
