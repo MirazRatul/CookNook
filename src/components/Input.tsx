@@ -50,7 +50,7 @@ export const Input: React.FC<InputProps> = ({
           error
             ? 'border-red-500 bg-red-50/10'
             : isFocused
-            ? 'border-primary-500 bg-white ring-1 ring-primary-500'
+            ? 'border-primary-500 bg-white border-2'
             : 'border-gray-200'
         }`}
       >
