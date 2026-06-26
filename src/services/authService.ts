@@ -166,3 +166,15 @@ export const signInWithGoogle = async (): Promise<FirebaseAuthTypes.User> => {
     }
   }
 };
+
+/**
+ * Sends a password reset email to the specified email address
+ */
+export const sendPasswordReset = async (email: string): Promise<void> => {
+  try {
+    await auth().sendPasswordResetEmail(email);
+  } catch (error: any) {
+    console.error("Password reset error: ", error.message);
+    throw new Error(getFriendlyAuthError(error));
+  }
+};

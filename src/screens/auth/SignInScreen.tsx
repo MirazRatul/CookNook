@@ -9,6 +9,10 @@ import {
   TouchableOpacity,
   ImageBackground,
   Image,
+  Modal,
+  TextInput,
+  ActivityIndicator,
+  StyleSheet,
 } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -27,7 +31,7 @@ import { Button } from '../../components/Button';
 import { Colors } from '../../constants/Colors';
 import { SocialButton } from '../../components/SocialButton';
 import { LoadingIndicator } from '../../components/LoadingIndicator';
-import { logInWithEmail, signInWithGoogle } from '../../services/authService';
+import { logInWithEmail, signInWithGoogle, sendPasswordReset } from '../../services/authService';
 import { IMAGE_URLS, LOGO_IMAGE } from '../../constants/Image_Url';
 import { useAlert } from '../../context/CustomAlertContext';
 import { signInSchema } from '../../utils/validationSchemas';
@@ -65,6 +69,12 @@ export const SignInScreen: React.FC<RootStackScreenProps<'SignIn'>> = ({ navigat
   const [generalError, setGeneralError] = useState('');
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+
+  // Forgot Password Modal State
+  const [isResetModalOpen, setIsResetModalOpen] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
+  const [resetLoading, setResetLoading] = useState(false);
+  const [resetError, setResetError] = useState('');
 
   // Smooth Fade & Soft Scale Animation Values (No spring bounces)
   const headerOpacity = useSharedValue(0);
@@ -128,6 +138,36 @@ export const SignInScreen: React.FC<RootStackScreenProps<'SignIn'>> = ({ navigat
     }
   };
 
+  const handlePasswordReset = async () => {
+    if (!resetEmail.trim()) {
+      setResetError(t('auth.email_placeholder'));
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(resetEmail.trim())) {
+      setResetError(t('auth.errors.invalid_email'));
+      return;
+    }
+
+    setResetLoading(true);
+    setResetError('');
+    try {
+      await sendPasswordReset(resetEmail.trim());
+      setIsResetModalOpen(false);
+      setResetEmail('');
+      showAlert(
+        t('auth.reset_email_sent_title'),
+        t('auth.reset_email_sent_desc', { email: resetEmail.trim() }),
+        undefined,
+        'success'
+      );
+    } catch (error: any) {
+      setResetError(error.message || t('auth.errors.default'));
+    } finally {
+      setResetLoading(false);
+    }
+  };
+
   const handleGoogleLogin = async () => {
     setGoogleLoading(true);
     setGeneralError('');
@@ -168,29 +208,21 @@ export const SignInScreen: React.FC<RootStackScreenProps<'SignIn'>> = ({ navigat
           >
             <View 
               style={{ maxWidth: layout.isTablet ? 460 : undefined }} 
-              className="w-full self-center py-4"
+              className="w-full self-center"
             >
-              {/* Logo & Header */}
-              <Animated.View style={headerAnimatedStyle} className="items-center mb-6">
-                <View 
-                  style={{ width: layout.scale(64), height: layout.scale(64), borderRadius: layout.scale(14) }} 
-                  className="bg-white/15 backdrop-blur-md justify-center items-center mb-2 shadow-inner border border-white/20 overflow-hidden"
-                >
-                  <Image 
-                    source={LOGO_IMAGE} 
-                    style={{ width: '100%', height: '100%' }}
-                    resizeMode="cover"
-                  />
-                </View>
-                <Text className="text-3xl font-black text-white tracking-wider">
-                  CookNook
-                </Text>
-                <Text className="text-amber-200/90 font-medium mt-1 text-center text-sm">
+              {/* Header section */}
+              <Animated.View style={headerAnimatedStyle} className="items-center mb-8">
+                <Image 
+                  source={LOGO_IMAGE} 
+                  style={{ width: layout.scale(120), height: layout.scale(42) }} 
+                  resizeMode="contain" 
+                />
+                <Text className="text-white text-sm font-semibold tracking-wider uppercase mt-3">
                   {t('auth.culinary_haven')}
                 </Text>
               </Animated.View>
 
-              {/* Glassmorphic Form Card */}
+              {/* Login Card */}
               <Animated.View 
                 style={[
                   cardAnimatedStyle,
@@ -202,29 +234,30 @@ export const SignInScreen: React.FC<RootStackScreenProps<'SignIn'>> = ({ navigat
                     elevation: 5,
                   }
                 ]}
-                className="bg-white/95 border border-white/20 rounded-[32px] p-6"
+                className="bg-white/95 rounded-3xl p-6 shadow-xl"
               >
-                <Text className="text-xl font-extrabold text-gray-800 mb-5">
+                <Text className="text-2xl font-black text-gray-800 mb-6">
                   {t('auth.sign_in')}
                 </Text>
 
                 {generalError ? (
-                  <View className="bg-red-50 border border-red-200 rounded-xl p-3.5 mb-4 flex-row items-center">
-                    <Ionicons name="alert-circle" size={20} color={Colors.danger} style={{ marginRight: 8 }} />
-                    <Text className="text-red-700 flex-1 font-medium text-xs">
+                  <View className="bg-red-50 border border-red-100 rounded-2xl p-4 mb-5 flex-row items-center">
+                    <Ionicons name="alert-circle" size={20} color={Colors.danger} />
+                    <Text className="text-red-600 text-xs font-semibold ml-2.5 flex-1 leading-relaxed">
                       {generalError}
                     </Text>
                   </View>
                 ) : null}
 
+                {/* Form Input fields */}
                 <FormInput
                   control={control}
                   name="email"
                   label={t('auth.email_address')}
                   placeholder={t('auth.email_placeholder')}
                   iconName="mail-outline"
-                  autoCapitalize="none"
                   keyboardType="email-address"
+                  autoCapitalize="none"
                 />
 
                 <FormInput
@@ -240,7 +273,11 @@ export const SignInScreen: React.FC<RootStackScreenProps<'SignIn'>> = ({ navigat
                 <TouchableOpacity 
                   activeOpacity={0.7} 
                   className="self-end mb-5"
-                  onPress={() => showAlert(t('auth.forgot_password'), t('auth.reset_password_desc', 'An email password reset link will be sent in the future.'), undefined, 'info')}
+                  onPress={() => {
+                    setResetEmail('');
+                    setResetError('');
+                    setIsResetModalOpen(true);
+                  }}
                 >
                   <Text className="text-right font-bold text-primary-600 text-sm">
                     {t('auth.forgot_password')}
@@ -263,7 +300,7 @@ export const SignInScreen: React.FC<RootStackScreenProps<'SignIn'>> = ({ navigat
                   <View className="flex-1 h-[1px] bg-gray-200" />
                 </View>
 
-                {/* Google Sign-In */}
+                {/* Google Sign-in */}
                 <SocialButton
                   title={t('auth.sign_in_google')}
                   onPress={handleGoogleLogin}
@@ -297,6 +334,106 @@ export const SignInScreen: React.FC<RootStackScreenProps<'SignIn'>> = ({ navigat
       {(loading || googleLoading) && (
         <LoadingIndicator message={t('auth.signing_in')} />
       )}
+
+      {/* Forgot Password Modal */}
+      <Modal
+        visible={isResetModalOpen}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setIsResetModalOpen(false)}
+      >
+        <View style={StyleSheet.absoluteFill} className="bg-black/60 justify-center items-center px-6">
+          <View 
+            style={{ 
+              width: '100%', 
+              maxWidth: layout.isTablet ? 420 : undefined, 
+              backgroundColor: Colors.white,
+              borderRadius: 24,
+              padding: 24,
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 10 },
+              shadowOpacity: 0.15,
+              shadowRadius: 20,
+              elevation: 10,
+            }}
+          >
+            {/* Header */}
+            <View className="flex-row justify-between items-center mb-4">
+              <Text className="text-xl font-black text-gray-800">
+                {t('auth.forgot_password_title')}
+              </Text>
+              <TouchableOpacity
+                onPress={() => setIsResetModalOpen(false)}
+                className="p-1.5 bg-gray-100 rounded-full"
+                activeOpacity={0.7}
+              >
+                <Ionicons name="close" size={18} color={Colors.gray[600]} />
+              </TouchableOpacity>
+            </View>
+
+            {/* Description */}
+            <Text className="text-sm font-medium text-gray-500 mb-6 leading-relaxed">
+              {t('auth.forgot_password_desc')}
+            </Text>
+
+            {/* Email Input */}
+            <View className="mb-6">
+              <Text className="text-xs font-bold text-gray-400 mb-2 uppercase tracking-wide">
+                {t('auth.email_address')}
+              </Text>
+              <View className="flex-row items-center border border-gray-200 rounded-xl px-3 bg-gray-50/50">
+                <Ionicons name="mail-outline" size={20} color={Colors.gray[400]} />
+                <TextInput
+                  value={resetEmail}
+                  onChangeText={(text) => {
+                    setResetEmail(text);
+                    if (resetError) setResetError('');
+                  }}
+                  placeholder={t('auth.email_placeholder')}
+                  placeholderTextColor={Colors.gray[400]}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  className="flex-1 py-3 ml-3 text-sm font-bold text-gray-700 h-[48px]"
+                  style={{ textAlignVertical: 'center' }}
+                />
+              </View>
+              {resetError ? (
+                <Text className="text-red-500 text-xs font-semibold mt-1.5 pl-1">
+                  {resetError}
+                </Text>
+              ) : null}
+            </View>
+
+            {/* Action Buttons */}
+            <View className="flex-row justify-end">
+              <TouchableOpacity
+                onPress={() => setIsResetModalOpen(false)}
+                className="px-5 py-3 rounded-xl bg-gray-100 items-center justify-center mr-3"
+                activeOpacity={0.7}
+              >
+                <Text className="text-sm font-extrabold text-gray-600">
+                  {t('auth.cancel')}
+                </Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity
+                onPress={handlePasswordReset}
+                disabled={resetLoading}
+                className="px-5 py-3 rounded-xl bg-amber-600 items-center justify-center flex-row shadow-sm active:bg-amber-700"
+                activeOpacity={0.7}
+              >
+                {resetLoading ? (
+                  <ActivityIndicator size="small" color={Colors.white} className="mr-2" />
+                ) : null}
+                <Text className="text-sm font-extrabold text-white">
+                  {t('auth.send_link')}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </KeyboardAvoidingView>
   );
 };
