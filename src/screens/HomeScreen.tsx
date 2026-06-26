@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, Image, TouchableOpacity } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { ProfileDrawer } from '../components/ProfileDrawer';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeInDown, FadeInRight, FadeInUp, LinearTransition } from 'react-native-reanimated';
@@ -20,6 +21,7 @@ import { Colors } from '../constants/Colors';
 type HomeScreenProps = AppTabScreenProps<'Home'>;
 
 export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const insets = useSafeAreaInsets();
   const layout = useResponsiveLayout();
@@ -65,8 +67,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         }}
       >
         <View>
-          <Text className="text-gray-400 text-sm font-semibold tracking-wide">HELLO, CHEF!</Text>
-          <Text className="text-2xl font-extrabold text-gray-900 mt-0.5">What are we cooking?</Text>
+          <Text className="text-gray-400 text-sm font-semibold tracking-wide">{t('home.hello_chef')}</Text>
+          <Text className="text-2xl font-extrabold text-gray-900 mt-0.5">{t('home.what_cooking')}</Text>
         </View>
         <TouchableOpacity
           onPress={() => {
@@ -101,7 +103,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
               dispatch(setSearchQuery(text));
               navigation.navigate('Explore');
             }}
-            placeholder="Search recipes, ingredients..."
+            placeholder={t('explore.search_placeholder')}
           />
         </TouchableOpacity>
       </Animated.View>
@@ -146,9 +148,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             alignSelf: 'center',
           }}
         >
-          <Text className="text-xl font-black text-gray-800">Popular Recipes</Text>
+          <Text className="text-xl font-black text-gray-800">{t('home.popular_recipes')}</Text>
           <TouchableOpacity onPress={() => navigation.navigate('Explore')} className="flex-row items-center">
-            <Text className="text-primary-600 font-bold text-sm mr-0.5">See All</Text>
+            <Text className="text-primary-600 font-bold text-sm mr-0.5">{t('home.see_all')}</Text>
             <Ionicons name="chevron-forward" size={16} color={Colors.primary[600]} />
           </TouchableOpacity>
         </View>
@@ -191,7 +193,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           alignSelf: 'center',
         }}
       >
-        <Text className="text-xl font-black text-gray-800 mb-4">Chef Recommendations</Text>
+        <Text className="text-xl font-black text-gray-800 mb-4">{t('home.chef_recommendations')}</Text>
         {filteredRecipes.length > 0 ? (
           filteredRecipes.map((recipe, index) => (
             <Animated.View
@@ -216,7 +218,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           >
             <Ionicons name="fast-food-outline" size={48} color={Colors.primary[600]} style={{ opacity: 0.4 }} />
             <Text className="text-gray-500 font-semibold mt-3 text-center">
-              No recipes found in this category
+              {t('home.no_recipes_category')}
             </Text>
           </Animated.View>
         )}

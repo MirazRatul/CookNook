@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   View,
   Text,
@@ -32,6 +33,7 @@ import { useAlert } from '../../context/CustomAlertContext';
 import { signInSchema } from '../../utils/validationSchemas';
 
 export const SignInScreen: React.FC<RootStackScreenProps<'SignIn'>> = ({ navigation, route }) => {
+  const { t } = useTranslation();
   const layout = useResponsiveLayout();
   const { showAlert } = useAlert();
   
@@ -48,8 +50,8 @@ export const SignInScreen: React.FC<RootStackScreenProps<'SignIn'>> = ({ navigat
   useEffect(() => {
     if (params?.showVerificationAlert) {
       showAlert(
-        'Verify Your Email',
-        `A verification link has been sent to ${params.email}. Please verify your email before logging in.`,
+        t('auth.verify_email_title', 'Verify Your Email'),
+        t('auth.verify_email_desc', { defaultValue: 'A verification link has been sent to {{email}}. Please verify your email before logging in.', email: params.email }),
         undefined,
         'success'
       );
@@ -184,7 +186,7 @@ export const SignInScreen: React.FC<RootStackScreenProps<'SignIn'>> = ({ navigat
                   CookNook
                 </Text>
                 <Text className="text-amber-200/90 font-medium mt-1 text-center text-sm">
-                  Your Personal Culinary Haven
+                  {t('auth.culinary_haven')}
                 </Text>
               </Animated.View>
 
@@ -203,7 +205,7 @@ export const SignInScreen: React.FC<RootStackScreenProps<'SignIn'>> = ({ navigat
                 className="bg-white/95 border border-white/20 rounded-[32px] p-6"
               >
                 <Text className="text-xl font-extrabold text-gray-800 mb-5">
-                  Sign In
+                  {t('auth.sign_in')}
                 </Text>
 
                 {generalError ? (
@@ -218,8 +220,8 @@ export const SignInScreen: React.FC<RootStackScreenProps<'SignIn'>> = ({ navigat
                 <FormInput
                   control={control}
                   name="email"
-                  label="Email Address"
-                  placeholder="Enter your email"
+                  label={t('auth.email_address')}
+                  placeholder={t('auth.email_placeholder')}
                   iconName="mail-outline"
                   autoCapitalize="none"
                   keyboardType="email-address"
@@ -228,8 +230,8 @@ export const SignInScreen: React.FC<RootStackScreenProps<'SignIn'>> = ({ navigat
                 <FormInput
                   control={control}
                   name="password"
-                  label="Password"
-                  placeholder="Enter your password"
+                  label={t('auth.password')}
+                  placeholder={t('auth.password_placeholder')}
                   iconName="lock-closed-outline"
                   isPassword
                   autoCapitalize="none"
@@ -238,15 +240,15 @@ export const SignInScreen: React.FC<RootStackScreenProps<'SignIn'>> = ({ navigat
                 <TouchableOpacity 
                   activeOpacity={0.7} 
                   className="self-end mb-5"
-                  onPress={() => showAlert('Reset Password', 'An email password reset link will be sent in the future.', undefined, 'info')}
+                  onPress={() => showAlert(t('auth.forgot_password'), t('auth.reset_password_desc', 'An email password reset link will be sent in the future.'), undefined, 'info')}
                 >
                   <Text className="text-right font-bold text-primary-600 text-sm">
-                    Forgot Password?
+                    {t('auth.forgot_password')}
                   </Text>
                 </TouchableOpacity>
 
                 <Button
-                  title="Sign In"
+                  title={t('auth.sign_in')}
                   onPress={handleSubmit(handleLogin)}
                   loading={loading}
                   className="mb-4 py-3.5 rounded-xl shadow-sm bg-primary-500"
@@ -256,14 +258,14 @@ export const SignInScreen: React.FC<RootStackScreenProps<'SignIn'>> = ({ navigat
                 <View className="flex-row items-center mb-4">
                   <View className="flex-1 h-[1px] bg-gray-200" />
                   <Text className="text-gray-400 font-bold text-[10px] px-3 uppercase tracking-widest">
-                    Or Connect With
+                    {t('auth.or_connect_with')}
                   </Text>
                   <View className="flex-1 h-[1px] bg-gray-200" />
                 </View>
 
                 {/* Google Sign-In */}
                 <SocialButton
-                  title="Sign in with Google"
+                  title={t('auth.sign_in_google')}
                   onPress={handleGoogleLogin}
                   iconName="logo-google"
                   iconColor={Colors.googleRed}
@@ -274,14 +276,14 @@ export const SignInScreen: React.FC<RootStackScreenProps<'SignIn'>> = ({ navigat
                 {/* Footer */}
                 <View className="flex-row justify-center items-center">
                   <Text className="text-gray-500 font-medium text-sm">
-                    Don't have an account?{' '}
+                    {t('auth.no_account')}
                   </Text>
                   <TouchableOpacity
                     onPress={() => navigation.navigate('SignUp')}
                     activeOpacity={0.7}
                   >
                     <Text className="text-primary-600 font-bold text-sm">
-                      Sign Up
+                      {t('auth.sign_up')}
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -293,7 +295,7 @@ export const SignInScreen: React.FC<RootStackScreenProps<'SignIn'>> = ({ navigat
 
       {/* Custom Fullscreen Loading Indicator */}
       {(loading || googleLoading) && (
-        <LoadingIndicator message="Signing In..." />
+        <LoadingIndicator message={t('auth.signing_in')} />
       )}
     </KeyboardAvoidingView>
   );

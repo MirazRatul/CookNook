@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, Pressable, StyleSheet, Dimensions } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Colors } from '../constants/Colors';
 import Animated, {
   useSharedValue,
@@ -30,6 +31,7 @@ export const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
   onClose,
   onNavigateToCreate,
 }) => {
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const progress = useSharedValue(0);
@@ -73,13 +75,13 @@ export const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
   if (!shouldRender) return null;
 
   const menuItems = [
-    { id: 1, label: 'My Recipes', icon: 'book-outline', onPress: onClose },
-    { id: 2, label: 'Create New Recipe', icon: 'add-circle-outline', onPress: () => { onClose(); onNavigateToCreate(); } },
-    { id: 3, label: 'Settings', icon: 'settings-outline', onPress: onClose },
-    { id: 4, label: 'Help & Feedback', icon: 'help-circle-outline', onPress: onClose },
+    { id: 1, label: t('drawer.my_recipes'), icon: 'book-outline', onPress: onClose },
+    { id: 2, label: t('drawer.create_new_recipe'), icon: 'add-circle-outline', onPress: () => { onClose(); onNavigateToCreate(); } },
+    { id: 3, label: t('drawer.settings'), icon: 'settings-outline', onPress: onClose },
+    { id: 4, label: t('drawer.help_feedback'), icon: 'help-circle-outline', onPress: onClose },
     {
       id: 5,
-      label: 'Logout',
+      label: t('drawer.logout'),
       icon: 'log-out-outline',
       onPress: async () => {
         onClose();
@@ -157,17 +159,17 @@ export const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
         <View className="flex-row justify-between px-6 py-5 border-b border-gray-100">
           <View className="items-center flex-1">
             <Text className="text-lg font-black text-gray-800">12</Text>
-            <Text className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mt-0.5">Recipes</Text>
+            <Text className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mt-0.5">{t('drawer.recipes_count')}</Text>
           </View>
           <View className="w-[1px] h-6 bg-gray-100 self-center" />
           <View className="items-center flex-1">
             <Text className="text-lg font-black text-gray-800">4.8k</Text>
-            <Text className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mt-0.5">Likes</Text>
+            <Text className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mt-0.5">{t('drawer.likes_count')}</Text>
           </View>
           <View className="w-[1px] h-6 bg-gray-100 self-center" />
           <View className="items-center flex-1">
             <Text className="text-lg font-black text-gray-800">32</Text>
-            <Text className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mt-0.5">Followers</Text>
+            <Text className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mt-0.5">{t('drawer.followers_count')}</Text>
           </View>
         </View>
 

@@ -1,5 +1,6 @@
 import React from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { useTranslation } from 'react-i18next';
 import {
   SafeAreaView,
   useSafeAreaInsets,
@@ -22,6 +23,7 @@ import {
 type FavoritesScreenProps = AppTabScreenProps<"Favorites">;
 
 export function FavoritesScreen({ navigation }: FavoritesScreenProps) {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const insets = useSafeAreaInsets();
   const layout = useResponsiveLayout();
@@ -55,7 +57,7 @@ export function FavoritesScreen({ navigation }: FavoritesScreenProps) {
         }}
       >
         <Text className="text-2xl font-black text-gray-900 mb-2">
-          My Favorites
+          {t('favorites.my_favorites')}
         </Text>
       </Animated.View>
       <View className="flex-1" style={{ backgroundColor: Colors.bgLight }}>
@@ -100,17 +102,16 @@ export function FavoritesScreen({ navigation }: FavoritesScreenProps) {
               style={{ opacity: 0.4 }}
             />
             <Text className="text-gray-900 font-extrabold text-lg mt-4">
-              No favorites yet
+              {t('favorites.no_favorites')}
             </Text>
             <Text className="text-gray-400 text-sm mt-1 text-center max-w-[240px]">
-              Tap the heart icon on any recipe to save it here for quick access
-              later!
+              {t('favorites.no_favorites_desc')}
             </Text>
             <TouchableOpacity
               onPress={() => navigation.navigate("Explore")}
               className="mt-6 bg-primary-500 px-6 py-2.5 rounded-full"
             >
-              <Text className="text-white font-bold text-sm">Find Recipes</Text>
+              <Text className="text-white font-bold text-sm">{t('favorites.find_recipes')}</Text>
             </TouchableOpacity>
           </Animated.View>
         )}

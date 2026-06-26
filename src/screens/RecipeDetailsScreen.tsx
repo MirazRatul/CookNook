@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, ScrollView, Image, TouchableOpacity } from "react-native";
+import { useTranslation } from "react-i18next";
 import {
   SafeAreaView,
   useSafeAreaInsets,
@@ -23,6 +24,7 @@ type RecipeDetailsScreenProps = RootStackScreenProps<"RecipeDetails">;
 export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({
   navigation,
 }) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const insets = useSafeAreaInsets();
   const layout = useResponsiveLayout();
@@ -42,13 +44,13 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({
         edges={["top", "right", "bottom", "left"]}
       >
         <Text className="text-gray-500 font-bold text-lg text-center">
-          No recipe selected
+          {t('details.no_recipe_selected')}
         </Text>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
           className="mt-4 bg-primary-500 px-6 py-3 rounded-full"
         >
-          <Text className="text-white font-bold">Go Back</Text>
+          <Text className="text-white font-bold">{t('details.go_back')}</Text>
         </TouchableOpacity>
       </SafeAreaView>
     );
@@ -149,7 +151,7 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({
             />
             <View className="ml-3">
               <Text className="text-xs text-gray-400 font-semibold">
-                RECIPE BY
+                {t('details.recipe_by')}
               </Text>
               <Text className="text-sm font-bold text-gray-800">
                 {selectedRecipe.chefName}
@@ -167,7 +169,7 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({
                 <Ionicons name="time-outline" size={18} color={Colors.primary[600]} />
               </View>
               <Text className="text-[10px] text-gray-400 font-semibold uppercase">
-                Cook Time
+                {t('details.cook_time')}
               </Text>
               <Text className="text-sm font-black text-gray-800 mt-0.5">
                 {selectedRecipe.duration}m
@@ -181,7 +183,7 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({
                 <Ionicons name="bar-chart-outline" size={18} color={Colors.primary[600]} />
               </View>
               <Text className="text-[10px] text-gray-400 font-semibold uppercase">
-                Difficulty
+                {t('details.difficulty')}
               </Text>
               <Text className="text-sm font-black text-gray-800 mt-0.5">
                 {selectedRecipe.difficulty}
@@ -195,7 +197,7 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({
                 <Ionicons name="flame-outline" size={18} color={Colors.primary[600]} />
               </View>
               <Text className="text-[10px] text-gray-400 font-semibold uppercase">
-                Calories
+                {t('details.calories')}
               </Text>
               <Text className="text-sm font-black text-gray-800 mt-0.5">
                 {selectedRecipe.calories} kcal
@@ -235,7 +237,7 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({
                     : "text-gray-500"
                 }`}
               >
-                Ingredients
+                {t('details.ingredients')}
               </Text>
             </TouchableOpacity>
 
@@ -264,7 +266,7 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({
                     : "text-gray-500"
                 }`}
               >
-                Instructions
+                {t('details.instructions')}
               </Text>
             </TouchableOpacity>
           </View>
@@ -277,10 +279,10 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({
             >
               <View className="flex-row items-center justify-between mb-4">
                 <Text className="text-lg font-black text-gray-800">
-                  Ingredients list
+                  {t('details.ingredients_list')}
                 </Text>
                 <Text className="text-xs text-gray-400 font-semibold">
-                  {selectedRecipe.ingredients.length} items
+                  {t('details.items_count', { count: selectedRecipe.ingredients.length })}
                 </Text>
               </View>
 
@@ -306,10 +308,10 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({
             >
               <View className="flex-row items-center justify-between mb-4">
                 <Text className="text-lg font-black text-gray-800">
-                  Cooking steps
+                  {t('details.cooking_steps')}
                 </Text>
                 <Text className="text-xs text-gray-400 font-semibold">
-                  {selectedRecipe.instructions.length} steps
+                  {t('details.steps_count', { count: selectedRecipe.instructions.length })}
                 </Text>
               </View>
 

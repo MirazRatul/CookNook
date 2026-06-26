@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, ScrollView, FlatList, TouchableOpacity } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeInDown, FadeInRight, FadeInUp, LinearTransition } from 'react-native-reanimated';
 import { useIsFocused } from '@react-navigation/native';
@@ -18,6 +19,7 @@ import { Colors } from '../constants/Colors';
 type ExploreScreenProps = AppTabScreenProps<'Explore'>;
 
 export const ExploreScreen: React.FC<ExploreScreenProps> = ({ navigation }) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const insets = useSafeAreaInsets();
   const layout = useResponsiveLayout();
@@ -57,12 +59,12 @@ export const ExploreScreen: React.FC<ExploreScreenProps> = ({ navigation }) => {
           zIndex: 10,
         }}
       >
-        <Text className="text-2xl font-black text-gray-900 mb-4">Explore Recipes</Text>
+        <Text className="text-2xl font-black text-gray-900 mb-4">{t('explore.explore_recipes')}</Text>
         
         <SearchBar
           value={searchQuery}
           onChangeText={(text) => dispatch(setSearchQuery(text))}
-          placeholder="Search recipes, ingredients..."
+          placeholder={t('explore.search_placeholder')}
         />
 
         {/* Categories Carousel */}
@@ -126,9 +128,9 @@ export const ExploreScreen: React.FC<ExploreScreenProps> = ({ navigation }) => {
             className="flex-1 items-center justify-center p-8"
           >
             <Ionicons name="search-outline" size={64} color={Colors.gray[400]} style={{ opacity: 0.4 }} />
-            <Text className="text-gray-900 font-extrabold text-lg mt-4">No results found</Text>
+            <Text className="text-gray-900 font-extrabold text-lg mt-4">{t('explore.no_results')}</Text>
             <Text className="text-gray-400 text-sm mt-1 text-center max-w-[240px]">
-              We couldn't find any recipes matching "{searchQuery}" in category "{selectedCategory}"
+              {t('explore.no_results_desc', { query: searchQuery, category: selectedCategory })}
             </Text>
             <TouchableOpacity
               onPress={() => {
@@ -137,7 +139,7 @@ export const ExploreScreen: React.FC<ExploreScreenProps> = ({ navigation }) => {
               }}
               className="mt-6 bg-primary-500 px-6 py-2.5 rounded-full"
             >
-              <Text className="text-white font-bold text-sm">Reset Search</Text>
+              <Text className="text-white font-bold text-sm">{t('explore.reset_search')}</Text>
             </TouchableOpacity>
           </Animated.View>
         )}

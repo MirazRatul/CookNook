@@ -6,6 +6,7 @@ import { Provider } from 'react-redux';
 import { RootNavigator } from './src/navigation/RootNavigator';
 import { store } from './src/store/store';
 import { CustomAlertProvider } from './src/context/CustomAlertContext';
+import './src/i18n';
 import './global.css';
 
 export default function App() {

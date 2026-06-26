@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, Image } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AppIntroSlider from 'react-native-app-intro-slider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -42,6 +43,7 @@ const slides: OnboardingSlide[] = [
 ];
 
 export const OnboardingScreen: React.FC<RootStackScreenProps<'Onboarding'>> = ({ navigation }) => {
+  const { t } = useTranslation();
   const layout = useResponsiveLayout();
   const imageHeight = layout.height * 0.52;
   const iconSize = layout.scale(28);
@@ -91,10 +93,10 @@ export const OnboardingScreen: React.FC<RootStackScreenProps<'Onboarding'>> = ({
             <Ionicons name={item.icon as any} size={iconSize} color={Colors.primary[600]} />
           </View>
           <Text style={{ fontSize: titleSize }} className="font-black text-gray-800 text-center mb-3">
-            {item.title}
+            {t(`onboarding.slide${item.key}_title`)}
           </Text>
           <Text style={{ fontSize: descSize, lineHeight: layout.scale(22) }} className="text-gray-500 text-center font-medium">
-            {item.description}
+            {t(`onboarding.slide${item.key}_desc`)}
           </Text>
         </View>
       </View>
@@ -121,7 +123,7 @@ export const OnboardingScreen: React.FC<RootStackScreenProps<'Onboarding'>> = ({
 
   const renderSkipButton = () => (
     <View style={{ height: buttonSize }} className="justify-center items-center ml-1">
-      <Text style={{ fontSize: skipTextSize }} className="text-gray-500 font-bold">Skip</Text>
+      <Text style={{ fontSize: skipTextSize }} className="text-gray-500 font-bold">{t('onboarding.skip')}</Text>
     </View>
   );
 

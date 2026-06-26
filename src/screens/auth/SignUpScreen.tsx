@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   View,
   Text,
@@ -31,6 +32,7 @@ import { IMAGE_URLS, LOGO_IMAGE } from '../../constants/Image_Url';
 import { signUpSchema } from '../../utils/validationSchemas';
 
 export const SignUpScreen: React.FC<RootStackScreenProps<'SignUp'>> = ({ navigation }) => {
+  const { t } = useTranslation();
   const layout = useResponsiveLayout();
   
   const { control, handleSubmit } = useForm({
@@ -160,7 +162,7 @@ export const SignUpScreen: React.FC<RootStackScreenProps<'SignUp'>> = ({ navigat
                   CookNook
                 </Text>
                 <Text className="text-amber-200/90 font-medium mt-1 text-center text-sm">
-                  Join CookNook to build your personal cookbook
+                  {t('auth.join_cooknook')}
                 </Text>
               </Animated.View>
 
@@ -179,7 +181,7 @@ export const SignUpScreen: React.FC<RootStackScreenProps<'SignUp'>> = ({ navigat
                 className="bg-white/95 border border-white/20 rounded-[32px] p-6"
               >
                 <Text className="text-xl font-extrabold text-gray-800 mb-5">
-                  Create Account
+                  {t('auth.create_account')}
                 </Text>
 
                 {generalError ? (
@@ -194,8 +196,8 @@ export const SignUpScreen: React.FC<RootStackScreenProps<'SignUp'>> = ({ navigat
                 <FormInput
                   control={control}
                   name="email"
-                  label="Email Address"
-                  placeholder="Enter your email"
+                  label={t('auth.email_address')}
+                  placeholder={t('auth.email_placeholder')}
                   iconName="mail-outline"
                   autoCapitalize="none"
                   keyboardType="email-address"
@@ -204,8 +206,8 @@ export const SignUpScreen: React.FC<RootStackScreenProps<'SignUp'>> = ({ navigat
                 <FormInput
                   control={control}
                   name="password"
-                  label="Password"
-                  placeholder="Create a password"
+                  label={t('auth.password')}
+                  placeholder={t('auth.create_password_placeholder', 'Create a password')}
                   iconName="lock-closed-outline"
                   isPassword
                   autoCapitalize="none"
@@ -214,15 +216,15 @@ export const SignUpScreen: React.FC<RootStackScreenProps<'SignUp'>> = ({ navigat
                 <FormInput
                   control={control}
                   name="confirmPassword"
-                  label="Confirm Password"
-                  placeholder="Confirm your password"
+                  label={t('auth.confirm_password')}
+                  placeholder={t('auth.confirm_password_placeholder')}
                   iconName="lock-closed-outline"
                   isPassword
                   autoCapitalize="none"
                 />
 
                 <Button
-                  title="Sign Up"
+                  title={t('auth.sign_up')}
                   onPress={handleSubmit(handleSignUp)}
                   loading={loading}
                   className="mt-2 mb-4 py-3.5 rounded-xl shadow-sm bg-primary-500"
@@ -232,14 +234,14 @@ export const SignUpScreen: React.FC<RootStackScreenProps<'SignUp'>> = ({ navigat
                 <View className="flex-row items-center mb-4">
                   <View className="flex-1 h-[1px] bg-gray-200" />
                   <Text className="text-gray-400 font-bold text-[10px] px-3 uppercase tracking-widest">
-                    Or Sign Up With
+                    {t('auth.or_sign_up_with')}
                   </Text>
                   <View className="flex-1 h-[1px] bg-gray-200" />
                 </View>
 
                 {/* Google Sign-In */}
                 <SocialButton
-                  title="Sign up with Google"
+                  title={t('auth.sign_up_google')}
                   onPress={handleGoogleLogin}
                   iconName="logo-google"
                   iconColor={Colors.googleRed}
@@ -250,14 +252,14 @@ export const SignUpScreen: React.FC<RootStackScreenProps<'SignUp'>> = ({ navigat
                 {/* Footer */}
                 <View className="flex-row justify-center items-center">
                   <Text className="text-gray-500 font-medium text-sm">
-                    Already have an account?{' '}
+                    {t('auth.have_account')}
                   </Text>
                   <TouchableOpacity
                     onPress={() => navigation.navigate('SignIn')}
                     activeOpacity={0.7}
                   >
                     <Text className="text-primary-600 font-bold text-sm">
-                      Sign In
+                      {t('auth.sign_in')}
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -269,7 +271,7 @@ export const SignUpScreen: React.FC<RootStackScreenProps<'SignUp'>> = ({ navigat
 
       {/* Custom Fullscreen Loading Indicator */}
       {(loading || googleLoading) && (
-        <LoadingIndicator message="Registering Account..." />
+        <LoadingIndicator message={t('auth.registering')} />
       )}
     </KeyboardAvoidingView>
   );

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, TextInput, TouchableOpacity } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useDispatch } from 'react-redux';
 import { addRecipe } from '../store/slices/recipesSlice';
@@ -15,6 +16,7 @@ import { Colors } from '../constants/Colors';
 type CreateRecipeScreenProps = AppTabScreenProps<'Create'>;
 
 export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ navigation }) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const insets = useSafeAreaInsets();
   const layout = useResponsiveLayout();
@@ -58,17 +60,17 @@ export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ navigati
 
   const handleCreate = () => {
     if (!title.trim() || !description.trim() || !duration || !calories) {
-      showAlert('Error', 'Please fill in all core fields.', undefined, 'error');
+      showAlert(t('create.error_title', 'Error'), t('create.error_missing_fields'), undefined, 'error');
       return;
     }
 
     if (ingredients.length === 0) {
-      showAlert('Error', 'Please add at least one ingredient.', undefined, 'error');
+      showAlert(t('create.error_title', 'Error'), t('create.error_no_ingredients'), undefined, 'error');
       return;
     }
 
     if (instructions.length === 0) {
-      showAlert('Error', 'Please add at least one instruction step.', undefined, 'error');
+      showAlert(t('create.error_title', 'Error'), t('create.error_no_instructions'), undefined, 'error');
       return;
     }
 
@@ -104,8 +106,8 @@ export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ navigati
     setInstructions([]);
 
     showAlert(
-      'Success',
-      'Your delicious recipe has been shared!',
+      t('create.success_title'),
+      t('create.success_message'),
       [
         {
           text: 'OK',
@@ -129,15 +131,15 @@ export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ navigati
           alignSelf: 'center',
         }}
       >
-        <Text className="text-2xl font-black text-gray-900 mb-6">Create a Recipe</Text>
+        <Text className="text-2xl font-black text-gray-900 mb-6">{t('create.create_recipe')}</Text>
 
         {/* Recipe Title */}
         <View className="mb-5">
-          <Text className="text-sm font-extrabold text-gray-800 mb-2">Recipe Title</Text>
+          <Text className="text-sm font-extrabold text-gray-800 mb-2">{t('create.recipe_title')}</Text>
           <TextInput
             value={title}
             onChangeText={setTitle}
-            placeholder="e.g. Creamy Tuscan Pasta"
+            placeholder={t('create.title_placeholder')}
             className="w-full bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3.5 text-gray-800"
             placeholderTextColor={Colors.gray[400]}
           />
@@ -145,11 +147,11 @@ export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ navigati
 
         {/* Recipe Description */}
         <View className="mb-5">
-          <Text className="text-sm font-extrabold text-gray-800 mb-2">Description</Text>
+          <Text className="text-sm font-extrabold text-gray-800 mb-2">{t('create.description')}</Text>
           <TextInput
             value={description}
             onChangeText={setDescription}
-            placeholder="Tell us about your culinary creation..."
+            placeholder={t('create.desc_placeholder')}
             multiline
             numberOfLines={3}
             className="w-full bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3.5 text-gray-800 text-left h-24"
@@ -160,7 +162,7 @@ export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ navigati
 
         {/* Category Dropdown/Chips */}
         <View className="mb-5">
-          <Text className="text-sm font-extrabold text-gray-800 mb-2">Category</Text>
+          <Text className="text-sm font-extrabold text-gray-800 mb-2">{t('create.category')}</Text>
           <View className="flex-row flex-wrap">
             {CATEGORIES.filter((c) => c !== 'All').map((cat) => (
               <TouchableOpacity
@@ -194,11 +196,11 @@ export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ navigati
           }}
         >
           <View className="flex-1">
-            <Text className="text-sm font-extrabold text-gray-800 mb-2">Cook Time (m)</Text>
+            <Text className="text-sm font-extrabold text-gray-800 mb-2">{t('create.cook_time_mins')}</Text>
             <TextInput
               value={duration}
               onChangeText={setDuration}
-              placeholder="e.g. 25"
+              placeholder={t('create.cook_time_placeholder')}
               keyboardType="number-pad"
               className="bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3.5 text-gray-800 text-center font-bold"
               placeholderTextColor={Colors.gray[400]}
@@ -206,11 +208,11 @@ export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ navigati
           </View>
 
           <View className="flex-1">
-            <Text className="text-sm font-extrabold text-gray-800 mb-2">Calories</Text>
+            <Text className="text-sm font-extrabold text-gray-800 mb-2">{t('create.calories_label')}</Text>
             <TextInput
               value={calories}
               onChangeText={setCalories}
-              placeholder="e.g. 350"
+              placeholder={t('create.calories_placeholder')}
               keyboardType="number-pad"
               className="bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3.5 text-gray-800 text-center font-bold"
               placeholderTextColor={Colors.gray[400]}
@@ -218,7 +220,7 @@ export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ navigati
           </View>
 
           <View className="flex-1">
-            <Text className="text-sm font-extrabold text-gray-800 mb-2">Difficulty</Text>
+            <Text className="text-sm font-extrabold text-gray-800 mb-2">{t('create.difficulty_label')}</Text>
             <View className="bg-gray-50 border border-gray-200 rounded-2xl flex-row overflow-hidden justify-between">
               {(['Easy', 'Medium', 'Hard'] as const).map((diff) => (
                 <TouchableOpacity
@@ -244,12 +246,12 @@ export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ navigati
 
         {/* INGREDIENTS LIST */}
         <View className="mb-6">
-          <Text className="text-sm font-extrabold text-gray-800 mb-2">Ingredients</Text>
+          <Text className="text-sm font-extrabold text-gray-800 mb-2">{t('create.ingredients_label')}</Text>
           <View className="flex-row mb-3">
             <TextInput
               value={newIngredient}
               onChangeText={setNewIngredient}
-              placeholder="e.g. 2 cloves garlic, minced"
+              placeholder={t('create.ingredient_placeholder')}
               className="flex-1 bg-gray-50 border border-gray-200 rounded-l-2xl px-4 py-3.5 text-gray-800"
               placeholderTextColor={Colors.gray[400]}
             />
@@ -278,12 +280,12 @@ export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ navigati
 
         {/* INSTRUCTIONS LIST */}
         <View className="mb-8">
-          <Text className="text-sm font-extrabold text-gray-800 mb-2">Instructions / Steps</Text>
+          <Text className="text-sm font-extrabold text-gray-800 mb-2">{t('create.instructions_label')}</Text>
           <View className="flex-row mb-3">
             <TextInput
               value={newInstruction}
               onChangeText={setNewInstruction}
-              placeholder="e.g. Heat butter in a pan over medium heat."
+              placeholder={t('create.instruction_placeholder')}
               className="flex-1 bg-gray-50 border border-gray-200 rounded-l-2xl px-4 py-3.5 text-gray-800"
               placeholderTextColor={Colors.gray[400]}
             />
@@ -312,7 +314,7 @@ export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ navigati
         </View>
 
         {/* SUBMIT BUTTON */}
-        <Button title="Share Recipe" onPress={handleCreate} size="lg" className="rounded-2xl" />
+        <Button title={t('create.share_recipe')} onPress={handleCreate} size="lg" className="rounded-2xl" />
       </View>
       </ScrollView>
     </SafeAreaView>
