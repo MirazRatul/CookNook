@@ -102,6 +102,10 @@
     "logout": "Logout",
     "recipes_count": "Recipes",
     "likes_count": "Likes",
-    "followers_count": "Followers"
+    "followers_count": "Followers",
+    "language": "Language",
+    "select_language": "Select Language",
+    "english": "English",
+    "spanish": "Spanish"
   }
 }

@@ -1,6 +1,7 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import * as Localization from 'expo-localization';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import en from './locales/en.json';
 import es from './locales/es.json';
@@ -22,5 +23,12 @@ i18n
       escapeValue: false, // React already protects against XSS
     },
   });
+
+// Load stored language preference asynchronously
+AsyncStorage.getItem('APP_LANGUAGE').then((storedLanguage) => {
+  if (storedLanguage) {
+    i18n.changeLanguage(storedLanguage);
+  }
+});
 
 export default i18n;

@@ -7,6 +7,7 @@ import Animated, {
   useAnimatedStyle,
   withTiming,
   runOnJS,
+  FadeInDown,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -21,6 +22,7 @@ interface ProfileDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   onNavigateToCreate: () => void;
+  onOpenLanguageSheet: () => void;
 }
 
 const { width } = Dimensions.get('window');
@@ -30,12 +32,14 @@ export const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
   isOpen,
   onClose,
   onNavigateToCreate,
+  onOpenLanguageSheet,
 }) => {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const progress = useSharedValue(0);
   const [shouldRender, setShouldRender] = React.useState(isOpen);
+  const [isSettingsExpanded, setIsSettingsExpanded] = React.useState(false);
 
   // Get current Firebase user details
   const currentUser = auth().currentUser;
@@ -53,6 +57,8 @@ export const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
           runOnJS(setShouldRender)(false);
         }
       });
+      // Reset settings expansion when drawer closes
+      setIsSettingsExpanded(false);
     }
   }, [isOpen]);
 
@@ -77,7 +83,7 @@ export const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
   const menuItems = [
     { id: 1, label: t('drawer.my_recipes'), icon: 'book-outline', onPress: onClose },
     { id: 2, label: t('drawer.create_new_recipe'), icon: 'add-circle-outline', onPress: () => { onClose(); onNavigateToCreate(); } },
-    { id: 3, label: t('drawer.settings'), icon: 'settings-outline', onPress: onClose },
+    { id: 3, label: t('drawer.settings'), icon: 'settings-outline', onPress: () => setIsSettingsExpanded(!isSettingsExpanded) },
     { id: 4, label: t('drawer.help_feedback'), icon: 'help-circle-outline', onPress: onClose },
     {
       id: 5,
@@ -201,11 +207,39 @@ export const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
                   {item.label}
                 </Text>
                 <Ionicons
-                  name="chevron-forward"
+                  name={
+                    item.id === 3
+                      ? isSettingsExpanded
+                        ? 'chevron-down'
+                        : 'chevron-forward'
+                      : 'chevron-forward'
+                  }
                   size={14}
                   color={item.isDanger ? Colors.dangerLight : Colors.gray[400]}
                 />
               </TouchableOpacity>
+
+              {/* Settings Sub-items */}
+              {item.id === 3 && isSettingsExpanded && (
+                <Animated.View 
+                  entering={FadeInDown.duration(200)}
+                  className="pl-14 pr-4 mb-2"
+                >
+                  <TouchableOpacity
+                    onPress={() => {
+                      onClose();
+                      onOpenLanguageSheet();
+                    }}
+                    className="flex-row items-center py-2.5 active:opacity-70"
+                  >
+                    <Ionicons name="globe-outline" size={16} color={Colors.gray[500]} />
+                    <Text className="text-sm font-semibold text-gray-600 ml-3 flex-1">
+                      {t('drawer.language')}
+                    </Text>
+                    <Ionicons name="chevron-forward" size={12} color={Colors.gray[400]} />
+                  </TouchableOpacity>
+                </Animated.View>
+              )}
             </View>
           ))}
         </View>

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { ProfileDrawer } from '../components/ProfileDrawer';
+import { LanguageBottomSheet } from '../components/LanguageBottomSheet';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeInDown, FadeInRight, FadeInUp, LinearTransition } from 'react-native-reanimated';
 import { useIsFocused } from '@react-navigation/native';
@@ -30,6 +31,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     (state: RootState) => state.recipes
   );
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isLanguageSheetOpen, setIsLanguageSheetOpen] = useState(false);
 
   // Filter recipes based on category
   const filteredRecipes = recipes.filter((recipe) => {
@@ -229,6 +231,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         isOpen={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
         onNavigateToCreate={() => navigation.navigate('Create')}
+        onOpenLanguageSheet={() => setIsLanguageSheetOpen(true)}
+      />
+      <LanguageBottomSheet
+        isOpen={isLanguageSheetOpen}
+        onClose={() => setIsLanguageSheetOpen(false)}
       />
     </View>
   );
