@@ -125,7 +125,7 @@ export const SplashScreenView: React.FC<RootStackScreenProps<'Splash'>> = ({ nav
         {/* Animated Custom Logo */}
         <Animated.View 
           style={[logoStyle, { width: logoSize, height: logoSize, borderRadius: logoSize / 2 }]}
-          className="bg-amber-50 justify-center items-center mb-6 shadow-md"
+          className="bg-amber-50 justify-center items-center mb-6"
         >
           <Ionicons name="restaurant" size={iconSize} color="#d97706" />
         </Animated.View>
