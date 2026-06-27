@@ -111,3 +111,23 @@ export const getFavoritesAPI = async () => {
     throw new Error(errorMessage);
   }
 };
+
+/**
+ * Retrieve all recipes from the database (seeded mock + user created).
+ * @param page The page number (default 1)
+ * @param limit The number of items per batch (default 100)
+ */
+export const getAllRecipesAPI = async (page: number = 1, limit: number = 100) => {
+  try {
+    const response = await apiClient.get('/recipes', {
+      params: { page, limit },
+    });
+    return response.data;
+  } catch (error: any) {
+    const errorMessage =
+      error.response?.data?.error?.message ||
+      error.message ||
+      'Failed to load all recipes from the server.';
+    throw new Error(errorMessage);
+  }
+};

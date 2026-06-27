@@ -88,7 +88,7 @@ export const UserRecipeScreen: React.FC<any> = ({ navigation }) => {
 
         // Map backend schema parameters into standardized frontend Recipe entities
         const mappedRecipes = fetchedRecipes.map((r: any): Recipe => ({
-          id: `db-${r.id}`,
+          id: r.id.toString(),
           title: r.title,
           description: r.description,
           image: r.images[0] || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c',

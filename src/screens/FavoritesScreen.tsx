@@ -33,7 +33,10 @@ export function FavoritesScreen({ navigation }: FavoritesScreenProps) {
   );
 
   const allRecipes = [...recipes, ...userRecipes];
-  const favoriteRecipes = allRecipes.filter((recipe) =>
+  const uniqueRecipes = allRecipes.filter(
+    (recipe, index, self) => self.findIndex((r) => r.id === recipe.id) === index
+  );
+  const favoriteRecipes = uniqueRecipes.filter((recipe) =>
     favorites.includes(recipe.id),
   );
 

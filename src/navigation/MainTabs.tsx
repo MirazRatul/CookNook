@@ -12,8 +12,9 @@ import { useResponsiveLayout } from '../hooks/useResponsiveLayout';
 import { MainTabParamList } from './types';
 import { useDispatch } from 'react-redux';
 import { auth } from '../services/firebase';
-import { getFavoritesAPI } from '../services/recipeService';
-import { setFavorites } from '../store/slices/recipesSlice';
+import { getFavoritesAPI, getAllRecipesAPI } from '../services/recipeService';
+import { setFavorites, addFavoriteRecipes, setRecipes } from '../store/slices/recipesSlice';
+import { Recipe } from '../constants/mockData';
 
 type IconName = keyof typeof Ionicons.glyphMap;
 
@@ -127,23 +128,69 @@ export function MainTabs() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const loadFavorites = async () => {
+    const initAppData = async () => {
       try {
         const user = auth().currentUser;
-        if (user) {
-          console.log('🔄 Fetching user favorites from database...');
-          const response = await getFavoritesAPI();
-          if (response && response.success && Array.isArray(response.data)) {
-            console.log(`✅ Loaded ${response.data.length} favorites from DB.`);
-            dispatch(setFavorites(response.data));
+        if (!user) return;
+
+        console.log('🔄 Fetching all recipes from database...');
+        const recipesResponse = await getAllRecipesAPI(1, 100);
+        if (recipesResponse && recipesResponse.success && recipesResponse.data) {
+          const mappedRecipes = recipesResponse.data.recipes.map((r: any): Recipe => ({
+            id: r.id.toString(),
+            title: r.title,
+            description: r.description,
+            image: r.images[0] || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c',
+            duration: r.duration,
+            difficulty: r.difficulty,
+            calories: r.calories,
+            rating: 5.0,
+            reviewsCount: 1,
+            chefName: r.chef_name,
+            chefAvatar: r.chef_avatar || 'https://images.unsplash.com/photo-1577219491135-ce391730fb2c',
+            category: r.category,
+            ingredients: r.ingredients || [],
+            instructions: r.instructions || [],
+            images: r.images || [],
+          }));
+          dispatch(setRecipes(mappedRecipes));
+        }
+
+        console.log('🔄 Fetching user favorites from database...');
+        const favResponse = await getFavoritesAPI();
+        if (favResponse && favResponse.success && favResponse.data) {
+          const { favoriteIds, favoriteRecipes } = favResponse.data;
+          if (Array.isArray(favoriteIds)) {
+            console.log(`✅ Loaded ${favoriteIds.length} favorites from DB.`);
+            dispatch(setFavorites(favoriteIds));
+          }
+          if (Array.isArray(favoriteRecipes)) {
+            const mappedFavRecipes = favoriteRecipes.map((r: any): Recipe => ({
+              id: r.id.toString(),
+              title: r.title,
+              description: r.description,
+              image: r.images[0] || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c',
+              duration: r.duration,
+              difficulty: r.difficulty,
+              calories: r.calories,
+              rating: 5.0,
+              reviewsCount: 1,
+              chefName: r.chef_name,
+              chefAvatar: r.chef_avatar || 'https://images.unsplash.com/photo-1577219491135-ce391730fb2c',
+              category: r.category,
+              ingredients: r.ingredients || [],
+              instructions: r.instructions || [],
+              images: r.images || [],
+            }));
+            dispatch(addFavoriteRecipes(mappedFavRecipes));
           }
         }
       } catch (error) {
-        console.error('❌ Error fetching favorites on app start:', error);
+        console.error('❌ Error initializing app data on MainTabs mount:', error);
       }
     };
 
-    loadFavorites();
+    initAppData();
   }, [dispatch]);
 
   return (

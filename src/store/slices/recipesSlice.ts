@@ -90,6 +90,14 @@ const recipesSlice = createSlice({
     setFavorites: (state, action: PayloadAction<string[]>) => {
       state.favorites = action.payload;
     },
+    addFavoriteRecipes: (state, action: PayloadAction<Recipe[]>) => {
+      const existingIds = new Set(state.userRecipes.map((r) => r.id));
+      const newRecipes = action.payload.filter((r) => !existingIds.has(r.id));
+      state.userRecipes = [...state.userRecipes, ...newRecipes];
+    },
+    setRecipes: (state, action: PayloadAction<Recipe[]>) => {
+      state.recipes = action.payload;
+    },
   },
 });
 
@@ -102,6 +110,8 @@ export const {
   setUserRecipes,
   setUserRecipesNeedsRefresh,
   setFavorites,
+  addFavoriteRecipes,
+  setRecipes,
 } = recipesSlice.actions;
 
 export default recipesSlice.reducer;

@@ -162,7 +162,7 @@ export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ navigati
         const categoryImages: Record<string, string> = IMAGE_URLS.categories;
 
         const newRecipe: Recipe = {
-          id: `db-${response.data.id}`,
+          id: response.data.id.toString(),
           title: response.data.title,
           description: response.data.description,
           image: response.data.images[0] || categoryImages[category] || categoryImages.Breakfast,
