@@ -13,6 +13,8 @@ import { useTranslation } from 'react-i18next';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
+import { useDispatch } from 'react-redux';
+import { updateChefProfile } from '../../store/slices/recipesSlice';
 import { Colors } from '../../constants/Colors';
 import { Button } from '../../components/Button';
 import { Input } from '../../components/Input';
@@ -63,6 +65,7 @@ export const ProfileScreen: React.FC<any> = ({ navigation }) => {
   const insets = useSafeAreaInsets();
   const layout = useResponsiveLayout();
   const { showAlert } = useAlert();
+  const dispatch = useDispatch();
 
   // Core Form States
   const [name, setName] = useState('');
@@ -226,6 +229,14 @@ export const ProfileScreen: React.FC<any> = ({ navigation }) => {
 
       const response = await updateUserProfileAPI(payload);
       if (response.success && response.data) {
+        // Sync local Redux store recipes to instantly update names/photos on all screens
+        dispatch(
+          updateChefProfile({
+            chefName: response.data.name,
+            chefAvatar: response.data.profile_pic || 'https://images.unsplash.com/photo-1577219491135-ce391730fb2c',
+          })
+        );
+
         // Sync profile details to the Firebase Auth user profile
         const currentUser = auth().currentUser;
         if (currentUser) {

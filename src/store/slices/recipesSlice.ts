@@ -98,6 +98,34 @@ const recipesSlice = createSlice({
     setRecipes: (state, action: PayloadAction<Recipe[]>) => {
       state.recipes = action.payload;
     },
+    updateChefProfile: (state, action: PayloadAction<{ chefName: string; chefAvatar: string }>) => {
+      const { chefName, chefAvatar } = action.payload;
+      
+      // Update in userRecipes list
+      state.userRecipes = state.userRecipes.map((r) => ({
+        ...r,
+        chefName,
+        chefAvatar,
+      }));
+
+      // Update in main recipes list (by checking if ID matches any user recipe or if it represents the user's recipe)
+      const userRecipeIds = new Set(state.userRecipes.map((r) => r.id));
+      state.recipes = state.recipes.map((r) => {
+        if (userRecipeIds.has(r.id)) {
+          return { ...r, chefName, chefAvatar };
+        }
+        return r;
+      });
+
+      // Also update selectedRecipe if active
+      if (state.selectedRecipe && (userRecipeIds.has(state.selectedRecipe.id) || state.userRecipes.some(r => r.id === state.selectedRecipe?.id))) {
+        state.selectedRecipe = {
+          ...state.selectedRecipe,
+          chefName,
+          chefAvatar,
+        };
+      }
+    },
   },
 });
 
@@ -112,6 +140,7 @@ export const {
   setFavorites,
   addFavoriteRecipes,
   setRecipes,
+  updateChefProfile,
 } = recipesSlice.actions;
 
 export default recipesSlice.reducer;
