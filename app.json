@@ -44,7 +44,14 @@
           }
         }
       ],
-      "expo-localization"
+      "expo-localization",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos to let you upload images for your recipes.",
+          "cameraPermission": "The app accesses your camera to let you take photos of your recipes."
+        }
+      ]
     ]
   }
 }
