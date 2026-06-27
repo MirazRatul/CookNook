@@ -3,12 +3,10 @@ import {
   View,
   Text,
   ScrollView,
-  TextInput,
   TouchableOpacity,
   Image,
   KeyboardAvoidingView,
   Platform,
-  ActivityIndicator,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -16,6 +14,8 @@ import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { Colors } from '../../constants/Colors';
 import { Button } from '../../components/Button';
+import { Input } from '../../components/Input';
+import { LoadingIndicator } from '../../components/LoadingIndicator';
 import { useResponsiveLayout } from '../../hooks/useResponsiveLayout';
 import { useAlert } from '../../context/CustomAlertContext';
 import { auth } from '../../services/firebase';
@@ -205,12 +205,7 @@ export const ProfileScreen: React.FC<any> = ({ navigation }) => {
   };
 
   if (isLoading) {
-    return (
-      <SafeAreaView className="flex-1 bg-white items-center justify-center">
-        <ActivityIndicator size="large" color={Colors.primary[600]} />
-        <Text className="text-gray-500 font-semibold mt-4">{t('profile.loading', 'Loading profile details...')}</Text>
-      </SafeAreaView>
-    );
+    return <LoadingIndicator message={t('profile.loading', 'Loading profile details...')} fullscreen={true} />;
   }
 
   // Get image source dynamically
@@ -232,7 +227,7 @@ export const ProfileScreen: React.FC<any> = ({ navigation }) => {
           <Ionicons name="chevron-back" size={22} color={Colors.gray[800]} />
         </TouchableOpacity>
         <Text className="text-lg font-black text-gray-900">{t('profile.title', 'Chef Profile')}</Text>
-        <View className="w-10 h-10" /> {/* Spacer */}
+        <View className="w-10 h-10" />
       </View>
 
       <KeyboardAvoidingView
@@ -252,23 +247,23 @@ export const ProfileScreen: React.FC<any> = ({ navigation }) => {
             }}
           >
             {/* Interactive Profile Photo Section */}
-            <View className="items-center mb-8">
+            <View className="items-center mb-6">
               <View className="relative shadow-xl">
                 <Image
                   source={imageSource}
-                  style={{ width: layout.scale(120), height: layout.scale(120) }}
+                  style={{ width: layout.scale(100), height: layout.scale(100) }}
                   className="rounded-full border-4 border-amber-100 bg-gray-50"
                   resizeMode="cover"
                 />
                 <TouchableOpacity
                   onPress={handleImageOptionPress}
                   activeOpacity={0.85}
-                  className="absolute bottom-0 right-0 bg-primary-500 w-10 h-10 rounded-full border-2 border-white items-center justify-center shadow-lg"
+                  className="absolute bottom-0 right-0 bg-primary-500 w-9 h-9 rounded-full border-2 border-white items-center justify-center shadow-lg"
                 >
-                  <Ionicons name="camera" size={18} color="white" />
+                  <Ionicons name="camera" size={16} color="white" />
                 </TouchableOpacity>
               </View>
-              <Text className="text-gray-400 text-xs font-bold mt-3">
+              <Text className="text-gray-400 text-xs font-bold mt-2.5">
                 {t('profile.upload_prompt', 'Tap the camera to update photo')}
               </Text>
             </View>
@@ -277,93 +272,63 @@ export const ProfileScreen: React.FC<any> = ({ navigation }) => {
             <View className="bg-gray-50/50 border border-gray-100 rounded-3xl p-5 mb-6">
               
               {/* Chef Name Field */}
-              <View className="mb-4">
-                <Text className="text-xs font-black text-gray-800 uppercase tracking-wider mb-2">
-                  {t('profile.name_label', 'Chef Name')} <Text className="text-red-500">*</Text>
-                </Text>
-                <TextInput
-                  value={name}
-                  onChangeText={setName}
-                  placeholder={t('profile.name_placeholder', 'Enter your name')}
-                  className="w-full bg-white border border-gray-200 rounded-2xl px-4 py-3 text-gray-800 font-bold"
-                  placeholderTextColor={Colors.gray[400]}
-                />
-              </View>
+              <Input
+                label={t('profile.name_label', 'Chef Name') + ' *'}
+                value={name}
+                onChangeText={setName}
+                placeholder={t('profile.name_placeholder', 'Enter your name')}
+              />
 
-              {/* Mobile Number Field */}
-              <View className="mb-4">
-                <Text className="text-xs font-black text-gray-800 uppercase tracking-wider mb-2">
-                  {t('profile.mobile_label', 'Mobile Number')} <Text className="text-red-500">*</Text>
-                </Text>
-                <TextInput
-                  value={mobile}
-                  onChangeText={setMobile}
-                  keyboardType="phone-pad"
-                  placeholder={t('profile.mobile_placeholder', 'Enter mobile number')}
-                  className="w-full bg-white border border-gray-200 rounded-2xl px-4 py-3 text-gray-800 font-bold"
-                  placeholderTextColor={Colors.gray[400]}
-                />
-              </View>
+              {/* Row for Mobile & Experience */}
+              <View className="flex-row" style={{ gap: 12 }}>
+                <View className="flex-1">
+                  <Input
+                    label={t('profile.mobile_label', 'Mobile Number') + ' *'}
+                    value={mobile}
+                    onChangeText={setMobile}
+                    keyboardType="phone-pad"
+                    placeholder={t('profile.mobile_placeholder', 'Enter mobile no')}
+                  />
+                </View>
 
-              {/* Bio Field */}
-              <View className="mb-4">
-                <Text className="text-xs font-black text-gray-800 uppercase tracking-wider mb-2">
-                  {t('profile.bio_label', 'Bio / Cook Story')}
-                </Text>
-                <TextInput
-                  value={bio}
-                  onChangeText={setBio}
-                  multiline
-                  numberOfLines={3}
-                  placeholder={t('profile.bio_placeholder', 'Write a short story about your culinary journey...')}
-                  className="w-full bg-white border border-gray-200 rounded-2xl px-4 py-3 text-gray-800 text-left h-20"
-                  placeholderTextColor={Colors.gray[400]}
-                  style={{ textAlignVertical: 'top' }}
-                />
+                <View style={{ width: layout.scale(95) }}>
+                  <Input
+                    label={t('profile.experience_short', 'Exp (Yrs)')}
+                    value={experienceYears}
+                    onChangeText={setExperienceYears}
+                    keyboardType="number-pad"
+                    placeholder="e.g. 5"
+                    style={{ textAlign: 'center' }}
+                  />
+                </View>
               </View>
 
               {/* Specialty Field */}
-              <View className="mb-4">
-                <Text className="text-xs font-black text-gray-800 uppercase tracking-wider mb-2">
-                  {t('profile.specialty_label', 'Culinary Specialty')}
-                </Text>
-                <TextInput
-                  value={specialty}
-                  onChangeText={setSpecialty}
-                  placeholder={t('profile.specialty_placeholder', 'e.g., Italian, Desserts, Vegan')}
-                  className="w-full bg-white border border-gray-200 rounded-2xl px-4 py-3 text-gray-800 font-bold"
-                  placeholderTextColor={Colors.gray[400]}
-                />
-              </View>
-
-              {/* Experience Years Field */}
-              <View className="mb-4">
-                <Text className="text-xs font-black text-gray-800 uppercase tracking-wider mb-2">
-                  {t('profile.experience_label', 'Years of Cooking Experience')}
-                </Text>
-                <TextInput
-                  value={experienceYears}
-                  onChangeText={setExperienceYears}
-                  keyboardType="number-pad"
-                  placeholder={t('profile.experience_placeholder', 'e.g., 5')}
-                  className="w-full bg-white border border-gray-200 rounded-2xl px-4 py-3 text-gray-800 font-bold"
-                  placeholderTextColor={Colors.gray[400]}
-                />
-              </View>
+              <Input
+                label={t('profile.specialty_label', 'Culinary Specialty')}
+                value={specialty}
+                onChangeText={setSpecialty}
+                placeholder={t('profile.specialty_placeholder', 'e.g., Italian, Desserts, Vegan')}
+              />
 
               {/* Address Field */}
-              <View className="mb-2">
-                <Text className="text-xs font-black text-gray-800 uppercase tracking-wider mb-2">
-                  {t('profile.address_label', 'Kitchen Location / Address')}
-                </Text>
-                <TextInput
-                  value={address}
-                  onChangeText={setAddress}
-                  placeholder={t('profile.address_placeholder', 'Enter city or street address')}
-                  className="w-full bg-white border border-gray-200 rounded-2xl px-4 py-3 text-gray-800 font-bold"
-                  placeholderTextColor={Colors.gray[400]}
-                />
-              </View>
+              <Input
+                label={t('profile.address_label', 'Kitchen Location / Address')}
+                value={address}
+                onChangeText={setAddress}
+                placeholder={t('profile.address_placeholder', 'Enter city or street address')}
+              />
+
+              {/* Bio Field */}
+              <Input
+                label={t('profile.bio_label', 'Bio / Cook Story')}
+                value={bio}
+                onChangeText={setBio}
+                multiline
+                numberOfLines={2}
+                placeholder={t('profile.bio_placeholder', 'Write a short story about your culinary journey...')}
+                className="mb-1"
+              />
 
             </View>
 
@@ -375,10 +340,14 @@ export const ProfileScreen: React.FC<any> = ({ navigation }) => {
               size="lg"
               className="rounded-2xl"
             />
-
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
+
+      {/* Fullscreen blur loading indicator on save */}
+      {isSaving && (
+        <LoadingIndicator message={t('profile.saving_message', 'Saving profile details...')} fullscreen={true} />
+      )}
     </SafeAreaView>
   );
 };

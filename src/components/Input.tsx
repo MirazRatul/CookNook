@@ -17,6 +17,7 @@ export const Input: React.FC<InputProps> = ({
   isPassword = false,
   secureTextEntry,
   className = '',
+  multiline,
   onBlur,
   onFocus,
   ...props
@@ -47,7 +48,9 @@ export const Input: React.FC<InputProps> = ({
       )}
 
       <View
-        className={`flex-row items-center border rounded-xl px-3 bg-gray-50 h-12 transition-colors ${
+        className={`flex-row border rounded-xl px-3 bg-gray-50 transition-colors ${
+          multiline ? 'items-start py-2.5 h-20' : 'items-center h-12'
+        } ${
           error
             ? 'border-red-500 bg-red-50/10'
             : isFocused
@@ -60,7 +63,7 @@ export const Input: React.FC<InputProps> = ({
             name={iconName as any}
             size={20}
             color={error ? Colors.danger : isFocused ? Colors.primary[500] : Colors.gray[400]}
-            style={{ marginRight: 10 }}
+            style={multiline ? { marginRight: 10, marginTop: 2 } : { marginRight: 10 }}
           />
         )}
 
@@ -70,6 +73,8 @@ export const Input: React.FC<InputProps> = ({
           secureTextEntry={isSecure}
           onFocus={handleFocus}
           onBlur={handleBlur}
+          multiline={multiline}
+          style={multiline ? [{ textAlignVertical: 'top', height: '100%' }, props.style] : props.style}
           {...props}
         />
 
