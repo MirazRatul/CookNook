@@ -14,12 +14,17 @@ import { RootStackScreenProps } from '../navigation/types';
 import { useResponsiveLayout } from '../hooks/useResponsiveLayout';
 import { REFRESH_LOGO } from '../constants/Image_Url';
 
+import { useDispatch } from 'react-redux';
 import { auth } from '../services/firebase';
+import { getAllRecipesAPI, getFavoritesAPI } from '../services/recipeService';
+import { setRecipes, setFavorites, addFavoriteRecipes } from '../store/slices/recipesSlice';
+import { Recipe } from '../constants/mockData';
 
 // Prevent the native splash screen from hiding automatically
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
 export const SplashScreenView: React.FC<RootStackScreenProps<'Splash'>> = ({ navigation }) => {
+  const dispatch = useDispatch();
   const layout = useResponsiveLayout();
   const scale = useSharedValue(0.3);
   const opacity = useSharedValue(0);
@@ -65,15 +70,25 @@ export const SplashScreenView: React.FC<RootStackScreenProps<'Splash'>> = ({ nav
     // Pre-calculate target screen during the animation delay
     let resolvedNextScreen: 'Onboarding' | 'SignIn' | 'MainTabs' = 'Onboarding';
 
+    const getInitialUser = () => {
+      return new Promise<any>((resolve) => {
+        const unsubscribe = auth().onAuthStateChanged((user) => {
+          unsubscribe();
+          resolve(user);
+        });
+      });
+    };
+
     const performInit = async () => {
       try {
         const hasSeenOnboarding = await AsyncStorage.getItem('HAS_SEEN_ONBOARDING');
-        const user = auth().currentUser;
+        
+        // Wait for Firebase Auth to finish loading initial session from keychain
+        const user = await getInitialUser();
         let isLoggedIn = false;
 
         if (user) {
           try {
-            // Reload user state to get the latest emailVerified field from Firebase
             await user.reload();
             const updatedUser = auth().currentUser;
             isLoggedIn = updatedUser !== null && updatedUser.emailVerified;
@@ -86,6 +101,67 @@ export const SplashScreenView: React.FC<RootStackScreenProps<'Splash'>> = ({ nav
             try {
               await auth().signOut();
             } catch (e) {}
+          }
+        }
+
+        // Pre-fetch and cache database content in Redux before navigating to home screen
+        if (isLoggedIn) {
+          try {
+            console.log('🔄 [Splash] Pre-fetching recipes from database...');
+            const recipesResponse = await getAllRecipesAPI(1, 100);
+            if (recipesResponse && recipesResponse.success && recipesResponse.data) {
+              const mappedRecipes = recipesResponse.data.recipes.map((r: any): Recipe => ({
+                id: r.id.toString(),
+                title: r.title,
+                description: r.description,
+                image: r.images[0] || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c',
+                duration: r.duration,
+                difficulty: r.difficulty,
+                calories: r.calories,
+                rating: 5.0,
+                reviewsCount: 1,
+                chefName: r.chef_name,
+                chefAvatar: r.chef_avatar || 'https://images.unsplash.com/photo-1577219491135-ce391730fb2c',
+                category: r.category,
+                ingredients: r.ingredients || [],
+                instructions: r.instructions || [],
+                images: r.images || [],
+                userId: r.user_id || undefined,
+              }));
+              dispatch(setRecipes(mappedRecipes));
+            }
+
+            console.log('🔄 [Splash] Pre-fetching favorites from database...');
+            const favResponse = await getFavoritesAPI();
+            if (favResponse && favResponse.success && favResponse.data) {
+              const { favoriteIds, favoriteRecipes } = favResponse.data;
+              if (Array.isArray(favoriteIds)) {
+                dispatch(setFavorites(favoriteIds));
+              }
+              if (Array.isArray(favoriteRecipes)) {
+                const mappedFavRecipes = favoriteRecipes.map((r: any): Recipe => ({
+                  id: r.id.toString(),
+                  title: r.title,
+                  description: r.description,
+                  image: r.images[0] || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c',
+                  duration: r.duration,
+                  difficulty: r.difficulty,
+                  calories: r.calories,
+                  rating: 5.0,
+                  reviewsCount: 1,
+                  chefName: r.chef_name,
+                  chefAvatar: r.chef_avatar || 'https://images.unsplash.com/photo-1577219491135-ce391730fb2c',
+                  category: r.category,
+                  ingredients: r.ingredients || [],
+                  instructions: r.instructions || [],
+                  images: r.images || [],
+                  userId: r.user_id || undefined,
+                }));
+                dispatch(addFavoriteRecipes(mappedFavRecipes));
+              }
+            }
+          } catch (fetchErr) {
+            console.error('❌ Error pre-fetching database data on splash:', fetchErr);
           }
         }
 
