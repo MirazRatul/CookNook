@@ -14,15 +14,16 @@ import Animated, {
 import { REFRESH_LOGO } from '../constants/Image_Url';
 
 interface CustomRefreshIndicatorProps {
-  scrollY: SharedValue<number>;
+  pullDistance: SharedValue<number>;
   refreshing: boolean;
 }
 
 export const CustomRefreshIndicator: React.FC<CustomRefreshIndicatorProps> = ({
-  scrollY,
+  pullDistance,
   refreshing,
 }) => {
   const rotation = useSharedValue(0);
+  const refreshingProgress = useSharedValue(0);
 
   useEffect(() => {
     if (refreshing) {
@@ -35,28 +36,32 @@ export const CustomRefreshIndicator: React.FC<CustomRefreshIndicatorProps> = ({
         -1, // Infinite loop
         false // Do not reverse (keep clockwise direction)
       );
+      // Smoothly animate refreshing transition to active (1)
+      refreshingProgress.value = withTiming(1, { duration: 300 });
     } else {
       // Reset rotation when finished
       cancelAnimation(rotation);
       rotation.value = 0;
+      // Smoothly animate refreshing transition to inactive (0)
+      refreshingProgress.value = withTiming(0, { duration: 300 });
     }
   }, [refreshing]);
 
   const animatedContainerStyle = useAnimatedStyle(() => {
-    // Determine opacity: fade in between 0px and 60px pull
-    const opacity = refreshing
-      ? 1
-      : interpolate(-scrollY.value, [0, 60], [0, 1], Extrapolate.CLAMP);
+    // Determine pull-based opacity, scale, and translateY (primarily used on iOS)
+    const pullOpacity = interpolate(pullDistance.value, [0, 60], [0, 1], Extrapolate.CLAMP);
+    const pullScale = interpolate(pullDistance.value, [0, 80], [0.6, 1.1], Extrapolate.CLAMP);
+    const pullTranslateY = interpolate(pullDistance.value, [0, 80], [-40, 20], Extrapolate.CLAMP);
 
-    // Determine scale: scale up from 0.6 to 1.1 based on pull distance
-    const scale = refreshing
-      ? 1.0
-      : interpolate(-scrollY.value, [0, 80], [0.6, 1.1], Extrapolate.CLAMP);
+    // Target values when refreshing is active
+    const activeOpacity = 1;
+    const activeScale = 1.0;
+    const activeTranslateY = 20;
 
-    // Translate Y: float down slightly as pulled, then lock at 16px when refreshing
-    const translateY = refreshing
-      ? 16
-      : interpolate(-scrollY.value, [0, 80], [-30, 20], Extrapolate.CLAMP);
+    // Blend values smoothly using refreshingProgress to prevent snapping on Android/iOS when starting or ending refresh
+    const opacity = interpolate(refreshingProgress.value, [0, 1], [pullOpacity, activeOpacity]);
+    const scale = interpolate(refreshingProgress.value, [0, 1], [pullScale, activeScale]);
+    const translateY = interpolate(refreshingProgress.value, [0, 1], [pullTranslateY, activeTranslateY]);
 
     return {
       opacity,
@@ -68,10 +73,10 @@ export const CustomRefreshIndicator: React.FC<CustomRefreshIndicatorProps> = ({
   });
 
   const animatedCircleStyle = useAnimatedStyle(() => {
-    // Determine rotation: use continuous spin if refreshing, otherwise track scroll Y value
+    // Determine rotation: use continuous spin if refreshing, otherwise track pull distance
     const rotateValue = refreshing
       ? `${rotation.value}deg`
-      : `${Math.max(-scrollY.value, 0) * 3.5}deg`;
+      : `${Math.max(pullDistance.value, 0) * 3.5}deg`;
 
     return {
       transform: [

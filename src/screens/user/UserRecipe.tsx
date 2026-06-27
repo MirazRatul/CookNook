@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Text,
   TouchableOpacity,
   View,
   RefreshControl,
   ActivityIndicator,
+  Platform,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -13,6 +14,7 @@ import Animated, {
   FadeInUp,
   useSharedValue,
   useAnimatedScrollHandler,
+  withTiming,
 } from 'react-native-reanimated';
 import { useIsFocused } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
@@ -53,9 +55,15 @@ export const UserRecipeScreen: React.FC<any> = ({ navigation }) => {
 
   // Shared scroll offset for pull-to-refresh tracking
   const scrollY = useSharedValue(0);
+  const pullDistance = useSharedValue(0);
+
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: (event) => {
       scrollY.value = event.contentOffset.y;
+      if (Platform.OS === 'ios') {
+        // On iOS, pull distance is derived from negative scrollY
+        pullDistance.value = Math.max(-event.contentOffset.y, 0);
+      }
     },
   });
 
@@ -232,11 +240,12 @@ export const UserRecipeScreen: React.FC<any> = ({ navigation }) => {
                   tintColor="transparent"
                   colors={['transparent']}
                   progressBackgroundColor="transparent"
+                  progressViewOffset={Platform.OS === 'android' ? -1000 : 0}
                 />
               }
             />
             {!isInitialLoading && (
-              <CustomRefreshIndicator scrollY={scrollY} refreshing={isRefreshing} />
+              <CustomRefreshIndicator pullDistance={pullDistance} refreshing={isRefreshing} />
             )}
           </>
         )}
