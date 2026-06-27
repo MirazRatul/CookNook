@@ -12,7 +12,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { RootStackScreenProps } from '../navigation/types';
 import { useResponsiveLayout } from '../hooks/useResponsiveLayout';
-import { LOGO_IMAGE } from '../constants/Image_Url';
+import { REFRESH_LOGO } from '../constants/Image_Url';
 
 import { auth } from '../services/firebase';
 
@@ -137,8 +137,8 @@ export const SplashScreenView: React.FC<RootStackScreenProps<'Splash'>> = ({ nav
           className="justify-center items-center mb-6"
         >
           <Image 
-            source={LOGO_IMAGE} 
-            style={{ width: logoSize, height: logoSize, borderRadius: logoSize / 5 }}
+            source={REFRESH_LOGO} 
+            style={{ width: logoSize, height: logoSize }}
             resizeMode="contain"
           />
         </Animated.View>

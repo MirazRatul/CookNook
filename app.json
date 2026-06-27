@@ -4,7 +4,12 @@
     "slug": "CookNook",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/App_Icon.png",
+    "splash": {
+      "image": "./assets/refresh_logo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FFFFFF"
+    },
     "userInterfaceStyle": "light",
     "ios": {
       "bundleIdentifier": "com.mirajulislam.cooknook",
@@ -16,7 +21,7 @@
       "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "backgroundColor": "#FFFBEB",
-        "foregroundImage": "./assets/android-icon-foreground.png",
+        "foregroundImage": "./assets/App_Icon.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
