@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import Animated, { FadeInDown, FadeInUp, LinearTransition } from 'react-native-reanimated';
+import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { useIsFocused } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../constants/Colors';
@@ -142,40 +142,6 @@ export const UserRecipeScreen: React.FC<any> = ({ navigation }) => {
     );
   };
 
-  const renderEmptyState = () => {
-    if (isInitialLoading) return null;
-    return (
-      <Animated.View
-        entering={FadeInUp.duration(500).springify()}
-        className="flex-1 items-center justify-center p-8 mt-16"
-      >
-        <View className="bg-amber-50 p-6 rounded-full mb-4">
-          <Ionicons
-            name="book-outline"
-            size={64}
-            color={Colors.primary[500]}
-            style={{ opacity: 0.8 }}
-          />
-        </View>
-        <Text className="text-gray-900 font-extrabold text-lg text-center mt-2">
-          {t('my_recipes.no_recipes', 'No Recipes Yet')}
-        </Text>
-        <Text className="text-gray-400 text-sm mt-1.5 text-center max-w-[260px] leading-relaxed">
-          {t('my_recipes.no_recipes_desc', "You haven't created any recipes yet. Start cooking and share your first dish!")}
-        </Text>
-        <TouchableOpacity
-          onPress={() => navigation.navigate('MainTabs', { screen: 'Create' })}
-          className="mt-6 bg-primary-500 px-6 py-3 rounded-full shadow-md shadow-amber-500/20"
-          activeOpacity={0.85}
-        >
-          <Text className="text-white font-bold text-sm">
-            {t('my_recipes.create_button', 'Create Recipe')}
-          </Text>
-        </TouchableOpacity>
-      </Animated.View>
-    );
-  };
-
   return (
     <SafeAreaView className="flex-1 bg-white" edges={['top', 'left', 'right']}>
       {/* Header Panel */}
@@ -219,8 +185,7 @@ export const UserRecipeScreen: React.FC<any> = ({ navigation }) => {
             showsVerticalScrollIndicator={false}
             renderItem={({ item, index }) => (
               <Animated.View
-                entering={FadeInDown.delay(Math.min(index, 4) * 100).duration(600).springify()}
-                layout={LinearTransition.springify()}
+                entering={isRefreshing ? undefined : FadeInDown.delay(Math.min(index, 4) * 50).duration(350)}
               >
                 <RecipeCard
                   recipe={item}
@@ -231,7 +196,15 @@ export const UserRecipeScreen: React.FC<any> = ({ navigation }) => {
                 />
               </Animated.View>
             )}
-            ListEmptyComponent={renderEmptyState}
+            ListEmptyComponent={
+              !isInitialLoading ? (
+                <EmptyStateView
+                  t={t}
+                  onPressCreate={() => navigation.navigate('MainTabs', { screen: 'Create' })}
+                  isRefreshing={isRefreshing}
+                />
+              ) : null
+            }
             ListFooterComponent={renderFooter}
             onEndReached={handleLoadMore}
             onEndReachedThreshold={0.2}
@@ -247,5 +220,44 @@ export const UserRecipeScreen: React.FC<any> = ({ navigation }) => {
         )}
       </View>
     </SafeAreaView>
+  );
+};
+
+interface EmptyStateProps {
+  t: (key: string, defaultValue?: string) => string;
+  onPressCreate: () => void;
+  isRefreshing: boolean;
+}
+
+const EmptyStateView: React.FC<EmptyStateProps> = ({ t, onPressCreate, isRefreshing }) => {
+  return (
+    <Animated.View
+      entering={isRefreshing ? undefined : FadeInUp.duration(500).springify()}
+      className="flex-1 items-center justify-center p-8 mt-16"
+    >
+      <View className="bg-amber-50 p-6 rounded-full mb-4">
+        <Ionicons
+          name="book-outline"
+          size={64}
+          color={Colors.primary[500]}
+          style={{ opacity: 0.8 }}
+        />
+      </View>
+      <Text className="text-gray-900 font-extrabold text-lg text-center mt-2">
+        {t('my_recipes.no_recipes', 'No Recipes Yet')}
+      </Text>
+      <Text className="text-gray-400 text-sm mt-1.5 text-center max-w-[260px] leading-relaxed">
+        {t('my_recipes.no_recipes_desc', "You haven't created any recipes yet. Start cooking and share your first dish!")}
+      </Text>
+      <TouchableOpacity
+        onPress={onPressCreate}
+        className="mt-6 bg-primary-500 px-6 py-3 rounded-full shadow-md shadow-amber-500/20"
+        activeOpacity={0.85}
+      >
+        <Text className="text-white font-bold text-sm">
+          {t('my_recipes.create_button', 'Create Recipe')}
+        </Text>
+      </TouchableOpacity>
+    </Animated.View>
   );
 };
