@@ -73,8 +73,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         }}
       >
         <View>
-          <Text className="text-gray-400 text-sm font-semibold tracking-wide">{t('home.hello_chef')}</Text>
-          <Text className="text-2xl font-extrabold text-gray-900 mt-0.5">{t('home.what_cooking')}</Text>
+          <Text numberOfLines={1} className="text-gray-400 text-sm font-semibold tracking-wide">{t('home.hello_chef')}</Text>
+          <Text numberOfLines={1} className="text-2xl font-extrabold text-gray-900 mt-0.5">{t('home.what_cooking')}</Text>
         </View>
         <TouchableOpacity
           onPress={() => {
@@ -154,9 +154,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             alignSelf: 'center',
           }}
         >
-          <Text className="text-xl font-black text-gray-800">{t('home.popular_recipes')}</Text>
+          <Text numberOfLines={1} className="text-xl font-black text-gray-800">{t('home.popular_recipes')}</Text>
           <TouchableOpacity onPress={() => navigation.navigate('Explore')} className="flex-row items-center">
-            <Text className="text-primary-600 font-bold text-sm mr-0.5">{t('home.see_all')}</Text>
+            <Text numberOfLines={1} className="text-primary-600 font-bold text-sm mr-0.5">{t('home.see_all')}</Text>
             <Ionicons name="chevron-forward" size={16} color={Colors.primary[600]} />
           </TouchableOpacity>
         </View>
@@ -199,7 +199,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           alignSelf: 'center',
         }}
       >
-        <Text className="text-xl font-black text-gray-800 mb-4">{t('home.chef_recommendations')}</Text>
+        <Text numberOfLines={1} className="text-xl font-black text-gray-800 mb-4">{t('home.chef_recommendations')}</Text>
         {filteredRecipes.length > 0 ? (
           filteredRecipes.map((recipe, index) => (
             <Animated.View

@@ -50,8 +50,10 @@ export const SplashScreenView: React.FC<RootStackScreenProps<'Splash'>> = ({ nav
   }));
 
   useEffect(() => {
-    // 1. Hide native splash screen immediately so our animated one mounts
-    SplashScreen.hideAsync().catch(() => {});
+    // 1. Hide native splash screen after a short delay to allow Android layout pass to render and prevent white flash
+    const hideTimer = setTimeout(() => {
+      SplashScreen.hideAsync().catch(() => {});
+    }, 250);
 
     // 2. Start logo scale and fade animations
     opacity.value = withTiming(1, { duration: 800 });
@@ -122,6 +124,7 @@ export const SplashScreenView: React.FC<RootStackScreenProps<'Splash'>> = ({ nav
 
     return () => {
       clearTimeout(splashTimer);
+      clearTimeout(hideTimer);
     };
   }, []);
 
