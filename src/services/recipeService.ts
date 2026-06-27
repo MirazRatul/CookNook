@@ -78,3 +78,36 @@ export const getUserRecipesAPI = async (page: number = 1, limit: number = 10) =>
     throw new Error(errorMessage);
   }
 };
+
+/**
+ * Toggle favorite status of a recipe in the backend.
+ * @param recipeId The ID of the recipe to toggle favorite status for
+ */
+export const toggleFavoriteAPI = async (recipeId: string) => {
+  try {
+    const response = await apiClient.post('/recipes/favorites/toggle', { recipeId });
+    return response.data;
+  } catch (error: any) {
+    const errorMessage =
+      error.response?.data?.error?.message ||
+      error.message ||
+      'Failed to toggle recipe favorite on the server.';
+    throw new Error(errorMessage);
+  }
+};
+
+/**
+ * Retrieve all favorite recipe IDs of the logged-in user.
+ */
+export const getFavoritesAPI = async () => {
+  try {
+    const response = await apiClient.get('/recipes/favorites');
+    return response.data;
+  } catch (error: any) {
+    const errorMessage =
+      error.response?.data?.error?.message ||
+      error.message ||
+      'Failed to load favorite recipes from the server.';
+    throw new Error(errorMessage);
+  }
+};

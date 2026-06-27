@@ -88,7 +88,7 @@ export const UserRecipeScreen: React.FC<any> = ({ navigation }) => {
 
         // Map backend schema parameters into standardized frontend Recipe entities
         const mappedRecipes = fetchedRecipes.map((r: any): Recipe => ({
-          id: r.id.toString(),
+          id: `db-${r.id}`,
           title: r.title,
           description: r.description,
           image: r.images[0] || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c',
@@ -245,7 +245,7 @@ export const UserRecipeScreen: React.FC<any> = ({ navigation }) => {
 };
 
 interface EmptyStateProps {
-  t: (key: string, defaultValue?: string) => string;
+  t: any;
   onPressCreate: () => void;
   isRefreshing: boolean;
 }

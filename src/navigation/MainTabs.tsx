@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { createBottomTabNavigator, BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -10,6 +10,10 @@ import { CreateRecipeScreen } from '../screens/CreateRecipeScreen';
 import { FavoritesScreen } from '../screens/FavoritesScreen';
 import { useResponsiveLayout } from '../hooks/useResponsiveLayout';
 import { MainTabParamList } from './types';
+import { useDispatch } from 'react-redux';
+import { auth } from '../services/firebase';
+import { getFavoritesAPI } from '../services/recipeService';
+import { setFavorites } from '../store/slices/recipesSlice';
 
 type IconName = keyof typeof Ionicons.glyphMap;
 
@@ -120,6 +124,28 @@ function CookNookTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
 }
 
 export function MainTabs() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const loadFavorites = async () => {
+      try {
+        const user = auth().currentUser;
+        if (user) {
+          console.log('🔄 Fetching user favorites from database...');
+          const response = await getFavoritesAPI();
+          if (response && response.success && Array.isArray(response.data)) {
+            console.log(`✅ Loaded ${response.data.length} favorites from DB.`);
+            dispatch(setFavorites(response.data));
+          }
+        }
+      } catch (error) {
+        console.error('❌ Error fetching favorites on app start:', error);
+      }
+    };
+
+    loadFavorites();
+  }, [dispatch]);
+
   return (
     <Tab.Navigator
       initialRouteName="Home"

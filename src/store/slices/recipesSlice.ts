@@ -1,5 +1,22 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { Recipe, MOCK_RECIPES } from '../../constants/mockData';
+import { toggleFavoriteAPI } from '../../services/recipeService';
+
+export const toggleFavorite = createAsyncThunk(
+  'recipes/toggleFavoriteStatus',
+  async (recipeId: string, { dispatch, rejectWithValue }) => {
+    // Perform optimistic local toggle
+    dispatch(recipesSlice.actions.toggleFavoriteLocal(recipeId));
+    try {
+      await toggleFavoriteAPI(recipeId);
+    } catch (error: any) {
+      console.error('❌ Failed to toggle favorite in database, reverting:', error.message);
+      // Revert local toggle on error
+      dispatch(recipesSlice.actions.toggleFavoriteLocal(recipeId));
+      return rejectWithValue(error.message);
+    }
+  }
+) as any;
 
 interface RecipesState {
   recipes: Recipe[];
@@ -27,7 +44,7 @@ const recipesSlice = createSlice({
   name: 'recipes',
   initialState,
   reducers: {
-    toggleFavorite: (state, action: PayloadAction<string>) => {
+    toggleFavoriteLocal: (state, action: PayloadAction<string>) => {
       const id = action.payload;
       const index = state.favorites.indexOf(id);
       if (index > -1) {
@@ -70,17 +87,21 @@ const recipesSlice = createSlice({
     setUserRecipesNeedsRefresh: (state, action: PayloadAction<boolean>) => {
       state.userRecipesNeedsRefresh = action.payload;
     },
+    setFavorites: (state, action: PayloadAction<string[]>) => {
+      state.favorites = action.payload;
+    },
   },
 });
 
 export const {
-  toggleFavorite,
+  toggleFavoriteLocal,
   setSearchQuery,
   setSelectedCategory,
   setSelectedRecipe,
   addRecipe,
   setUserRecipes,
   setUserRecipesNeedsRefresh,
+  setFavorites,
 } = recipesSlice.actions;
 
 export default recipesSlice.reducer;

@@ -28,13 +28,12 @@ export function FavoritesScreen({ navigation }: FavoritesScreenProps) {
   const insets = useSafeAreaInsets();
   const layout = useResponsiveLayout();
   const isFocused = useIsFocused();
-  const { recipes, favorites } = useSelector(
+  const { recipes, userRecipes, favorites } = useSelector(
     (state: RootState) => state.recipes,
   );
-  console.log(JSON.stringify(recipes, null, 2));
-  console.log("Favorite: ", JSON.stringify(favorites, null, 2));
 
-  const favoriteRecipes = recipes.filter((recipe) =>
+  const allRecipes = [...recipes, ...userRecipes];
+  const favoriteRecipes = allRecipes.filter((recipe) =>
     favorites.includes(recipe.id),
   );
 
