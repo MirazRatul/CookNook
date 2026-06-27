@@ -18,6 +18,7 @@ import { RootStackScreenProps } from "../navigation/types";
 import { Ionicons } from "@expo/vector-icons";
 import { HeartButton } from "../components/HeartButton";
 import { Colors } from "../constants/Colors";
+import { MediaModal } from "../components/MediaModal";
 
 type RecipeDetailsScreenProps = RootStackScreenProps<"RecipeDetails">;
 
@@ -37,6 +38,8 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({
     "ingredients",
   );
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [isMediaModalVisible, setIsMediaModalVisible] = useState(false);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
   if (!selectedRecipe) {
     return (
@@ -126,12 +129,21 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({
               ? selectedRecipe.images
               : [selectedRecipe.image]
             ).map((imgUri, index) => (
-              <Image
+              <TouchableOpacity
                 key={imgUri + index}
-                source={{ uri: imgUri }}
+                activeOpacity={0.9}
                 style={{ width: Dimensions.get('window').width, height: layout.details.heroHeight }}
-                resizeMode="cover"
-              />
+                onPress={() => {
+                  setSelectedImageIndex(index);
+                  setIsMediaModalVisible(true);
+                }}
+              >
+                <Image
+                  source={{ uri: imgUri }}
+                  style={{ width: '100%', height: '100%' }}
+                  resizeMode="cover"
+                />
+              </TouchableOpacity>
             ))}
           </ScrollView>
 
@@ -402,6 +414,18 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({
           )}
         </Animated.View>
       </ScrollView>
+
+      {/* Fullscreen Swipeable Media Modal */}
+      <MediaModal
+        visible={isMediaModalVisible}
+        onClose={() => setIsMediaModalVisible(false)}
+        images={
+          (selectedRecipe.images && selectedRecipe.images.length > 0)
+            ? selectedRecipe.images
+            : [selectedRecipe.image]
+        }
+        initialIndex={selectedImageIndex}
+      />
     </View>
   );
 };
