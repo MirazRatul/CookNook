@@ -22,3 +22,4 @@ export const IMAGE_URLS = {
 };
 
 export const LOGO_IMAGE = require('./logo.png');
+export const REFRESH_LOGO = require('./refresh_logo.png');

@@ -11,7 +11,7 @@ import Animated, {
   cancelAnimation,
   SharedValue,
 } from 'react-native-reanimated';
-import { LOGO_IMAGE } from '../constants/Image_Url';
+import { REFRESH_LOGO } from '../constants/Image_Url';
 
 interface CustomRefreshIndicatorProps {
   scrollY: SharedValue<number>;
@@ -42,7 +42,7 @@ export const CustomRefreshIndicator: React.FC<CustomRefreshIndicatorProps> = ({
     }
   }, [refreshing]);
 
-  const animatedStyle = useAnimatedStyle(() => {
+  const animatedContainerStyle = useAnimatedStyle(() => {
     // Determine opacity: fade in between 0px and 60px pull
     const opacity = refreshing
       ? 1
@@ -52,11 +52,6 @@ export const CustomRefreshIndicator: React.FC<CustomRefreshIndicatorProps> = ({
     const scale = refreshing
       ? 1.0
       : interpolate(-scrollY.value, [0, 80], [0.6, 1.1], Extrapolate.CLAMP);
-
-    // Determine rotation: use continuous spin if refreshing, otherwise track scroll Y value
-    const rotateValue = refreshing
-      ? `${rotation.value}deg`
-      : `${Math.max(-scrollY.value, 0) * 3.5}deg`;
 
     // Translate Y: float down slightly as pulled, then lock at 16px when refreshing
     const translateY = refreshing
@@ -68,6 +63,18 @@ export const CustomRefreshIndicator: React.FC<CustomRefreshIndicatorProps> = ({
       transform: [
         { translateY },
         { scale },
+      ],
+    };
+  });
+
+  const animatedCircleStyle = useAnimatedStyle(() => {
+    // Determine rotation: use continuous spin if refreshing, otherwise track scroll Y value
+    const rotateValue = refreshing
+      ? `${rotation.value}deg`
+      : `${Math.max(-scrollY.value, 0) * 3.5}deg`;
+
+    return {
+      transform: [
         { rotate: rotateValue },
       ],
     };
@@ -77,12 +84,18 @@ export const CustomRefreshIndicator: React.FC<CustomRefreshIndicatorProps> = ({
     <Animated.View
       style={[
         styles.container,
-        animatedStyle,
+        animatedContainerStyle,
       ]}
     >
-      <View style={styles.spinnerWrapper} className="shadow-md border border-amber-100 bg-white">
+      <View style={styles.wrapper}>
+        <Animated.View
+          style={[
+            styles.circle,
+            animatedCircleStyle,
+          ]}
+        />
         <Image
-          source={LOGO_IMAGE}
+          source={REFRESH_LOGO}
           style={styles.logo}
           resizeMode="contain"
         />
@@ -101,15 +114,24 @@ const styles = StyleSheet.create({
     zIndex: 9999,
     pointerEvents: 'none', // Allow scrolling gesture events to pass through
   },
-  spinnerWrapper: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+  wrapper: {
+    width: 80,
+    height: 80,
     alignItems: 'center',
     justifyContent: 'center',
   },
+  circle: {
+    position: 'absolute',
+    width: 65,
+    height: 65,
+    borderRadius: 39,
+    borderWidth: 3,
+    borderColor: 'rgba(245, 158, 11, 0.15)', // Light amber track background
+    borderTopColor: '#D97706', // Dark amber spinner arc
+    borderRightColor: '#D97706',
+  },
   logo: {
-    width: 28,
-    height: 28,
+    width: 60,
+    height: 60,
   },
 });
