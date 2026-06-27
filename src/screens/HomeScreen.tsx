@@ -168,7 +168,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         >
           {popularRecipes.map((recipe, index) => (
             <Animated.View
-              key={`popular-card-${recipe.id}-${isFocused}`}
+              key={`popular-card-${recipe.id}-${index}-${isFocused}`}
               entering={isFocused ? FadeInRight.delay(400 + index * 120).duration(600).springify() : undefined}
             >
               <RecipeCard
@@ -199,7 +199,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         {filteredRecipes.length > 0 ? (
           filteredRecipes.map((recipe, index) => (
             <Animated.View
-              key={`recommend-card-${recipe.id}-${isFocused}`}
+              key={`recommend-card-${recipe.id}-${index}-${isFocused}`}
               entering={isFocused ? FadeInDown.delay(index * 120).duration(600).springify() : undefined}
               layout={LinearTransition.springify()}
             >

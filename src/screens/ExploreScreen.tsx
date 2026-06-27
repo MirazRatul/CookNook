@@ -107,7 +107,7 @@ export const ExploreScreen: React.FC<ExploreScreenProps> = ({ navigation }) => {
             showsVerticalScrollIndicator={false}
             renderItem={({ item, index }) => (
               <Animated.View
-                key={`explore-card-${item.id}-${isFocused}`}
+                key={`explore-card-${item.id}-${index}-${isFocused}`}
                 entering={isFocused ? FadeInDown.delay(index * 100).duration(600).springify() : undefined}
                 layout={LinearTransition.springify()}
               >

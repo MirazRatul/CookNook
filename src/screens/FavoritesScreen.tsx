@@ -75,7 +75,7 @@ export function FavoritesScreen({ navigation }: FavoritesScreenProps) {
           >
             {favoriteRecipes.map((recipe, index) => (
               <Animated.View
-                key={`fav-card-${recipe.id}-${isFocused}`}
+                key={`fav-card-${recipe.id}-${index}-${isFocused}`}
                 entering={isFocused ? FadeInDown.delay(index * 100).duration(600).springify() : undefined}
                 layout={LinearTransition.springify()}
               >
