@@ -113,6 +113,7 @@
     "find_recipes": "Buscar Recetas"
   },
   "drawer": {
+    "profile": "Perfil",
     "my_recipes": "Mis Recetas",
     "create_new_recipe": "Crear Nueva Receta",
     "settings": "Configuración",
@@ -126,5 +127,41 @@
     "english": "Inglés",
     "spanish": "Español",
     "bangla": "Bengalí"
+  },
+  "common": {
+    "cancel": "Cancelar",
+    "permission_denied": "Permiso Denegado",
+    "error": "Error",
+    "success": "Éxito",
+    "saving": "Guardando Cambios..."
+  },
+  "profile": {
+    "title": "Perfil del Chef",
+    "image_source_title": "Foto de Perfil",
+    "image_source_desc": "Seleccione cómo desea agregar su foto de perfil.",
+    "camera": "Tomar Foto",
+    "gallery": "Elegir de la Galería",
+    "camera_permission_desc": "Necesitamos permisos de cámara para tomar una foto de perfil.",
+    "gallery_permission_desc": "Necesitamos permisos de biblioteca de fotos para seleccionar una foto de perfil.",
+    "error_name_required": "El nombre del chef es un campo obligatorio.",
+    "error_mobile_required": "El número de teléfono móvil es un campo obligatorio.",
+    "error_image_required": "Por favor, sube una foto de perfil.",
+    "success_update": "¡Perfil actualizado con éxito!",
+    "loading": "Cargando detalles del perfil...",
+    "upload_prompt": "Toca la cámara para actualizar la foto",
+    "name_label": "Nombre del Chef",
+    "name_placeholder": "Ingrese su nombre",
+    "mobile_label": "Número de Móvil",
+    "experience_short": "Exp (Años)",
+    "mobile_placeholder": "Ingrese número de móvil",
+    "specialty_label": "Especialidad Culinaria",
+    "specialty_placeholder": "ej. Italiana, Postres, Vegana",
+    "address_label": "Ubicación de la Cocina / Dirección",
+    "address_placeholder": "Ingrese ciudad o dirección de calle",
+    "bio_label": "Biografía / Historia de Cocina",
+    "bio_placeholder": "Escribe una breve historia sobre tu viaje culinario...",
+    "save_button": "Guardar Perfil",
+    "select_country_code": "Seleccionar País",
+    "saving_message": "Guardando detalles del perfil..."
   }
 }

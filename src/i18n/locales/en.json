@@ -113,6 +113,7 @@
     "find_recipes": "Find Recipes"
   },
   "drawer": {
+    "profile": "Profile",
     "my_recipes": "My Recipes",
     "create_new_recipe": "Create New Recipe",
     "settings": "Settings",
@@ -126,5 +127,41 @@
     "english": "English",
     "spanish": "Spanish",
     "bangla": "Bangla"
+  },
+  "common": {
+    "cancel": "Cancel",
+    "permission_denied": "Permission Denied",
+    "error": "Error",
+    "success": "Success",
+    "saving": "Saving Changes..."
+  },
+  "profile": {
+    "title": "Chef Profile",
+    "image_source_title": "Profile Photo",
+    "image_source_desc": "Select how you want to add your profile photo.",
+    "camera": "Take Photo",
+    "gallery": "Choose from Gallery",
+    "camera_permission_desc": "We need camera permissions to snap a profile photo.",
+    "gallery_permission_desc": "We need photo library permissions to select a profile photo.",
+    "error_name_required": "Chef Name is a mandatory field.",
+    "error_mobile_required": "Mobile number is a mandatory field.",
+    "error_image_required": "Please upload a profile picture.",
+    "success_update": "Profile updated successfully!",
+    "loading": "Loading profile details...",
+    "upload_prompt": "Tap the camera to update photo",
+    "name_label": "Chef Name",
+    "name_placeholder": "Enter your name",
+    "mobile_label": "Mobile Number",
+    "experience_short": "Exp (Yrs)",
+    "mobile_placeholder": "Enter mobile no",
+    "specialty_label": "Culinary Specialty",
+    "specialty_placeholder": "e.g., Italian, Desserts, Vegan",
+    "address_label": "Kitchen Location / Address",
+    "address_placeholder": "Enter city or street address",
+    "bio_label": "Bio / Cook Story",
+    "bio_placeholder": "Write a short story about your culinary journey...",
+    "save_button": "Save Profile",
+    "select_country_code": "Select Country",
+    "saving_message": "Saving profile details..."
   }
 }
