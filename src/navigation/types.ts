@@ -18,6 +18,7 @@ export type RootStackParamList = {
   MainTabs: NavigatorScreenParams<MainTabParamList> | undefined;
   RecipeDetails: undefined;
   Profile: undefined;
+  UserRecipe: undefined;
 };
 
 export type RootStackScreenProps<RouteName extends keyof RootStackParamList> =

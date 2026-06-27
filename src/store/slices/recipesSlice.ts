@@ -7,6 +7,9 @@ interface RecipesState {
   searchQuery: string;
   selectedCategory: string;
   selectedRecipe: Recipe | null;
+  userRecipes: Recipe[];
+  userRecipesNeedsRefresh: boolean;
+  userRecipesHasMore: boolean;
 }
 
 const initialState: RecipesState = {
@@ -15,6 +18,9 @@ const initialState: RecipesState = {
   searchQuery: '',
   selectedCategory: 'All',
   selectedRecipe: null,
+  userRecipes: [],
+  userRecipesNeedsRefresh: true,
+  userRecipesHasMore: true,
 };
 
 const recipesSlice = createSlice({
@@ -41,6 +47,28 @@ const recipesSlice = createSlice({
     },
     addRecipe: (state, action: PayloadAction<Recipe>) => {
       state.recipes.unshift(action.payload);
+      // Prepend to local my recipes list as well so it updates instantly
+      state.userRecipes.unshift(action.payload);
+      state.userRecipesNeedsRefresh = true;
+    },
+    setUserRecipes: (
+      state,
+      action: PayloadAction<{ recipes: Recipe[]; page: number; hasMore: boolean }>
+    ) => {
+      const { recipes, page, hasMore } = action.payload;
+      if (page === 1) {
+        state.userRecipes = recipes;
+      } else {
+        // Prevent duplicate appending
+        const existingIds = new Set(state.userRecipes.map((r) => r.id));
+        const newRecipes = recipes.filter((r) => !existingIds.has(r.id));
+        state.userRecipes = [...state.userRecipes, ...newRecipes];
+      }
+      state.userRecipesHasMore = hasMore;
+      state.userRecipesNeedsRefresh = false;
+    },
+    setUserRecipesNeedsRefresh: (state, action: PayloadAction<boolean>) => {
+      state.userRecipesNeedsRefresh = action.payload;
     },
   },
 });
@@ -51,6 +79,8 @@ export const {
   setSelectedCategory,
   setSelectedRecipe,
   addRecipe,
+  setUserRecipes,
+  setUserRecipesNeedsRefresh,
 } = recipesSlice.actions;
 
 export default recipesSlice.reducer;

@@ -82,7 +82,7 @@ export const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
 
   const menuItems = [
     { id: 0, label: t('drawer.profile', 'Profile'), icon: 'person-outline', onPress: () => { onClose(); navigation.navigate('Profile'); } },
-    { id: 1, label: t('drawer.my_recipes'), icon: 'book-outline', onPress: onClose },
+    { id: 1, label: t('drawer.my_recipes', 'My Recipes'), icon: 'book-outline', onPress: () => { onClose(); navigation.navigate('UserRecipe'); } },
     { id: 2, label: t('drawer.create_new_recipe'), icon: 'add-circle-outline', onPress: () => { onClose(); onNavigateToCreate(); } },
     { id: 3, label: t('drawer.settings'), icon: 'settings-outline', onPress: () => setIsSettingsExpanded(!isSettingsExpanded) },
     { id: 4, label: t('drawer.help_feedback'), icon: 'help-circle-outline', onPress: onClose },

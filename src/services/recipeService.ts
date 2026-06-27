@@ -58,3 +58,23 @@ export const createRecipeAPI = async (recipeData: CreateRecipeData) => {
     throw new Error(errorMessage);
   }
 };
+
+/**
+ * Retrieve paginated created recipes for the logged-in user.
+ * @param page The page number (default 1)
+ * @param limit The number of items per batch (default 10)
+ */
+export const getUserRecipesAPI = async (page: number = 1, limit: number = 10) => {
+  try {
+    const response = await apiClient.get('/recipes/my-recipes', {
+      params: { page, limit },
+    });
+    return response.data;
+  } catch (error: any) {
+    const errorMessage =
+      error.response?.data?.error?.message ||
+      error.message ||
+      'Failed to load user recipes from the server.';
+    throw new Error(errorMessage);
+  }
+};
