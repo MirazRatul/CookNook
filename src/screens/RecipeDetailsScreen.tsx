@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, ScrollView, Image, TouchableOpacity } from "react-native";
+import { View, Text, ScrollView, Image, TouchableOpacity, Dimensions } from "react-native";
 import { useTranslation } from "react-i18next";
 import {
   SafeAreaView,
@@ -36,6 +36,7 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({
   const [activeTab, setActiveTab] = useState<"ingredients" | "instructions">(
     "ingredients",
   );
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
 
   if (!selectedRecipe) {
     return (
@@ -103,14 +104,65 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false} className="flex-1">
-        {/* Banner Image */}
-        <Animated.Image
+        {/* Banner Image / Multi-Image Carousel */}
+        <Animated.View
           entering={FadeInLeft.delay(200).duration(1200)}
-          source={{ uri: selectedRecipe.image }}
-          className="w-full bg-gray-100"
-          style={{ height: layout.details.heroHeight }}
-          resizeMode="cover"
-        />
+          style={{ height: layout.details.heroHeight, width: '100%', position: 'relative' }}
+        >
+          <ScrollView
+            horizontal
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            onScroll={(event) => {
+              const slideSize = event.nativeEvent.layoutMeasurement.width;
+              const offset = event.nativeEvent.contentOffset.x;
+              const activeIndex = Math.floor((offset + slideSize / 2) / slideSize);
+              setActiveImageIndex(activeIndex);
+            }}
+            scrollEventThrottle={16}
+            style={{ width: '100%', height: '100%' }}
+          >
+            {((selectedRecipe.images && selectedRecipe.images.length > 0)
+              ? selectedRecipe.images
+              : [selectedRecipe.image]
+            ).map((imgUri, index) => (
+              <Image
+                key={imgUri + index}
+                source={{ uri: imgUri }}
+                style={{ width: Dimensions.get('window').width, height: layout.details.heroHeight }}
+                resizeMode="cover"
+              />
+            ))}
+          </ScrollView>
+
+          {/* Dots Indicator */}
+          {selectedRecipe.images && selectedRecipe.images.length > 1 && (
+            <View 
+              style={{
+                position: 'absolute',
+                bottom: 55,
+                left: 0,
+                right: 0,
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'center',
+                gap: 6,
+              }}
+            >
+              {selectedRecipe.images.map((_, index) => (
+                <View
+                  key={index}
+                  style={{
+                    width: activeImageIndex === index ? 16 : 6,
+                    height: 6,
+                    borderRadius: 3,
+                    backgroundColor: activeImageIndex === index ? Colors.primary[500] : 'rgba(255, 255, 255, 0.6)',
+                  }}
+                />
+              ))}
+            </View>
+          )}
+        </Animated.View>
 
         {/* Content Container */}
         <Animated.View
