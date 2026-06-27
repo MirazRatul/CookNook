@@ -91,9 +91,9 @@ const recipesSlice = createSlice({
       state.favorites = action.payload;
     },
     addFavoriteRecipes: (state, action: PayloadAction<Recipe[]>) => {
-      const existingIds = new Set(state.userRecipes.map((r) => r.id));
+      const existingIds = new Set(state.recipes.map((r) => r.id));
       const newRecipes = action.payload.filter((r) => !existingIds.has(r.id));
-      state.userRecipes = [...state.userRecipes, ...newRecipes];
+      state.recipes = [...state.recipes, ...newRecipes];
     },
     setRecipes: (state, action: PayloadAction<Recipe[]>) => {
       state.recipes = action.payload;
