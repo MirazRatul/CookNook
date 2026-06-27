@@ -50,7 +50,6 @@ export const SplashScreenView: React.FC<RootStackScreenProps<'Splash'>> = ({ nav
   }));
 
   useEffect(() => {
-    AsyncStorage.clear();
     // 1. Hide native splash screen immediately so our animated one mounts
     SplashScreen.hideAsync().catch(() => {});
 
