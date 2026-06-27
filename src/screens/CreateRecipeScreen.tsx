@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, TextInput, TouchableOpacity, Image } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useDispatch } from 'react-redux';
+import * as ImagePicker from 'expo-image-picker';
 import { addRecipe } from '../store/slices/recipesSlice';
 import { Recipe, CATEGORIES } from '../constants/mockData';
 import { Button } from '../components/Button';
@@ -12,6 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { IMAGE_URLS } from '../constants/Image_Url';
 import { useAlert } from '../context/CustomAlertContext';
 import { Colors } from '../constants/Colors';
+import { createRecipeAPI } from '../services/recipeService';
 
 type CreateRecipeScreenProps = AppTabScreenProps<'Create'>;
 
@@ -30,12 +32,69 @@ export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ navigati
   const [calories, setCalories] = useState('');
   const [difficulty, setDifficulty] = useState<'Easy' | 'Medium' | 'Hard'>('Easy');
 
+  // Images state
+  const [images, setImages] = useState<string[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   // Ingredients and Instructions state
   const [ingredients, setIngredients] = useState<string[]>([]);
   const [newIngredient, setNewIngredient] = useState('');
 
   const [instructions, setInstructions] = useState<string[]>([]);
   const [newInstruction, setNewInstruction] = useState('');
+
+  // Gallery Image Picker
+  const pickImages = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      showAlert(
+        t('create.permission_denied_title', 'Permission Denied'),
+        t('create.permission_gallery_desc', 'We need gallery permissions to let you select recipe photos.'),
+        undefined,
+        'error'
+      );
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsMultipleSelection: true,
+      quality: 0.8,
+    });
+
+    if (!result.canceled) {
+      const pickedUris = result.assets.map(asset => asset.uri);
+      setImages(prev => [...prev, ...pickedUris]);
+    }
+  };
+
+  // Camera Photo Picker
+  const takePhoto = async () => {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    if (status !== 'granted') {
+      showAlert(
+        t('create.permission_denied_title', 'Permission Denied'),
+        t('create.permission_camera_desc', 'We need camera permissions to let you snap recipe photos.'),
+        undefined,
+        'error'
+      );
+      return;
+    }
+
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 0.8,
+    });
+
+    if (!result.canceled) {
+      const pickedUri = result.assets[0].uri;
+      setImages(prev => [...prev, pickedUri]);
+    }
+  };
+
+  const removeImage = (index: number) => {
+    setImages(images.filter((_, idx) => idx !== index));
+  };
 
   // Handle additions
   const handleAddIngredient = () => {
@@ -58,7 +117,7 @@ export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ navigati
     setInstructions(instructions.filter((_, idx) => idx !== index));
   };
 
-  const handleCreate = () => {
+  const handleCreate = async () => {
     if (!title.trim() || !description.trim() || !duration || !calories) {
       showAlert(t('create.error_title', 'Error'), t('create.error_missing_fields'), undefined, 'error');
       return;
@@ -74,48 +133,88 @@ export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ navigati
       return;
     }
 
-    const categoryImages: Record<string, string> = IMAGE_URLS.categories;
+    if (images.length === 0) {
+      showAlert(
+        t('create.error_title', 'Error'), 
+        t('create.error_no_images', 'Please add at least one recipe photo.'), 
+        undefined, 
+        'error'
+      );
+      return;
+    }
 
-    const newRecipe: Recipe = {
-      id: Date.now().toString(),
-      title: title.trim(),
-      description: description.trim(),
-      image: categoryImages[category] || categoryImages.Breakfast,
-      duration: parseInt(duration),
-      difficulty,
-      calories: parseInt(calories),
-      rating: 5.0,
-      reviewsCount: 1,
-      chefName: 'Chef You',
-      chefAvatar: IMAGE_URLS.profiles.chefRatul,
-      category,
-      ingredients,
-      instructions,
-    };
+    setIsSubmitting(true);
 
-    dispatch(addRecipe(newRecipe));
+    try {
+      const response = await createRecipeAPI({
+        title: title.trim(),
+        description: description.trim(),
+        category,
+        duration: parseInt(duration),
+        calories: parseInt(calories),
+        difficulty,
+        ingredients,
+        instructions,
+        images,
+      });
 
-    // Reset Form
-    setTitle('');
-    setDescription('');
-    setCategory('Breakfast');
-    setDuration('');
-    setCalories('');
-    setDifficulty('Easy');
-    setIngredients([]);
-    setInstructions([]);
+      if (response.success && response.data) {
+        const categoryImages: Record<string, string> = IMAGE_URLS.categories;
 
-    showAlert(
-      t('create.success_title'),
-      t('create.success_message'),
-      [
-        {
-          text: 'OK',
-          onPress: () => navigation.navigate('Home'),
-        },
-      ],
-      'success'
-    );
+        const newRecipe: Recipe = {
+          id: response.data.id.toString(),
+          title: response.data.title,
+          description: response.data.description,
+          image: response.data.images[0] || categoryImages[category] || categoryImages.Breakfast,
+          duration: response.data.duration,
+          difficulty: response.data.difficulty,
+          calories: response.data.calories,
+          rating: 5.0,
+          reviewsCount: 1,
+          chefName: response.data.chef_name,
+          chefAvatar: response.data.chef_avatar || IMAGE_URLS.profiles.chefRatul,
+          category: response.data.category,
+          ingredients: response.data.ingredients,
+          instructions: response.data.instructions,
+          images: response.data.images,
+        };
+
+        dispatch(addRecipe(newRecipe));
+
+        // Reset Form
+        setTitle('');
+        setDescription('');
+        setCategory('Breakfast');
+        setDuration('');
+        setCalories('');
+        setDifficulty('Easy');
+        setIngredients([]);
+        setInstructions([]);
+        setImages([]);
+
+        showAlert(
+          t('create.success_title', 'Success'),
+          t('create.success_message', 'Recipe created successfully.'),
+          [
+            {
+              text: 'OK',
+              onPress: () => navigation.navigate('Home'),
+            },
+          ],
+          'success'
+        );
+      }
+    } catch (error: any) {
+      console.error('❌ Error publishing recipe:', error);
+      showAlert(
+        t('create.error_title', 'Error'),
+        error.message || 'Failed to create recipe. Please try again.',
+        undefined,
+        'error'
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -185,6 +284,54 @@ export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ navigati
               </TouchableOpacity>
             ))}
           </View>
+        </View>
+
+        {/* Recipe Photos Picker (Camera & Gallery) */}
+        <View className="mb-6">
+          <Text className="text-sm font-extrabold text-gray-800 mb-2">{t('create.images_label', 'Recipe Photos')}</Text>
+          
+          <View className="flex-row gap-3 mb-3.5">
+            <TouchableOpacity
+              onPress={takePhoto}
+              activeOpacity={0.8}
+              className="flex-1 flex-row items-center justify-center bg-gray-50 border border-dashed border-gray-300 rounded-2xl py-3"
+            >
+              <Ionicons name="camera-outline" size={20} color={Colors.primary[600]} style={{ marginRight: 6 }} />
+              <Text className="text-xs font-bold text-gray-600">{t('create.take_photo', 'Take Photo')}</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={pickImages}
+              activeOpacity={0.8}
+              className="flex-1 flex-row items-center justify-center bg-gray-50 border border-dashed border-gray-300 rounded-2xl py-3"
+            >
+              <Ionicons name="images-outline" size={20} color={Colors.primary[600]} style={{ marginRight: 6 }} />
+              <Text className="text-xs font-bold text-gray-600">{t('create.choose_gallery', 'Add Images')}</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Picked Images Thumbnails */}
+          {images.length > 0 && (
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row py-1">
+              {images.map((uri, idx) => (
+                <View key={idx} className="relative mr-3.5 mb-1.5">
+                  <Image
+                    source={{ uri }}
+                    style={{ width: layout.scale(80), height: layout.scale(80) }}
+                    className="rounded-2xl bg-gray-100 border border-gray-200"
+                    resizeMode="cover"
+                  />
+                  <TouchableOpacity
+                    onPress={() => removeImage(idx)}
+                    activeOpacity={0.8}
+                    className="absolute -top-1.5 -right-1.5 bg-white rounded-full p-0.5 shadow-sm border border-gray-100"
+                  >
+                    <Ionicons name="close-circle" size={20} color={Colors.danger} />
+                  </TouchableOpacity>
+                </View>
+              ))}
+            </ScrollView>
+          )}
         </View>
 
         {/* Cook Time, Calories, Difficulty Row */}
@@ -314,7 +461,13 @@ export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ navigati
         </View>
 
         {/* SUBMIT BUTTON */}
-        <Button title={t('create.share_recipe')} onPress={handleCreate} size="lg" className="rounded-2xl" />
+        <Button 
+          title={isSubmitting ? t('create.sharing_recipe', 'Sharing...') : t('create.share_recipe')} 
+          onPress={handleCreate} 
+          loading={isSubmitting}
+          size="lg" 
+          className="rounded-2xl" 
+        />
       </View>
       </ScrollView>
     </SafeAreaView>

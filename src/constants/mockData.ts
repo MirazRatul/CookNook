@@ -13,6 +13,7 @@ export interface Recipe {
   category: string;
   ingredients: string[];
   instructions: string[];
+  images?: string[];
 }
 
 export const CATEGORIES = ['All', 'Breakfast', 'Italian', 'Mexican', 'Desserts', 'Seafood', 'Drinks'];
