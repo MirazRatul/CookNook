@@ -5,6 +5,7 @@ import { OnboardingScreen } from "../screens/OnboardingScreen";
 import { SignInScreen } from "../screens/auth/SignInScreen";
 import { SignUpScreen } from "../screens/auth/SignUpScreen";
 import { RecipeDetailsScreen } from "../screens/RecipeDetailsScreen";
+import { ProfileScreen } from "../screens/user/ProfileScreen";
 import { MainTabs } from "./MainTabs";
 import { RootStackParamList } from "./types";
 import { Colors } from "../constants/Colors";
@@ -26,6 +27,7 @@ export function RootNavigator() {
       <Stack.Screen name="SignIn" component={SignInScreen} />
       <Stack.Screen name="SignUp" component={SignUpScreen} />
       <Stack.Screen name="MainTabs" component={MainTabs} />
+      <Stack.Screen name="Profile" component={ProfileScreen} />
       <Stack.Screen
         name="RecipeDetails"
         component={RecipeDetailsScreen}

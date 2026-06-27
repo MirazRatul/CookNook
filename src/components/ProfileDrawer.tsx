@@ -81,6 +81,7 @@ export const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
   if (!shouldRender) return null;
 
   const menuItems = [
+    { id: 0, label: t('drawer.profile', 'Profile'), icon: 'person-outline', onPress: () => { onClose(); navigation.navigate('Profile'); } },
     { id: 1, label: t('drawer.my_recipes'), icon: 'book-outline', onPress: onClose },
     { id: 2, label: t('drawer.create_new_recipe'), icon: 'add-circle-outline', onPress: () => { onClose(); onNavigateToCreate(); } },
     { id: 3, label: t('drawer.settings'), icon: 'settings-outline', onPress: () => setIsSettingsExpanded(!isSettingsExpanded) },
@@ -132,7 +133,11 @@ export const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
         ]}
       >
         {/* Profile Card */}
-        <View className="px-6 pb-6 border-b border-gray-100">
+        <TouchableOpacity
+          onPress={() => { onClose(); navigation.navigate('Profile'); }}
+          activeOpacity={0.9}
+          className="px-6 pb-6 border-b border-gray-100"
+        >
           <View className="flex-row justify-between items-center">
             <View className="relative">
               <Image
@@ -143,7 +148,7 @@ export const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
                 <View className="w-1.5 h-1.5 rounded-full bg-white" />
               </View>
             </View>
-
+ 
             <TouchableOpacity
               onPress={onClose}
               className="p-2 bg-gray-100 rounded-full items-center justify-center"
@@ -152,14 +157,14 @@ export const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
               <Ionicons name="close" size={20} color={Colors.gray[700]} />
             </TouchableOpacity>
           </View>
-
+ 
           <Text className="text-xl font-black text-gray-900 mt-4">
             {userDisplayName}
           </Text>
           <Text className="text-xs font-semibold text-gray-400 mt-0.5">
             {userEmail}
           </Text>
-        </View>
+        </TouchableOpacity>
 
         {/* Stats Row */}
         <View className="flex-row justify-between px-6 py-5 border-b border-gray-100">
