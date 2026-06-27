@@ -234,6 +234,7 @@ export const ProfileScreen: React.FC<any> = ({ navigation }) => {
           updateChefProfile({
             chefName: response.data.name,
             chefAvatar: response.data.profile_pic || 'https://images.unsplash.com/photo-1577219491135-ce391730fb2c',
+            userId: response.data.id,
           })
         );
 

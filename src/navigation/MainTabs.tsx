@@ -152,6 +152,7 @@ export function MainTabs() {
             ingredients: r.ingredients || [],
             instructions: r.instructions || [],
             images: r.images || [],
+            userId: r.user_id || undefined,
           }));
           dispatch(setRecipes(mappedRecipes));
         }
@@ -181,6 +182,7 @@ export function MainTabs() {
               ingredients: r.ingredients || [],
               instructions: r.instructions || [],
               images: r.images || [],
+              userId: r.user_id || undefined,
             }));
             dispatch(addFavoriteRecipes(mappedFavRecipes));
           }

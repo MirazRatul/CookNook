@@ -103,6 +103,7 @@ export const UserRecipeScreen: React.FC<any> = ({ navigation }) => {
           ingredients: r.ingredients || [],
           instructions: r.instructions || [],
           images: r.images || [],
+          userId: r.user_id || undefined,
         }));
 
         dispatch(

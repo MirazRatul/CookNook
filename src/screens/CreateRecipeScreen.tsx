@@ -177,6 +177,7 @@ export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ navigati
           ingredients: response.data.ingredients,
           instructions: response.data.instructions,
           images: response.data.images,
+          userId: response.data.user_id,
         };
 
         dispatch(addRecipe(newRecipe));

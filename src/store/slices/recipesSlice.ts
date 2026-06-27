@@ -98,27 +98,27 @@ const recipesSlice = createSlice({
     setRecipes: (state, action: PayloadAction<Recipe[]>) => {
       state.recipes = action.payload;
     },
-    updateChefProfile: (state, action: PayloadAction<{ chefName: string; chefAvatar: string }>) => {
-      const { chefName, chefAvatar } = action.payload;
+    updateChefProfile: (state, action: PayloadAction<{ chefName: string; chefAvatar: string; userId: string }>) => {
+      const { chefName, chefAvatar, userId } = action.payload;
       
-      // Update in userRecipes list
-      state.userRecipes = state.userRecipes.map((r) => ({
-        ...r,
-        chefName,
-        chefAvatar,
-      }));
-
-      // Update in main recipes list (by checking if ID matches any user recipe or if it represents the user's recipe)
-      const userRecipeIds = new Set(state.userRecipes.map((r) => r.id));
-      state.recipes = state.recipes.map((r) => {
-        if (userRecipeIds.has(r.id)) {
+      // Update in userRecipes list if the recipe was created by this user
+      state.userRecipes = state.userRecipes.map((r) => {
+        if (r.userId === userId) {
           return { ...r, chefName, chefAvatar };
         }
         return r;
       });
 
-      // Also update selectedRecipe if active
-      if (state.selectedRecipe && (userRecipeIds.has(state.selectedRecipe.id) || state.userRecipes.some(r => r.id === state.selectedRecipe?.id))) {
+      // Update in main recipes list if the recipe was created by this user
+      state.recipes = state.recipes.map((r) => {
+        if (r.userId === userId) {
+          return { ...r, chefName, chefAvatar };
+        }
+        return r;
+      });
+
+      // Also update selectedRecipe if active and created by this user
+      if (state.selectedRecipe && state.selectedRecipe.userId === userId) {
         state.selectedRecipe = {
           ...state.selectedRecipe,
           chefName,
