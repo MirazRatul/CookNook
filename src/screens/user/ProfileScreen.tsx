@@ -7,6 +7,7 @@ import {
   Image,
   KeyboardAvoidingView,
   Platform,
+  TextInput,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -16,11 +17,46 @@ import { Colors } from '../../constants/Colors';
 import { Button } from '../../components/Button';
 import { Input } from '../../components/Input';
 import { LoadingIndicator } from '../../components/LoadingIndicator';
+import { BottomSheet } from '../../components/BottomSheet';
 import { useResponsiveLayout } from '../../hooks/useResponsiveLayout';
 import { useAlert } from '../../context/CustomAlertContext';
 import { auth } from '../../services/firebase';
 import { getUserProfileAPI, updateUserProfileAPI } from '../../services/userService';
 import { IMAGE_URLS } from '../../constants/Image_Url';
+
+const COUNTRY_CODES = [
+  { code: '+880', name: 'Bangladesh', flag: '🇧🇩' },
+  { code: '+1', name: 'United States/Canada', flag: '🇺🇸' },
+  { code: '+91', name: 'India', flag: '🇮🇳' },
+  { code: '+44', name: 'United Kingdom', flag: '🇬🇧' },
+  { code: '+61', name: 'Australia', flag: '🇦🇺' },
+  { code: '+92', name: 'Pakistan', flag: '🇵🇰' },
+  { code: '+971', name: 'UAE', flag: '🇦🇪' },
+  { code: '+60', name: 'Malaysia', flag: '🇲🇾' },
+  { code: '+65', name: 'Singapore', flag: '🇸🇬' },
+  { code: '+33', name: 'France', flag: '🇫🇷' },
+  { code: '+49', name: 'Germany', flag: '🇩🇪' },
+  { code: '+86', name: 'China', flag: '🇨🇳' },
+  { code: '+81', name: 'Japan', flag: '🇯🇵' },
+];
+
+const parsePhoneNumber = (fullNumber: string) => {
+  if (!fullNumber) return { countryCode: '+880', nationalNumber: '' };
+  // Sort country codes by length descending to match longer prefix first
+  const sortedCodes = [...COUNTRY_CODES].sort((a, b) => b.code.length - a.code.length);
+  for (const c of sortedCodes) {
+    if (fullNumber.startsWith(c.code)) {
+      return {
+        countryCode: c.code,
+        nationalNumber: fullNumber.slice(c.code.length),
+      };
+    }
+  }
+  return {
+    countryCode: '+880',
+    nationalNumber: fullNumber,
+  };
+};
 
 export const ProfileScreen: React.FC<any> = ({ navigation }) => {
   const { t } = useTranslation();
@@ -35,6 +71,11 @@ export const ProfileScreen: React.FC<any> = ({ navigation }) => {
   const [address, setAddress] = useState('');
   const [experienceYears, setExperienceYears] = useState('');
   const [specialty, setSpecialty] = useState('');
+
+  // Country Code Picker States
+  const [selectedCountryCode, setSelectedCountryCode] = useState('+880');
+  const [isCountrySheetOpen, setIsCountrySheetOpen] = useState(false);
+  const [isMobileFocused, setIsMobileFocused] = useState(false);
   
   // Profile Picture States
   // Can be a remote URL (string starting with http) or a local picked URI (string)
@@ -54,7 +95,12 @@ export const ProfileScreen: React.FC<any> = ({ navigation }) => {
       const response = await getUserProfileAPI();
       if (response.success && response.data) {
         setName(response.data.name || '');
-        setMobile(response.data.mobile || '');
+        
+        // Parse database number into code and local number
+        const { countryCode, nationalNumber } = parsePhoneNumber(response.data.mobile || '');
+        setSelectedCountryCode(countryCode);
+        setMobile(nationalNumber);
+
         setBio(response.data.bio || '');
         setAddress(response.data.address || '');
         setExperienceYears(response.data.experience_years ? response.data.experience_years.toString() : '');
@@ -166,15 +212,16 @@ export const ProfileScreen: React.FC<any> = ({ navigation }) => {
 
     setIsSaving(true);
     try {
+      const fullMobile = selectedCountryCode + mobile.trim();
       const isLocalFile = !profilePic.startsWith('http');
       const payload = {
         name: name.trim(),
-        mobile: mobile.trim(),
+        mobile: fullMobile,
         bio: bio.trim(),
         address: address.trim(),
         experience_years: experienceYears.trim(),
         specialty: specialty.trim(),
-        profile_pic: isLocalFile ? profilePic : undefined, // Only pass if it's a new local file picked
+        profile_pic: isLocalFile ? profilePic : undefined,
       };
 
       const response = await updateUserProfileAPI(payload);
@@ -212,6 +259,8 @@ export const ProfileScreen: React.FC<any> = ({ navigation }) => {
   const imageSource = profilePic
     ? { uri: profilePic }
     : { uri: IMAGE_URLS.profiles.chefRatul };
+
+  const selectedCountry = COUNTRY_CODES.find((c) => c.code === selectedCountryCode) || COUNTRY_CODES[0];
 
   return (
     <SafeAreaView className="flex-1 bg-white" edges={['top', 'left', 'right']}>
@@ -279,26 +328,59 @@ export const ProfileScreen: React.FC<any> = ({ navigation }) => {
                 placeholder={t('profile.name_placeholder', 'Enter your name')}
               />
 
-              {/* Row for Mobile & Experience */}
-              <View className="flex-row" style={{ gap: 12 }}>
+              {/* Row for Mobile & Experience Labels */}
+              <View className="flex-row mb-1.5" style={{ gap: 12 }}>
                 <View className="flex-1">
-                  <Input
-                    label={t('profile.mobile_label', 'Mobile Number') + ' *'}
+                  <Text className="text-gray-700 font-medium text-sm">
+                    {t('profile.mobile_label', 'Mobile Number')} <Text className="text-red-500">*</Text>
+                  </Text>
+                </View>
+                <View style={{ width: layout.scale(95) }}>
+                  <Text className="text-gray-700 font-medium text-sm text-center" numberOfLines={1}>
+                    {t('profile.experience_short', 'Exp (Yrs)')}
+                  </Text>
+                </View>
+              </View>
+
+              {/* Row for Mobile & Experience Inputs */}
+              <View className="flex-row mb-4" style={{ gap: 12 }}>
+                {/* Mobile & Country Code Box */}
+                <View 
+                  className={`flex-row items-center border rounded-xl px-3 bg-gray-50 h-12 flex-1 transition-colors ${
+                    isMobileFocused ? 'border-primary-500 bg-white border-2' : 'border-gray-200'
+                  }`}
+                >
+                  <TouchableOpacity
+                    onPress={() => setIsCountrySheetOpen(true)}
+                    activeOpacity={0.7}
+                    className="flex-row items-center pr-2.5 mr-2.5 border-r border-gray-200 h-full"
+                  >
+                    <Text className="text-sm mr-1">{selectedCountry.flag}</Text>
+                    <Text className="text-sm font-semibold text-gray-800">{selectedCountry.code}</Text>
+                    <Ionicons name="chevron-down" size={10} color={Colors.gray[500]} style={{ marginLeft: 3 }} />
+                  </TouchableOpacity>
+
+                  <TextInput
                     value={mobile}
                     onChangeText={setMobile}
                     keyboardType="phone-pad"
                     placeholder={t('profile.mobile_placeholder', 'Enter mobile no')}
+                    className="flex-1 text-gray-800 text-[14px] p-0"
+                    placeholderTextColor={Colors.gray[400]}
+                    onFocus={() => setIsMobileFocused(true)}
+                    onBlur={() => setIsMobileFocused(false)}
                   />
                 </View>
 
+                {/* Experience Box */}
                 <View style={{ width: layout.scale(95) }}>
                   <Input
-                    label={t('profile.experience_short', 'Exp (Yrs)')}
                     value={experienceYears}
                     onChangeText={setExperienceYears}
                     keyboardType="number-pad"
                     placeholder="e.g. 5"
                     style={{ textAlign: 'center' }}
+                    className="mb-0"
                   />
                 </View>
               </View>
@@ -343,6 +425,36 @@ export const ProfileScreen: React.FC<any> = ({ navigation }) => {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
+
+      {/* Country Code Picker Bottom Sheet */}
+      <BottomSheet
+        isOpen={isCountrySheetOpen}
+        onClose={() => setIsCountrySheetOpen(false)}
+        title={t('profile.select_country_code', 'Select Country')}
+        sheetHeight={400}
+      >
+        <ScrollView showsVerticalScrollIndicator={false} className="flex-1">
+          {COUNTRY_CODES.map((country) => (
+            <TouchableOpacity
+              key={country.code + country.name}
+              onPress={() => {
+                setSelectedCountryCode(country.code);
+                setIsCountrySheetOpen(false);
+              }}
+              className={`flex-row items-center justify-between py-3.5 border-b border-gray-50 ${
+                selectedCountryCode === country.code ? 'bg-amber-50/40 rounded-xl px-2' : ''
+              }`}
+              activeOpacity={0.7}
+            >
+              <View className="flex-row items-center">
+                <Text className="text-xl mr-3">{country.flag}</Text>
+                <Text className="text-sm font-semibold text-gray-800">{country.name}</Text>
+              </View>
+              <Text className="text-sm font-black text-primary-600">{country.code}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </BottomSheet>
 
       {/* Fullscreen blur loading indicator on save */}
       {isSaving && (
