@@ -1,10 +1,5 @@
 import { Platform } from 'react-native';
-
-const API_BASE_URL = Platform.select({
-  android: 'http://10.0.2.2:5001/api/v1',
-  ios: 'http://localhost:5001/api/v1',
-  default: 'http://localhost:5001/api/v1',
-});
+import apiClient from '../api/api';
 
 export interface CreateRecipeData {
   title: string;
@@ -49,24 +44,17 @@ export const createRecipeAPI = async (recipeData: CreateRecipeData) => {
     } as any);
   });
 
-  console.log(`📤 Sending recipe to backend: ${API_BASE_URL}/recipes`);
+  console.log('📤 Sending recipe to backend via Axios API Client...');
 
-  const response = await fetch(`${API_BASE_URL}/recipes`, {
-    method: 'POST',
-    body: formData,
-    headers: {
-      'Accept': 'application/json',
-      // Note: Fetch automatically sets the appropriate 'multipart/form-data; boundary=...' header,
-      // so we MUST NOT set it manually or it will corrupt the boundary.
-    },
-  });
-
-  const responseJson = await response.json().catch(() => null);
-
-  if (!response.ok) {
-    const errorMessage = responseJson?.error?.message || 'Failed to create recipe on the server.';
+  try {
+    const response = await apiClient.post('/recipes', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.error?.message || error.message || 'Failed to create recipe on the server.';
     throw new Error(errorMessage);
   }
-
-  return responseJson;
 };
