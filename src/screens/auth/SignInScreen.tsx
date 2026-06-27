@@ -210,14 +210,22 @@ export const SignInScreen: React.FC<RootStackScreenProps<'SignIn'>> = ({ navigat
               style={{ maxWidth: layout.isTablet ? 460 : undefined }} 
               className="w-full self-center"
             >
-              {/* Header section */}
-              <Animated.View style={headerAnimatedStyle} className="items-center mb-8">
-                <Image 
-                  source={LOGO_IMAGE} 
-                  style={{ width: layout.scale(120), height: layout.scale(42) }} 
-                  resizeMode="contain" 
-                />
-                <Text className="text-white text-sm font-semibold tracking-wider uppercase mt-3">
+              {/* Logo & Header */}
+              <Animated.View style={headerAnimatedStyle} className="items-center mb-6">
+                <View 
+                  style={{ width: layout.scale(64), height: layout.scale(64), borderRadius: layout.scale(14) }} 
+                  className="bg-white/15 backdrop-blur-md justify-center items-center mb-2 shadow-inner border border-white/20 overflow-hidden"
+                >
+                  <Image 
+                    source={LOGO_IMAGE} 
+                    style={{ width: '100%', height: '100%' }}
+                    resizeMode="cover"
+                  />
+                </View>
+                <Text className="text-3xl font-black text-white tracking-wider">
+                  CookNook
+                </Text>
+                <Text className="text-amber-200/90 font-medium mt-1 text-center text-sm">
                   {t('auth.culinary_haven')}
                 </Text>
               </Animated.View>
