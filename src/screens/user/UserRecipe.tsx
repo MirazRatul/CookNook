@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import {
-  FlatList,
   Text,
   TouchableOpacity,
   View,
@@ -9,7 +8,12 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
+import Animated, {
+  FadeInDown,
+  FadeInUp,
+  useSharedValue,
+  useAnimatedScrollHandler,
+} from 'react-native-reanimated';
 import { useIsFocused } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../constants/Colors';
@@ -26,6 +30,7 @@ import {
 } from '../../store/slices/recipesSlice';
 import { getUserRecipesAPI } from '../../services/recipeService';
 import { useAlert } from '../../context/CustomAlertContext';
+import { CustomRefreshIndicator } from '../../components/CustomRefreshIndicator';
 
 export const UserRecipeScreen: React.FC<any> = ({ navigation }) => {
   const { t } = useTranslation();
@@ -45,6 +50,14 @@ export const UserRecipeScreen: React.FC<any> = ({ navigation }) => {
   const [isInitialLoading, setIsInitialLoading] = useState(false);
   const [isMoreLoading, setIsMoreLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+
+  // Shared scroll offset for pull-to-refresh tracking
+  const scrollY = useSharedValue(0);
+  const scrollHandler = useAnimatedScrollHandler({
+    onScroll: (event) => {
+      scrollY.value = event.contentOffset.y;
+    },
+  });
 
   useEffect(() => {
     if (isFocused) {
@@ -161,7 +174,7 @@ export const UserRecipeScreen: React.FC<any> = ({ navigation }) => {
       </View>
 
       {/* Recipes List Container */}
-      <View className="flex-1" style={{ backgroundColor: Colors.bgLight }}>
+      <View className="flex-1 relative" style={{ backgroundColor: Colors.bgLight }}>
         {isInitialLoading ? (
           <View className="flex-1 items-center justify-center">
             <ActivityIndicator size="large" color={Colors.primary[500]} />
@@ -170,53 +183,61 @@ export const UserRecipeScreen: React.FC<any> = ({ navigation }) => {
             </Text>
           </View>
         ) : (
-          <FlatList
-            data={userRecipes}
-            keyExtractor={(item) => `user-recipe-${item.id}`}
-            contentContainerStyle={{
-              paddingHorizontal: layout.spacing.screen,
-              paddingTop: 20,
-              paddingBottom: insets.bottom + 48,
-              width: '100%',
-              maxWidth: layout.listMaxWidth,
-              alignSelf: 'center',
-              flexGrow: 1,
-            }}
-            showsVerticalScrollIndicator={false}
-            renderItem={({ item, index }) => (
-              <Animated.View
-                entering={isRefreshing ? undefined : FadeInDown.delay(Math.min(index, 4) * 50).duration(350)}
-              >
-                <RecipeCard
-                  recipe={item}
-                  isFavorite={favorites.includes(item.id)}
-                  onPress={() => handleRecipePress(item)}
-                  onToggleFavorite={() => dispatch(toggleFavorite(item.id))}
-                  horizontal
+          <>
+            <Animated.FlatList
+              data={userRecipes}
+              keyExtractor={(item) => `user-recipe-${item.id}`}
+              onScroll={scrollHandler}
+              scrollEventThrottle={16}
+              contentContainerStyle={{
+                paddingHorizontal: layout.spacing.screen,
+                paddingTop: 20,
+                paddingBottom: insets.bottom + 48,
+                width: '100%',
+                maxWidth: layout.listMaxWidth,
+                alignSelf: 'center',
+                flexGrow: 1,
+              }}
+              showsVerticalScrollIndicator={false}
+              renderItem={({ item, index }) => (
+                <Animated.View
+                  entering={isRefreshing ? undefined : FadeInDown.delay(Math.min(index, 4) * 50).duration(350)}
+                >
+                  <RecipeCard
+                    recipe={item}
+                    isFavorite={favorites.includes(item.id)}
+                    onPress={() => handleRecipePress(item)}
+                    onToggleFavorite={() => dispatch(toggleFavorite(item.id))}
+                    horizontal
+                  />
+                </Animated.View>
+              )}
+              ListEmptyComponent={
+                !isInitialLoading ? (
+                  <EmptyStateView
+                    t={t}
+                    onPressCreate={() => navigation.navigate('MainTabs', { screen: 'Create' })}
+                    isRefreshing={isRefreshing}
+                  />
+                ) : null
+              }
+              ListFooterComponent={renderFooter}
+              onEndReached={handleLoadMore}
+              onEndReachedThreshold={0.2}
+              refreshControl={
+                <RefreshControl
+                  refreshing={isRefreshing}
+                  onRefresh={handleRefresh}
+                  tintColor="transparent"
+                  colors={['transparent']}
+                  progressBackgroundColor="transparent"
                 />
-              </Animated.View>
+              }
+            />
+            {!isInitialLoading && (
+              <CustomRefreshIndicator scrollY={scrollY} refreshing={isRefreshing} />
             )}
-            ListEmptyComponent={
-              !isInitialLoading ? (
-                <EmptyStateView
-                  t={t}
-                  onPressCreate={() => navigation.navigate('MainTabs', { screen: 'Create' })}
-                  isRefreshing={isRefreshing}
-                />
-              ) : null
-            }
-            ListFooterComponent={renderFooter}
-            onEndReached={handleLoadMore}
-            onEndReachedThreshold={0.2}
-            refreshControl={
-              <RefreshControl
-                refreshing={isRefreshing}
-                onRefresh={handleRefresh}
-                colors={[Colors.primary[500]]}
-                tintColor={Colors.primary[500]}
-              />
-            }
-          />
+          </>
         )}
       </View>
     </SafeAreaView>
