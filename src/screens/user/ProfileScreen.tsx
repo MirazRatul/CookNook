@@ -225,7 +225,18 @@ export const ProfileScreen: React.FC<any> = ({ navigation }) => {
       };
 
       const response = await updateUserProfileAPI(payload);
-      if (response.success) {
+      if (response.success && response.data) {
+        // Sync profile details to the Firebase Auth user profile
+        const currentUser = auth().currentUser;
+        if (currentUser) {
+          await currentUser.updateProfile({
+            displayName: response.data.name,
+            photoURL: response.data.profile_pic || undefined,
+          });
+          // Force reload to refresh local auth cache references
+          await currentUser.reload();
+        }
+
         showAlert(
           t('common.success', 'Success'),
           t('profile.success_update', 'Profile updated successfully!'),

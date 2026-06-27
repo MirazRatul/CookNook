@@ -18,6 +18,7 @@ import { AppTabScreenProps } from '../navigation/types';
 import { Ionicons } from '@expo/vector-icons';
 import { IMAGE_URLS } from '../constants/Image_Url';
 import { Colors } from '../constants/Colors';
+import { auth } from '../services/firebase';
 
 type HomeScreenProps = AppTabScreenProps<'Home'>;
 
@@ -32,6 +33,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   );
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isLanguageSheetOpen, setIsLanguageSheetOpen] = useState(false);
+
+  const currentUser = auth().currentUser;
+  const userPhoto = currentUser?.photoURL ? { uri: currentUser.photoURL } : { uri: IMAGE_URLS.profiles.chefRatul };
 
   // Filter recipes based on category
   const filteredRecipes = recipes.filter((recipe) => {
@@ -80,7 +84,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           activeOpacity={0.85}
         >
           <Image
-            source={{ uri: IMAGE_URLS.profiles.chefRatul }}
+            source={userPhoto}
             className="w-12 h-12 rounded-full border-2 border-white shadow-sm"
           />
         </TouchableOpacity>
