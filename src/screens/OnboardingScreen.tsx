@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import AppIntroSlider from 'react-native-app-intro-slider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
-import Animated, { FadeInDown, ZoomIn } from 'react-native-reanimated';
+import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { RootStackScreenProps } from '../navigation/types';
 import { Colors } from '../constants/Colors';
 import { useResponsiveLayout } from '../hooks/useResponsiveLayout';
@@ -81,7 +81,7 @@ export const OnboardingScreen: React.FC<RootStackScreenProps<'Onboarding'>> = ({
         <View style={{ height: imageHeight }} className="w-full rounded-b-[40px] overflow-hidden bg-gray-100">
           <Animated.Image 
             key={`slide-image-${item.key}-${isActive}`}
-            entering={isActive ? ZoomIn.delay(100).duration(600) : undefined}
+            entering={isActive ? FadeIn.duration(1200) : undefined}
             source={{ uri: item.image }} 
             className="w-full h-full" 
             resizeMode="cover" 
