@@ -18,7 +18,10 @@ export interface CreateRecipeData {
  * Service to submit new recipes along with multiple image uploads and video to the backend.
  * Packages files and text fields into a multipart/form-data request.
  */
-export const createRecipeAPI = async (recipeData: CreateRecipeData) => {
+export const createRecipeAPI = async (
+  recipeData: CreateRecipeData,
+  onProgress?: (percentage: number) => void
+) => {
   const formData = new FormData();
 
   formData.append('title', recipeData.title);
@@ -64,6 +67,12 @@ export const createRecipeAPI = async (recipeData: CreateRecipeData) => {
     const response = await apiClient.post('/recipes', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
+      },
+      onUploadProgress: (progressEvent) => {
+        if (progressEvent.total && onProgress) {
+          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          onProgress(percentCompleted);
+        }
       },
     });
     return response.data;

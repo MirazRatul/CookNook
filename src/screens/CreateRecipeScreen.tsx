@@ -15,6 +15,7 @@ import { useAlert } from '../context/CustomAlertContext';
 import { Colors } from '../constants/Colors';
 import { createRecipeAPI } from '../services/recipeService';
 import { Video } from 'react-native-compressor';
+import { LoadingIndicator } from '../components/LoadingIndicator';
 
 type CreateRecipeScreenProps = AppTabScreenProps<'Create'>;
 
@@ -189,7 +190,7 @@ export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ navigati
         console.log('✅ Video compression complete! Target URI:', finalVideoUri);
       }
 
-      setSubmitStatus(t('create.uploading_data', 'Uploading recipe details & files...'));
+      setSubmitStatus(t('create.uploading_data', 'Uploading details & files: 0%'));
       const response = await createRecipeAPI({
         title: title.trim(),
         description: description.trim(),
@@ -201,6 +202,8 @@ export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ navigati
         instructions,
         images,
         video: finalVideoUri,
+      }, (percentage) => {
+        setSubmitStatus(t('create.uploading_progress', `Uploading details & files: ${percentage}%`));
       });
 
       if (response.success && response.data) {
@@ -564,6 +567,9 @@ export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ navigati
       </View>
       </ScrollView>
       </KeyboardAvoidingView>
+      {isSubmitting && (
+        <LoadingIndicator message={submitStatus || t('create.sharing_recipe', 'Sharing...')} />
+      )}
     </SafeAreaView>
   );
 };
