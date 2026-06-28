@@ -1,11 +1,10 @@
 import React, { useState } from "react";
-import { View, Text, ScrollView, Image, TouchableOpacity, Dimensions, Modal } from "react-native";
+import { View, Text, ScrollView, Image, TouchableOpacity, Dimensions, Modal, StyleSheet } from "react-native";
 import { useTranslation } from "react-i18next";
 import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
-import { useVideoPlayer, VideoView } from 'expo-video';
 import Animated, {
   FadeIn,
   FadeInDown,
@@ -20,6 +19,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { HeartButton } from "../components/HeartButton";
 import { Colors } from "../constants/Colors";
 import { MediaModal } from "../components/MediaModal";
+import { VideoRecipeModal } from "../components/video/VideoRecipeModal";
+import { useVideoPlayer, VideoView } from 'expo-video';
 
 type RecipeDetailsScreenProps = RootStackScreenProps<"RecipeDetails">;
 
@@ -42,6 +43,12 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({
   const [isMediaModalVisible, setIsMediaModalVisible] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [isVideoVisible, setIsVideoVisible] = useState(false);
+
+  const previewPlayer = useVideoPlayer(selectedRecipe?.videoUrl || '', (p) => {
+    p.muted = true;
+    p.loop = false;
+    p.pause(); // Ensure it stays paused as a static first frame preview
+  });
 
   if (!selectedRecipe) {
     return (
@@ -176,34 +183,6 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({
               ))}
             </View>
           )}
-          {/* Floating Play Video Button */}
-          {selectedRecipe.videoUrl && (
-            <TouchableOpacity
-              onPress={() => setIsVideoVisible(true)}
-              activeOpacity={0.85}
-              style={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: [{ translateX: -30 }, { translateY: -40 }],
-                width: 60,
-                height: 60,
-                borderRadius: 30,
-                backgroundColor: 'rgba(0,0,0,0.5)',
-                justifyContent: 'center',
-                alignItems: 'center',
-                borderWidth: 2,
-                borderColor: '#ffffff',
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: 0.3,
-                shadowRadius: 5,
-                elevation: 6,
-              }}
-            >
-              <Ionicons name="play" size={32} color="#ffffff" style={{ marginLeft: 4 }} />
-            </TouchableOpacity>
-          )}
         </Animated.View>
 
         {/* Content Container */}
@@ -252,6 +231,79 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({
               </Text>
             </View>
           </View>
+
+          {/* Video Recipe Card (if video exists) */}
+          {selectedRecipe.videoUrl && (
+            <View className="mt-5 pb-5 border-b border-gray-100">
+              <Text className="text-sm font-extrabold text-gray-800 mb-3">
+                {t('details.video_recipe_label', 'Video Recipe Guide')}
+              </Text>
+              
+              <TouchableOpacity
+                onPress={() => setIsVideoVisible(true)}
+                activeOpacity={0.9}
+                style={{
+                  width: '100%',
+                  aspectRatio: 16 / 9,
+                  borderRadius: 24,
+                  backgroundColor: '#000',
+                  overflow: 'hidden',
+                  position: 'relative',
+                  shadowColor: '#000',
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.15,
+                  shadowRadius: 8,
+                  elevation: 5,
+                }}
+              >
+                {/* Video thumbnail preview playing silently */}
+                <VideoView
+                  player={previewPlayer}
+                  style={{ width: '100%', height: '100%', opacity: 0.72 }}
+                  nativeControls={false}
+                  contentFit="cover"
+                />
+
+                {/* Dark overlay */}
+                <View style={{ ...StyleSheet.absoluteFill, backgroundColor: 'rgba(0,0,0,0.18)' }} />
+
+                {/* Custom Styled play button in the center */}
+                <View
+                  style={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: [{ translateX: -28 }, { translateY: -28 }],
+                    width: 56,
+                    height: 56,
+                    borderRadius: 28,
+                    backgroundColor: '#f59e0b', // Amber-500 matching app design
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    borderWidth: 2,
+                    borderColor: '#ffffff',
+                    shadowColor: '#000',
+                    shadowOffset: { width: 0, height: 3 },
+                    shadowOpacity: 0.25,
+                    shadowRadius: 4,
+                    elevation: 5,
+                  }}
+                >
+                  <Ionicons name="play" size={28} color="#ffffff" style={{ marginLeft: 3 }} />
+                </View>
+
+                {/* Overlay Text info at bottom-left */}
+                <View style={{ position: 'absolute', bottom: 16, left: 16, right: 16 }}>
+                  <Text className="text-white font-extrabold text-sm">
+                    {t('details.watch_video_guide', 'Watch Step-by-Step Video Guide')}
+                  </Text>
+                  <Text className="text-gray-200 text-xs mt-0.5 font-medium">
+                    {selectedRecipe.duration} {t('details.mins_duration', 'mins cook time')}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+          )}
 
           {/* Recipe Meta Stats */}
           <View
@@ -459,56 +511,13 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({
 
       {/* Fullscreen Video Player Modal */}
       {selectedRecipe.videoUrl && (
-        <VideoPlayerModal
+        <VideoRecipeModal
           visible={isVideoVisible}
           videoUrl={selectedRecipe.videoUrl}
+          recipeTitle={selectedRecipe.title}
           onClose={() => setIsVideoVisible(false)}
         />
       )}
     </View>
-  );
-};
-
-interface VideoPlayerModalProps {
-  visible: boolean;
-  videoUrl: string;
-  onClose: () => void;
-}
-
-const VideoPlayerModal: React.FC<VideoPlayerModalProps> = ({ visible, videoUrl, onClose }) => {
-  const player = useVideoPlayer(videoUrl, (p) => {
-    p.loop = true;
-    p.play();
-  });
-
-  return (
-    <Modal
-      visible={visible}
-      animationType="fade"
-      transparent={true}
-      onRequestClose={onClose}
-    >
-      <View style={{ flex: 1, backgroundColor: 'black', justifyContent: 'center' }}>
-        <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom', 'left', 'right']}>
-          {/* Header */}
-          <View style={{ height: 60, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16 }}>
-            <TouchableOpacity onPress={onClose} style={{ padding: 8 }}>
-              <Ionicons name="close" size={30} color="white" />
-            </TouchableOpacity>
-            <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>Recipe Video</Text>
-            <View style={{ width: 46 }} />
-          </View>
-
-          {/* Video View */}
-          <View style={{ flex: 1, justifyContent: 'center' }}>
-            <VideoView
-              style={{ width: '100%', aspectRatio: 16 / 9, maxHeight: '80%' }}
-              player={player}
-              nativeControls={true}
-            />
-          </View>
-        </SafeAreaView>
-      </View>
-    </Modal>
   );
 };
