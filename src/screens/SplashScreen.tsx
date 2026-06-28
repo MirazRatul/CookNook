@@ -127,6 +127,7 @@ export const SplashScreenView: React.FC<RootStackScreenProps<'Splash'>> = ({ nav
                 instructions: r.instructions || [],
                 images: r.images || [],
                 userId: r.user_id || undefined,
+                videoUrl: r.video_url || undefined,
               }));
               dispatch(setRecipes(mappedRecipes));
             }
@@ -156,6 +157,7 @@ export const SplashScreenView: React.FC<RootStackScreenProps<'Splash'>> = ({ nav
                   instructions: r.instructions || [],
                   images: r.images || [],
                   userId: r.user_id || undefined,
+                  videoUrl: r.video_url || undefined,
                 }));
                 dispatch(addFavoriteRecipes(mappedFavRecipes));
               }

@@ -14,6 +14,7 @@ import { IMAGE_URLS } from '../constants/Image_Url';
 import { useAlert } from '../context/CustomAlertContext';
 import { Colors } from '../constants/Colors';
 import { createRecipeAPI } from '../services/recipeService';
+import { Video } from 'react-native-compressor';
 
 type CreateRecipeScreenProps = AppTabScreenProps<'Create'>;
 
@@ -34,7 +35,9 @@ export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ navigati
 
   // Images state
   const [images, setImages] = useState<string[]>([]);
+  const [video, setVideo] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState('');
 
   // Ingredients and Instructions state
   const [ingredients, setIngredients] = useState<string[]>([]);
@@ -96,6 +99,34 @@ export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ navigati
     setImages(images.filter((_, idx) => idx !== index));
   };
 
+  // Video Picker from Gallery
+  const pickVideo = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      showAlert(
+        t('create.permission_denied_title', 'Permission Denied'),
+        t('create.permission_gallery_desc', 'We need gallery permissions to let you select a recipe video.'),
+        undefined,
+        'error'
+      );
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Videos,
+      allowsEditing: true,
+      quality: 1,
+    });
+
+    if (!result.canceled && result.assets && result.assets.length > 0) {
+      setVideo(result.assets[0].uri);
+    }
+  };
+
+  const removeVideo = () => {
+    setVideo(null);
+  };
+
   // Handle additions
   const handleAddIngredient = () => {
     if (newIngredient.trim() === '') return;
@@ -144,8 +175,21 @@ export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ navigati
     }
 
     setIsSubmitting(true);
+    let finalVideoUri = video;
 
     try {
+      if (video) {
+        setSubmitStatus(t('create.compressing_video', 'Compressing video (keeping high quality)...'));
+        console.log('🎬 Starting client-side video compression...');
+        // Compress using react-native-compressor (retains video quality automatically)
+        finalVideoUri = await Video.compress(video, {
+          compressionMethod: 'auto',
+          minimumFileSizeForCompress: 0,
+        });
+        console.log('✅ Video compression complete! Target URI:', finalVideoUri);
+      }
+
+      setSubmitStatus(t('create.uploading_data', 'Uploading recipe details & files...'));
       const response = await createRecipeAPI({
         title: title.trim(),
         description: description.trim(),
@@ -156,6 +200,7 @@ export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ navigati
         ingredients,
         instructions,
         images,
+        video: finalVideoUri,
       });
 
       if (response.success && response.data) {
@@ -178,6 +223,7 @@ export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ navigati
           instructions: response.data.instructions,
           images: response.data.images,
           userId: response.data.user_id,
+          videoUrl: response.data.video_url || undefined,
         };
 
         dispatch(addRecipe(newRecipe));
@@ -192,6 +238,7 @@ export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ navigati
         setIngredients([]);
         setInstructions([]);
         setImages([]);
+        setVideo(null);
 
         showAlert(
           t('create.success_title', 'Success'),
@@ -215,6 +262,7 @@ export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ navigati
       );
     } finally {
       setIsSubmitting(false);
+      setSubmitStatus('');
     }
   };
 
@@ -337,6 +385,45 @@ export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ navigati
                 </View>
               ))}
             </ScrollView>
+          )}
+        </View>
+
+        {/* Recipe Video Picker (Optional) */}
+        <View className="mb-6">
+          <Text className="text-sm font-extrabold text-gray-800 mb-2">{t('create.video_label', 'Recipe Video (Optional)')}</Text>
+          
+          {!video ? (
+            <TouchableOpacity
+              onPress={pickVideo}
+              activeOpacity={0.8}
+              className="flex-row items-center justify-center bg-gray-50 border border-dashed border-gray-300 rounded-2xl py-4"
+            >
+              <Ionicons name="videocam-outline" size={22} color={Colors.primary[600]} style={{ marginRight: 8 }} />
+              <Text className="text-xs font-bold text-gray-600">{t('create.add_video', 'Upload Recipe Video')}</Text>
+            </TouchableOpacity>
+          ) : (
+            <View className="bg-amber-50/65 border border-amber-100 rounded-2xl p-4 flex-row items-center justify-between">
+              <View className="flex-row items-center flex-1 mr-3">
+                <View className="bg-amber-500/10 p-2.5 rounded-xl mr-3">
+                  <Ionicons name="videocam" size={24} color={Colors.primary[600]} />
+                </View>
+                <View className="flex-1">
+                  <Text numberOfLines={1} className="text-sm font-bold text-gray-800">
+                    {video.split('/').pop() || 'recipe_video.mp4'}
+                  </Text>
+                  <Text className="text-xs text-gray-400 mt-0.5">
+                    {t('create.video_ready', 'Video ready for optimized upload')}
+                  </Text>
+                </View>
+              </View>
+              <TouchableOpacity
+                onPress={removeVideo}
+                activeOpacity={0.8}
+                className="bg-white rounded-full p-1.5 shadow-sm border border-gray-100"
+              >
+                <Ionicons name="trash-outline" size={18} color={Colors.danger} />
+              </TouchableOpacity>
+            </View>
           )}
         </View>
 
@@ -468,7 +555,7 @@ export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ navigati
 
         {/* SUBMIT BUTTON */}
         <Button 
-          title={isSubmitting ? t('create.sharing_recipe', 'Sharing...') : t('create.share_recipe')} 
+          title={isSubmitting ? (submitStatus || t('create.sharing_recipe', 'Sharing...')) : t('create.share_recipe')} 
           onPress={handleCreate} 
           loading={isSubmitting}
           size="lg" 

@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { View, Text, ScrollView, Image, TouchableOpacity, Dimensions } from "react-native";
+import { View, Text, ScrollView, Image, TouchableOpacity, Dimensions, Modal } from "react-native";
 import { useTranslation } from "react-i18next";
 import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
+import { useVideoPlayer, VideoView } from 'expo-video';
 import Animated, {
   FadeIn,
   FadeInDown,
@@ -40,6 +41,7 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isMediaModalVisible, setIsMediaModalVisible] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [isVideoVisible, setIsVideoVisible] = useState(false);
 
   if (!selectedRecipe) {
     return (
@@ -173,6 +175,34 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({
                 />
               ))}
             </View>
+          )}
+          {/* Floating Play Video Button */}
+          {selectedRecipe.videoUrl && (
+            <TouchableOpacity
+              onPress={() => setIsVideoVisible(true)}
+              activeOpacity={0.85}
+              style={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: [{ translateX: -30 }, { translateY: -40 }],
+                width: 60,
+                height: 60,
+                borderRadius: 30,
+                backgroundColor: 'rgba(0,0,0,0.5)',
+                justifyContent: 'center',
+                alignItems: 'center',
+                borderWidth: 2,
+                borderColor: '#ffffff',
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.3,
+                shadowRadius: 5,
+                elevation: 6,
+              }}
+            >
+              <Ionicons name="play" size={32} color="#ffffff" style={{ marginLeft: 4 }} />
+            </TouchableOpacity>
           )}
         </Animated.View>
 
@@ -426,6 +456,59 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({
         }
         initialIndex={selectedImageIndex}
       />
+
+      {/* Fullscreen Video Player Modal */}
+      {selectedRecipe.videoUrl && (
+        <VideoPlayerModal
+          visible={isVideoVisible}
+          videoUrl={selectedRecipe.videoUrl}
+          onClose={() => setIsVideoVisible(false)}
+        />
+      )}
     </View>
+  );
+};
+
+interface VideoPlayerModalProps {
+  visible: boolean;
+  videoUrl: string;
+  onClose: () => void;
+}
+
+const VideoPlayerModal: React.FC<VideoPlayerModalProps> = ({ visible, videoUrl, onClose }) => {
+  const player = useVideoPlayer(videoUrl, (p) => {
+    p.loop = true;
+    p.play();
+  });
+
+  return (
+    <Modal
+      visible={visible}
+      animationType="fade"
+      transparent={true}
+      onRequestClose={onClose}
+    >
+      <View style={{ flex: 1, backgroundColor: 'black', justifyContent: 'center' }}>
+        <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom', 'left', 'right']}>
+          {/* Header */}
+          <View style={{ height: 60, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16 }}>
+            <TouchableOpacity onPress={onClose} style={{ padding: 8 }}>
+              <Ionicons name="close" size={30} color="white" />
+            </TouchableOpacity>
+            <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>Recipe Video</Text>
+            <View style={{ width: 46 }} />
+          </View>
+
+          {/* Video View */}
+          <View style={{ flex: 1, justifyContent: 'center' }}>
+            <VideoView
+              style={{ width: '100%', aspectRatio: 16 / 9, maxHeight: '80%' }}
+              player={player}
+              nativeControls={true}
+            />
+          </View>
+        </SafeAreaView>
+      </View>
+    </Modal>
   );
 };

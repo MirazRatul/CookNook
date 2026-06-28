@@ -11,10 +11,11 @@ export interface CreateRecipeData {
   ingredients: string[];
   instructions: string[];
   images: string[]; // Local file URIs from ImagePicker
+  video?: string | null; // Local video URI from ImagePicker
 }
 
 /**
- * Service to submit new recipes along with multiple image uploads to the backend.
+ * Service to submit new recipes along with multiple image uploads and video to the backend.
  * Packages files and text fields into a multipart/form-data request.
  */
 export const createRecipeAPI = async (recipeData: CreateRecipeData) => {
@@ -43,6 +44,19 @@ export const createRecipeAPI = async (recipeData: CreateRecipeData) => {
       type,
     } as any);
   });
+
+  // Package the video URI for multipart upload if provided
+  if (recipeData.video) {
+    const filename = recipeData.video.split('/').pop() || 'recipe_video.mp4';
+    const match = /\.(\w+)$/.exec(filename);
+    const type = match ? `video/${match[1]}` : 'video/mp4';
+
+    formData.append('video', {
+      uri: Platform.OS === 'ios' ? recipeData.video.replace('file://', '') : recipeData.video,
+      name: filename,
+      type,
+    } as any);
+  }
 
   console.log('📤 Sending recipe to backend via Axios API Client...');
 

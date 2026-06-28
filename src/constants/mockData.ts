@@ -15,6 +15,7 @@ export interface Recipe {
   instructions: string[];
   images?: string[];
   userId?: string;
+  videoUrl?: string;
 }
 
 export const CATEGORIES = ['All', 'Breakfast', 'Italian', 'Mexican', 'Desserts', 'Seafood', 'Drinks'];
