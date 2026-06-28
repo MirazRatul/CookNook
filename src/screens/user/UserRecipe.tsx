@@ -6,6 +6,7 @@ import {
   RefreshControl,
   ActivityIndicator,
   Platform,
+  GestureResponderEvent,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -34,6 +35,8 @@ import { getUserRecipesAPI } from '../../services/recipeService';
 import { useAlert } from '../../context/CustomAlertContext';
 import { CustomRefreshIndicator } from '../../components/CustomRefreshIndicator';
 
+const ANDROID_REFRESH_TRIGGER_DISTANCE = 70;
+
 export const UserRecipeScreen: React.FC<any> = ({ navigation }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
@@ -56,6 +59,8 @@ export const UserRecipeScreen: React.FC<any> = ({ navigation }) => {
   // Shared scroll offset for pull-to-refresh tracking
   const scrollY = useSharedValue(0);
   const pullDistance = useSharedValue(0);
+  const androidPullStartY = useRef<number | null>(null);
+  const isAndroidPulling = useRef(false);
 
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: (event) => {
@@ -66,6 +71,56 @@ export const UserRecipeScreen: React.FC<any> = ({ navigation }) => {
       }
     },
   });
+
+  const resetAndroidPullDistance = () => {
+    if (Platform.OS === 'android' && !isRefreshing) {
+      pullDistance.value = withTiming(0, { duration: 180 });
+    }
+  };
+
+  const handleAndroidTouchStart = (event: GestureResponderEvent) => {
+    if (Platform.OS !== 'android' || isRefreshing || isInitialLoading || isMoreLoading) return;
+
+    if (scrollY.value <= 0) {
+      androidPullStartY.current = event.nativeEvent.pageY;
+      isAndroidPulling.current = false;
+    }
+  };
+
+  const handleAndroidTouchMove = (event: GestureResponderEvent) => {
+    if (Platform.OS !== 'android' || androidPullStartY.current === null || scrollY.value > 0) return;
+
+    const dragDistance = event.nativeEvent.pageY - androidPullStartY.current;
+
+    if (dragDistance > 0) {
+      isAndroidPulling.current = true;
+      pullDistance.value = Math.min(dragDistance * 0.65, 110);
+    } else if (isAndroidPulling.current) {
+      pullDistance.value = withTiming(0, { duration: 120 });
+    }
+  };
+
+  const handleAndroidTouchEnd = () => {
+    if (Platform.OS !== 'android') return;
+
+    const shouldRefresh = isAndroidPulling.current && pullDistance.value >= ANDROID_REFRESH_TRIGGER_DISTANCE;
+
+    androidPullStartY.current = null;
+    isAndroidPulling.current = false;
+
+    if (shouldRefresh) {
+      handleRefresh();
+      return;
+    }
+
+    resetAndroidPullDistance();
+  };
+
+  useEffect(() => {
+    if (Platform.OS === 'android' && !isRefreshing) {
+      pullDistance.value = withTiming(0, { duration: 180 });
+    }
+  }, [isRefreshing]);
 
   useEffect(() => {
     if (isFocused) {
@@ -198,6 +253,10 @@ export const UserRecipeScreen: React.FC<any> = ({ navigation }) => {
               keyExtractor={(item) => `user-recipe-${item.id}`}
               onScroll={scrollHandler}
               scrollEventThrottle={16}
+              onTouchStart={handleAndroidTouchStart}
+              onTouchMove={handleAndroidTouchMove}
+              onTouchEnd={handleAndroidTouchEnd}
+              onTouchCancel={handleAndroidTouchEnd}
               contentContainerStyle={{
                 paddingHorizontal: layout.spacing.screen,
                 paddingTop: 20,
@@ -233,16 +292,16 @@ export const UserRecipeScreen: React.FC<any> = ({ navigation }) => {
               ListFooterComponent={renderFooter}
               onEndReached={handleLoadMore}
               onEndReachedThreshold={0.2}
-              refreshControl={
+              refreshControl={Platform.OS === 'ios' ? (
                 <RefreshControl
                   refreshing={isRefreshing}
                   onRefresh={handleRefresh}
                   tintColor="transparent"
                   colors={['transparent']}
                   progressBackgroundColor="transparent"
-                  progressViewOffset={Platform.OS === 'android' ? -1000 : 0}
+                  progressViewOffset={0}
                 />
-              }
+              ) : undefined}
             />
             {!isInitialLoading && (
               <CustomRefreshIndicator pullDistance={pullDistance} refreshing={isRefreshing} />
