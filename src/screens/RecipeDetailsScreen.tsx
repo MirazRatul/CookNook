@@ -73,54 +73,54 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({
 
   return (
     <View className="flex-1 bg-white">
-      {/* Absolute Header Overlay */}
-      <View
-        className="absolute left-0 right-0 z-10 px-6 flex-row items-center justify-between"
-        style={{ top: insets.top + 12 }}
-      >
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          className="p-2.5 rounded-full items-center justify-center"
-          style={{
-            backgroundColor: Colors.whiteOpacity,
-            shadowColor: Colors.black,
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.15,
-            shadowRadius: 3.5,
-            elevation: 3,
-          }}
-          activeOpacity={0.8}
-        >
-          <Ionicons name="arrow-back" size={22} color={Colors.gray[800]} />
-        </TouchableOpacity>
-
-        <View
-          className="p-2.5 rounded-full items-center justify-center"
-          style={{
-            backgroundColor: Colors.whiteOpacity,
-            shadowColor: Colors.black,
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.15,
-            shadowRadius: 3.5,
-            elevation: 3,
-          }}
-        >
-          <HeartButton
-            isFavorite={isFav}
-            onPress={() => dispatch(toggleFavorite(selectedRecipe.id))}
-            size={22}
-            colorActive={Colors.danger}
-            colorInactive={Colors.gray[800]}
-          />
-        </View>
-      </View>
-
       <ScrollView showsVerticalScrollIndicator={false} className="flex-1">
         {/* Banner Image / Multi-Image Carousel */}
         <Animated.View
           entering={FadeInLeft.delay(200).duration(1200)}
           style={{ height: layout.details.heroHeight, width: '100%', position: 'relative' }}
         >
+          {/* Absolute Header Overlay (now scrolls with content) */}
+          <View
+            className="absolute left-0 right-0 z-10 px-6 flex-row items-center justify-between"
+            style={{ top: insets.top + 12 }}
+          >
+            <TouchableOpacity
+              onPress={() => navigation.goBack()}
+              className="p-2.5 rounded-full items-center justify-center"
+              style={{
+                backgroundColor: Colors.whiteOpacity,
+                shadowColor: Colors.black,
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.15,
+                shadowRadius: 3.5,
+                elevation: 3,
+              }}
+              activeOpacity={0.8}
+            >
+              <Ionicons name="arrow-back" size={22} color={Colors.gray[800]} />
+            </TouchableOpacity>
+
+            <View
+              className="p-2.5 rounded-full items-center justify-center"
+              style={{
+                backgroundColor: Colors.whiteOpacity,
+                shadowColor: Colors.black,
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.15,
+                shadowRadius: 3.5,
+                elevation: 3,
+              }}
+            >
+              <HeartButton
+                isFavorite={isFav}
+                onPress={() => dispatch(toggleFavorite(selectedRecipe.id))}
+                size={22}
+                colorActive={Colors.danger}
+                colorInactive={Colors.gray[800]}
+              />
+            </View>
+          </View>
+
           <ScrollView
             horizontal
             pagingEnabled
