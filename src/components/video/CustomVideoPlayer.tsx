@@ -88,6 +88,20 @@ export const CustomVideoPlayer: React.FC<CustomVideoPlayerProps> = ({ videoUrl }
     setShowControls(true);
   };
 
+  const seekBackward5s = () => {
+    const targetTime = Math.max(0, currentTime - 5);
+    player.currentTime = targetTime;
+    setCurrentTime(targetTime);
+    setShowControls(true);
+  };
+
+  const seekForward5s = () => {
+    const targetTime = Math.min(duration, currentTime + 5);
+    player.currentTime = targetTime;
+    setCurrentTime(targetTime);
+    setShowControls(true);
+  };
+
   const handleProgressBarPress = (e: any) => {
     const { locationX } = e.nativeEvent;
     if (progressBarWidth > 0 && duration > 0) {
@@ -128,20 +142,43 @@ export const CustomVideoPlayer: React.FC<CustomVideoPlayerProps> = ({ videoUrl }
       {/* Custom Controls Overlay */}
       {showControls && (
         <View style={styles.overlay} pointerEvents="box-none">
-          {/* Big Center Play/Pause Button */}
+          {/* Big Center Play/Pause & Seek Buttons */}
           {!isLoading && (
-            <TouchableOpacity
-              activeOpacity={0.8}
-              onPress={togglePlay}
-              style={styles.centerButton}
-            >
-              <Ionicons
-                name={isPlaying ? 'pause' : 'play'}
-                size={34}
-                color="white"
-                style={!isPlaying ? { marginLeft: 4 } : undefined}
-              />
-            </TouchableOpacity>
+            <View style={styles.centerControlsContainer}>
+              {/* Seek Backward 5s */}
+              <TouchableOpacity
+                activeOpacity={0.75}
+                onPress={seekBackward5s}
+                style={styles.seekButton}
+              >
+                <Ionicons name="arrow-undo-outline" size={18} color="white" />
+                <Text style={styles.seekText}>5s</Text>
+              </TouchableOpacity>
+
+              {/* Play/Pause */}
+              <TouchableOpacity
+                activeOpacity={0.85}
+                onPress={togglePlay}
+                style={styles.centerButton}
+              >
+                <Ionicons
+                  name={isPlaying ? 'pause' : 'play'}
+                  size={32}
+                  color="white"
+                  style={!isPlaying ? { marginLeft: 4 } : undefined}
+                />
+              </TouchableOpacity>
+
+              {/* Seek Forward 5s */}
+              <TouchableOpacity
+                activeOpacity={0.75}
+                onPress={seekForward5s}
+                style={styles.seekButton}
+              >
+                <Ionicons name="arrow-redo-outline" size={18} color="white" />
+                <Text style={styles.seekText}>5s</Text>
+              </TouchableOpacity>
+            </View>
           )}
 
           {/* Bottom Bar: Timeline, Timestamps, Mute */}
@@ -189,7 +226,7 @@ const styles = StyleSheet.create({
     aspectRatio: 16 / 9,
     backgroundColor: '#000',
     overflow: 'hidden',
-    borderRadius: 24,
+    borderRadius: 0,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -217,15 +254,22 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: 16,
   },
-  centerButton: {
+  centerControlsContainer: {
     position: 'absolute',
-    alignSelf: 'center',
+    left: 0,
+    right: 0,
     top: '50%',
-    marginTop: -28, // Offset half button height
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: 'rgba(245, 158, 11, 0.85)', // Colors.primary[500] matching amber
+    marginTop: -30, // half height offset
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 32,
+  },
+  centerButton: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: 'rgba(245, 158, 11, 0.85)', // Amber matching app design
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
@@ -234,14 +278,36 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 6,
   },
+  seekButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255, 255, 255, 0.16)', // Frosted glass layout
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  seekText: {
+    color: '#ffffff',
+    fontSize: 9,
+    fontWeight: '800',
+    marginTop: -2,
+    textTransform: 'uppercase',
+  },
   bottomBar: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
     paddingHorizontal: 16,
-    paddingBottom: 16,
-    paddingTop: 12,
+    paddingBottom: 8,
+    paddingTop: 6,
     backgroundColor: 'rgba(0, 0, 0, 0.65)',
   },
   progressBarWrapper: {
@@ -263,7 +329,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginTop: 8,
+    marginTop: 4,
   },
   timeText: {
     color: '#e5e7eb',
