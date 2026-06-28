@@ -15,8 +15,10 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
 import { IMAGE_URLS } from '../constants/Image_Url';
+import { useDispatch } from 'react-redux';
 import { auth } from '../services/firebase';
 import { logOutUser } from '../services/authService';
+import { clearUserSessionState } from '../store/slices/recipesSlice';
 
 interface ProfileDrawerProps {
   isOpen: boolean;
@@ -35,6 +37,7 @@ export const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
   onOpenLanguageSheet,
 }) => {
   const { t } = useTranslation();
+  const dispatch = useDispatch();
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const progress = useSharedValue(0);
@@ -94,6 +97,7 @@ export const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
         onClose();
         try {
           await logOutUser();
+          dispatch(clearUserSessionState());
           navigation.reset({
             index: 0,
             routes: [{ name: 'SignIn' }],

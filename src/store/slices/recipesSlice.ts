@@ -126,6 +126,13 @@ const recipesSlice = createSlice({
         };
       }
     },
+    clearUserSessionState: (state) => {
+      state.userRecipes = [];
+      state.favorites = [];
+      state.userRecipesNeedsRefresh = true;
+      state.userRecipesHasMore = true;
+      state.selectedRecipe = null;
+    },
   },
 });
 
@@ -141,6 +148,7 @@ export const {
   addFavoriteRecipes,
   setRecipes,
   updateChefProfile,
+  clearUserSessionState,
 } = recipesSlice.actions;
 
 export default recipesSlice.reducer;
