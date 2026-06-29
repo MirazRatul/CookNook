@@ -180,13 +180,20 @@ export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ navigati
 
     try {
       if (video) {
-        setSubmitStatus(t('create.compressing_video', 'Compressing video (keeping high quality)...'));
-        console.log('🎬 Starting client-side video compression...');
-        // Compress using react-native-compressor (retains video quality automatically)
-        finalVideoUri = await Video.compress(video, {
-          compressionMethod: 'auto',
-          minimumFileSizeForCompress: 0,
-        });
+        setSubmitStatus(t('create.compressing_video_start', 'Preparing video compression...'));
+        console.log('🎬 Starting optimized client-side video compression...');
+        finalVideoUri = await Video.compress(
+          video,
+          {
+            compressionMethod: 'manual',
+            maxSize: 1080, // Limit resolution to 1080p for fast processing
+            bitrate: 3000000, // 3Mbps for visually lossless high quality
+            minimumFileSizeForCompress: 0,
+          },
+          (progress) => {
+            setSubmitStatus(t('create.compressing_video_progress', `Compressing video: ${Math.round(progress * 100)}%`));
+          }
+        );
         console.log('✅ Video compression complete! Target URI:', finalVideoUri);
       }
 
