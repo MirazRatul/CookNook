@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { View, Text, ScrollView, TextInput, TouchableOpacity, Image, KeyboardAvoidingView, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../store/store';
 import * as ImagePicker from 'expo-image-picker';
-import { addRecipe } from '../store/slices/recipesSlice';
+import { addRecipe, setUploadStatus, clearUploadStatus } from '../store/slices/recipesSlice';
 import { Recipe, CATEGORIES } from '../constants/mockData';
 import { Button } from '../components/Button';
 import { useResponsiveLayout } from '../hooks/useResponsiveLayout';
@@ -37,8 +38,7 @@ export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ navigati
   // Images state
   const [images, setImages] = useState<string[]>([]);
   const [video, setVideo] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState('');
+  const uploadStatus = useSelector((state: RootState) => state.recipes.uploadStatus);
 
   // Ingredients and Instructions state
   const [ingredients, setIngredients] = useState<string[]>([]);
@@ -175,105 +175,138 @@ export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ navigati
       return;
     }
 
-    setIsSubmitting(true);
-    let finalVideoUri = video;
+    const recipePayload = {
+      title: title.trim(),
+      description: description.trim(),
+      category,
+      duration: parseInt(duration) || 0,
+      calories: parseInt(calories) || 0,
+      difficulty,
+      ingredients,
+      instructions,
+      images,
+      video,
+    };
 
-    try {
-      if (video) {
-        setSubmitStatus(t('create.compressing_video_start', 'Preparing video compression...'));
-        console.log('🎬 Starting optimized client-side video compression...');
-        finalVideoUri = await Video.compress(
-          video,
-          {
-            compressionMethod: 'manual',
-            maxSize: 1080, // Limit resolution to 1080p for fast processing
-            bitrate: 3000000, // 3Mbps for visually lossless high quality
-            minimumFileSizeForCompress: 0,
-          },
-          (progress) => {
-            setSubmitStatus(t('create.compressing_video_progress', `Compressing video: ${Math.round(progress * 100)}%`));
-          }
-        );
-        console.log('✅ Video compression complete! Target URI:', finalVideoUri);
-      }
+    // Dispatch initial background state
+    dispatch(setUploadStatus({
+      isUploading: true,
+      progress: 0,
+      statusText: t('create.preparing', 'Preparing recipe details...')
+    }));
 
-      setSubmitStatus(t('create.uploading_data', 'Uploading details & files: 0%'));
-      const response = await createRecipeAPI({
-        title: title.trim(),
-        description: description.trim(),
-        category,
-        duration: parseInt(duration),
-        calories: parseInt(calories),
-        difficulty,
-        ingredients,
-        instructions,
-        images,
-        video: finalVideoUri,
-      }, (percentage) => {
-        setSubmitStatus(t('create.uploading_progress', `Uploading details & files: ${percentage}%`));
-      });
+    // Reset Form fields immediately so the form clears!
+    setTitle('');
+    setDescription('');
+    setCategory('Breakfast');
+    setDuration('');
+    setCalories('');
+    setDifficulty('Easy');
+    setIngredients([]);
+    setInstructions([]);
+    setImages([]);
+    setVideo(null);
 
-      if (response.success && response.data) {
-        const categoryImages: Record<string, string> = IMAGE_URLS.categories;
+    // Redirect to Home immediately!
+    navigation.navigate('Home');
 
-        const newRecipe: Recipe = {
-          id: response.data.id.toString(),
-          title: response.data.title,
-          description: response.data.description,
-          image: response.data.images[0] || categoryImages[category] || categoryImages.Breakfast,
-          duration: response.data.duration,
-          difficulty: response.data.difficulty,
-          calories: response.data.calories,
-          rating: 5.0,
-          reviewsCount: 1,
-          chefName: response.data.chef_name,
-          chefAvatar: response.data.chef_avatar || IMAGE_URLS.profiles.chefRatul,
-          category: response.data.category,
-          ingredients: response.data.ingredients,
-          instructions: response.data.instructions,
-          images: response.data.images,
-          userId: response.data.user_id,
-          videoUrl: response.data.video_url || undefined,
-        };
+    // Run the upload workflow in the background!
+    (async () => {
+      let finalVideoUri = recipePayload.video;
+      try {
+        if (recipePayload.video) {
+          dispatch(setUploadStatus({
+            isUploading: true,
+            progress: 0,
+            statusText: t('create.compressing_video_start', 'Compressing video: 0%')
+          }));
 
-        dispatch(addRecipe(newRecipe));
-
-        // Reset Form
-        setTitle('');
-        setDescription('');
-        setCategory('Breakfast');
-        setDuration('');
-        setCalories('');
-        setDifficulty('Easy');
-        setIngredients([]);
-        setInstructions([]);
-        setImages([]);
-        setVideo(null);
-
-        showAlert(
-          t('create.success_title', 'Success'),
-          t('create.success_message', 'Recipe created successfully.'),
-          [
+          console.log('🎬 Starting optimized background client-side video compression...');
+          finalVideoUri = await Video.compress(
+            recipePayload.video,
             {
-              text: 'OK',
-              onPress: () => navigation.navigate('Home'),
+              compressionMethod: 'manual',
+              maxSize: 720, // Limit resolution to 720p for fast compression
+              bitrate: 1500000, // 1.5Mbps for optimized mobile file size
+              minimumFileSizeForCompress: 0,
             },
-          ],
-          'success'
-        );
+            (progress) => {
+              const compPercent = Math.round(progress * 100);
+              dispatch(setUploadStatus({
+                isUploading: true,
+                progress: Math.round(compPercent * 0.4), // Let compression represent first 40% of bar
+                statusText: t('create.compressing_video_progress', `Compressing video: ${compPercent}%`)
+              }));
+            }
+          );
+        }
+
+        dispatch(setUploadStatus({
+          isUploading: true,
+          progress: 40,
+          statusText: t('create.uploading_data', 'Uploading details & files: 0%')
+        }));
+
+        const response = await createRecipeAPI({
+          ...recipePayload,
+          video: finalVideoUri,
+        }, (percentage) => {
+          // Upload represents the remaining 60% of progress (from 40% to 100%)
+          const overallProgress = Math.round(40 + (percentage * 0.6));
+          dispatch(setUploadStatus({
+            isUploading: true,
+            progress: overallProgress,
+            statusText: t('create.uploading_progress', `Uploading details & files: ${percentage}%`)
+          }));
+        });
+
+        if (response.success && response.data) {
+          const categoryImages: Record<string, string> = IMAGE_URLS.categories;
+
+          const newRecipe: Recipe = {
+            id: response.data.id.toString(),
+            title: response.data.title,
+            description: response.data.description,
+            image: response.data.images[0] || categoryImages[recipePayload.category] || categoryImages.Breakfast,
+            duration: response.data.duration,
+            difficulty: response.data.difficulty,
+            calories: response.data.calories,
+            rating: 5.0,
+            reviewsCount: 1,
+            chefName: response.data.chef_name,
+            chefAvatar: response.data.chef_avatar || IMAGE_URLS.profiles.chefRatul,
+            category: response.data.category,
+            ingredients: response.data.ingredients,
+            instructions: response.data.instructions,
+            images: response.data.images,
+            userId: response.data.user_id,
+            videoUrl: response.data.video_url || (recipePayload.video ? 'processing' : undefined),
+          };
+
+          // Dispatch new recipe to home feed instantly
+          dispatch(addRecipe(newRecipe));
+          
+          // Flash complete & clear
+          dispatch(setUploadStatus({
+            isUploading: true,
+            progress: 100,
+            statusText: t('create.upload_success', 'Success! Recipe shared.')
+          }));
+
+          setTimeout(() => {
+            dispatch(clearUploadStatus());
+          }, 2000);
+        }
+      } catch (error: any) {
+        console.error('❌ Error publishing recipe in background:', error);
+        dispatch(setUploadStatus({
+          isUploading: true,
+          progress: 0,
+          statusText: '',
+          error: error.message || 'Failed to share recipe. Tap to dismiss.'
+        }));
       }
-    } catch (error: any) {
-      console.error('❌ Error publishing recipe:', error);
-      showAlert(
-        t('create.error_title', 'Error'),
-        error.message || 'Failed to create recipe. Please try again.',
-        undefined,
-        'error'
-      );
-    } finally {
-      setIsSubmitting(false);
-      setSubmitStatus('');
-    }
+    })();
   };
 
   return (
@@ -565,18 +598,15 @@ export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ navigati
 
         {/* SUBMIT BUTTON */}
         <Button 
-          title={isSubmitting ? (submitStatus || t('create.sharing_recipe', 'Sharing...')) : t('create.share_recipe')} 
+          title={t('create.share_recipe')} 
           onPress={handleCreate} 
-          loading={isSubmitting}
+          disabled={uploadStatus.isUploading}
           size="lg" 
           className="rounded-2xl" 
         />
       </View>
       </ScrollView>
       </KeyboardAvoidingView>
-      {isSubmitting && (
-        <LoadingIndicator message={submitStatus || t('create.sharing_recipe', 'Sharing...')} />
-      )}
     </SafeAreaView>
   );
 };

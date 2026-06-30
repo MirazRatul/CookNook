@@ -154,3 +154,20 @@ export const getAllRecipesAPI = async (page: number = 1, limit: number = 100) =>
     throw new Error(errorMessage);
   }
 };
+
+/**
+ * Fetch a single recipe by its ID from the backend database.
+ * @param recipeId The ID of the recipe
+ */
+export const getRecipeByIdAPI = async (recipeId: string) => {
+  try {
+    const response = await apiClient.get(`/recipes/${recipeId}`);
+    return response.data;
+  } catch (error: any) {
+    const errorMessage =
+      error.response?.data?.error?.message ||
+      error.message ||
+      'Failed to load recipe details from the server.';
+    throw new Error(errorMessage);
+  }
+};

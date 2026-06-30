@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { View, Text, ScrollView, Image, TouchableOpacity, Dimensions, Modal, StyleSheet } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, ScrollView, Image, TouchableOpacity, Dimensions, Modal, StyleSheet, ActivityIndicator } from "react-native";
 import { useTranslation } from "react-i18next";
 import {
   SafeAreaView,
@@ -12,7 +12,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../store/store";
-import { toggleFavorite } from "../store/slices/recipesSlice";
+import { toggleFavorite, updateRecipeVideoUrl } from "../store/slices/recipesSlice";
 import { useResponsiveLayout } from "../hooks/useResponsiveLayout";
 import { RootStackScreenProps } from "../navigation/types";
 import { Ionicons } from "@expo/vector-icons";
@@ -21,6 +21,7 @@ import { Colors } from "../constants/Colors";
 import { MediaModal } from "../components/MediaModal";
 import { VideoRecipeModal } from "../components/video/VideoRecipeModal";
 import { useVideoPlayer, VideoView } from 'expo-video';
+import { getRecipeByIdAPI } from "../services/recipeService";
 
 type RecipeDetailsScreenProps = RootStackScreenProps<"RecipeDetails">;
 
@@ -44,11 +45,39 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [isVideoVisible, setIsVideoVisible] = useState(false);
 
-  const previewPlayer = useVideoPlayer(selectedRecipe?.videoUrl || '', (p) => {
-    p.muted = true;
-    p.loop = false;
-    p.pause(); // Ensure it stays paused as a static first frame preview
-  });
+  // Start polling backend if the video is still processing
+  useEffect(() => {
+    if (!selectedRecipe || selectedRecipe.videoUrl !== 'processing') return;
+
+    const intervalId = setInterval(async () => {
+      try {
+        console.log(`🔄 Polling backend for recipe ID: ${selectedRecipe.id} video processing status...`);
+        const response = await getRecipeByIdAPI(selectedRecipe.id);
+        if (response.success && response.data && response.data.video_url) {
+          console.log(`✅ Polling complete! Video URL found: ${response.data.video_url}`);
+          dispatch(updateRecipeVideoUrl({
+            recipeId: selectedRecipe.id,
+            videoUrl: response.data.video_url
+          }));
+        }
+      } catch (err) {
+        console.error('❌ Error during recipe video polling:', err);
+      }
+    }, 5000); // Poll every 5 seconds
+
+    return () => clearInterval(intervalId);
+  }, [selectedRecipe?.id, selectedRecipe?.videoUrl, dispatch]);
+
+  const previewPlayer = useVideoPlayer(
+    selectedRecipe?.videoUrl && selectedRecipe.videoUrl !== 'processing'
+      ? selectedRecipe.videoUrl
+      : '',
+    (p) => {
+      p.muted = true;
+      p.loop = false;
+      p.pause(); // Ensure it stays paused as a static first frame preview
+    }
+  );
 
   if (!selectedRecipe) {
     return (
@@ -89,11 +118,6 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({
               className="p-2.5 rounded-full items-center justify-center"
               style={{
                 backgroundColor: Colors.whiteOpacity,
-                shadowColor: Colors.black,
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.15,
-                shadowRadius: 3.5,
-                elevation: 3,
               }}
               activeOpacity={0.8}
             >
@@ -104,11 +128,6 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({
               className="p-2.5 rounded-full items-center justify-center"
               style={{
                 backgroundColor: Colors.whiteOpacity,
-                shadowColor: Colors.black,
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.15,
-                shadowRadius: 3.5,
-                elevation: 3,
               }}
             >
               <HeartButton
@@ -232,76 +251,78 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({
             </View>
           </View>
 
-          {/* Video Recipe Card (if video exists) */}
+          {/* Video Recipe Card (if video exists or is processing) */}
           {selectedRecipe.videoUrl && (
             <View className="mt-5 pb-5 border-b border-gray-100">
               <Text className="text-sm font-extrabold text-gray-800 mb-3">
                 {t('details.video_recipe_label', 'Video Recipe Guide')}
               </Text>
               
-              <TouchableOpacity
-                onPress={() => setIsVideoVisible(true)}
-                activeOpacity={0.9}
-                style={{
-                  width: '100%',
-                  aspectRatio: 16 / 9,
-                  borderRadius: 24,
-                  backgroundColor: '#000',
-                  overflow: 'hidden',
-                  position: 'relative',
-                  shadowColor: '#000',
-                  shadowOffset: { width: 0, height: 4 },
-                  shadowOpacity: 0.15,
-                  shadowRadius: 8,
-                  elevation: 5,
-                }}
-              >
-                {/* Video thumbnail preview playing silently */}
-                <VideoView
-                  player={previewPlayer}
-                  style={{ width: '100%', height: '100%', opacity: 0.72 }}
-                  nativeControls={false}
-                  contentFit="cover"
-                />
-
-                {/* Dark overlay */}
-                <View style={{ ...StyleSheet.absoluteFill, backgroundColor: 'rgba(0,0,0,0.18)' }} />
-
-                {/* Custom Styled play button in the center */}
+              {selectedRecipe.videoUrl === 'processing' ? (
                 <View
+                  className="bg-amber-50/50 border border-amber-100 rounded-3xl p-6 items-center justify-center"
+                  style={{ aspectRatio: 16 / 9, width: '100%' }}
+                >
+                  <ActivityIndicator size="small" color="#f59e0b" />
+                  <Text className="text-amber-800 font-semibold text-xs mt-3">
+                    {t('details.video_processing', 'Guide video is processing on server...')}
+                  </Text>
+                </View>
+              ) : (
+                <TouchableOpacity
+                  onPress={() => setIsVideoVisible(true)}
+                  activeOpacity={0.9}
                   style={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    transform: [{ translateX: -28 }, { translateY: -28 }],
-                    width: 56,
-                    height: 56,
-                    borderRadius: 28,
-                    backgroundColor: '#f59e0b', // Amber-500 matching app design
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    borderWidth: 2,
-                    borderColor: '#ffffff',
-                    shadowColor: '#000',
-                    shadowOffset: { width: 0, height: 3 },
-                    shadowOpacity: 0.25,
-                    shadowRadius: 4,
-                    elevation: 5,
+                    width: '100%',
+                    aspectRatio: 16 / 9,
+                    borderRadius: 24,
+                    backgroundColor: '#000',
+                    overflow: 'hidden',
+                    position: 'relative',
                   }}
                 >
-                  <Ionicons name="play" size={28} color="#ffffff" style={{ marginLeft: 3 }} />
-                </View>
+                  {/* Video thumbnail preview playing silently */}
+                  <VideoView
+                    player={previewPlayer}
+                    style={{ width: '100%', height: '100%', opacity: 0.72 }}
+                    nativeControls={false}
+                    contentFit="cover"
+                  />
 
-                {/* Overlay Text info at bottom-left */}
-                <View style={{ position: 'absolute', bottom: 16, left: 16, right: 16 }}>
-                  <Text className="text-white font-extrabold text-sm">
-                    {t('details.watch_video_guide', 'Watch Step-by-Step Video Guide')}
-                  </Text>
-                  <Text className="text-gray-200 text-xs mt-0.5 font-medium">
-                    {selectedRecipe.duration} {t('details.mins_duration', 'mins cook time')}
-                  </Text>
-                </View>
-              </TouchableOpacity>
+                  {/* Dark overlay */}
+                  <View style={{ ...StyleSheet.absoluteFill, backgroundColor: 'rgba(0,0,0,0.18)' }} />
+
+                  {/* Custom Styled play button in the center */}
+                  <View
+                    style={{
+                      position: 'absolute',
+                      top: '50%',
+                      left: '50%',
+                      transform: [{ translateX: -28 }, { translateY: -28 }],
+                      width: 56,
+                      height: 56,
+                      borderRadius: 28,
+                      backgroundColor: '#f59e0b', // Amber-500 matching app design
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      borderWidth: 2,
+                      borderColor: '#ffffff',
+                    }}
+                  >
+                    <Ionicons name="play" size={28} color="#ffffff" style={{ marginLeft: 3 }} />
+                  </View>
+
+                  {/* Overlay Text info at bottom-left */}
+                  <View style={{ position: 'absolute', bottom: 16, left: 16, right: 16 }}>
+                    <Text className="text-white font-extrabold text-sm">
+                      {t('details.watch_video_guide', 'Watch Step-by-Step Video Guide')}
+                    </Text>
+                    <Text className="text-gray-200 text-xs mt-0.5 font-medium">
+                      {selectedRecipe.duration} {t('details.mins_duration', 'mins cook time')}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              )}
             </View>
           )}
 
@@ -364,17 +385,6 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({
               className={`flex-1 py-3 rounded-xl items-center ${
                 activeTab === "ingredients" ? "bg-white" : "bg-transparent"
               }`}
-              style={
-                activeTab === "ingredients"
-                  ? {
-                      shadowColor: Colors.black,
-                      shadowOffset: { width: 0, height: 1 },
-                      shadowOpacity: 0.05,
-                      shadowRadius: 2,
-                      elevation: 1,
-                    }
-                  : undefined
-              }
             >
               <Text
                 className={`text-sm font-bold ${
@@ -393,17 +403,6 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({
               className={`flex-1 py-3 rounded-xl items-center ${
                 activeTab === "instructions" ? "bg-white" : "bg-transparent"
               }`}
-              style={
-                activeTab === "instructions"
-                  ? {
-                      shadowColor: Colors.black,
-                      shadowOffset: { width: 0, height: 1 },
-                      shadowOpacity: 0.05,
-                      shadowRadius: 2,
-                      elevation: 1,
-                    }
-                  : undefined
-              }
             >
               <Text
                 className={`text-sm font-bold ${
@@ -467,13 +466,6 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({
                   <View className="items-center mr-4">
                     <View
                       className="w-8 h-8 rounded-full bg-primary-500 items-center justify-center z-10"
-                      style={{
-                        shadowColor: Colors.black,
-                        shadowOffset: { width: 0, height: 1 },
-                        shadowOpacity: 0.1,
-                        shadowRadius: 1,
-                        elevation: 1,
-                      }}
                     >
                       <Text className="text-white text-xs font-black">
                         {idx + 1}

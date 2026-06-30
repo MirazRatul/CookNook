@@ -6,6 +6,7 @@ import { Provider } from 'react-redux';
 import { RootNavigator } from './src/navigation/RootNavigator';
 import { store } from './src/store/store';
 import { CustomAlertProvider } from './src/context/CustomAlertContext';
+import { GlobalUploadOverlay } from './src/components/GlobalUploadOverlay';
 import './src/i18n';
 import './global.css';
 
@@ -16,6 +17,7 @@ export default function App() {
         <CustomAlertProvider>
           <NavigationContainer>
             <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+            <GlobalUploadOverlay />
             <RootNavigator />
           </NavigationContainer>
         </CustomAlertProvider>

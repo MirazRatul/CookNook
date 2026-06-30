@@ -27,6 +27,12 @@ interface RecipesState {
   userRecipes: Recipe[];
   userRecipesNeedsRefresh: boolean;
   userRecipesHasMore: boolean;
+  uploadStatus: {
+    isUploading: boolean;
+    progress: number;
+    statusText: string;
+    error: string | null;
+  };
 }
 
 const initialState: RecipesState = {
@@ -38,6 +44,12 @@ const initialState: RecipesState = {
   userRecipes: [],
   userRecipesNeedsRefresh: true,
   userRecipesHasMore: true,
+  uploadStatus: {
+    isUploading: false,
+    progress: 0,
+    statusText: '',
+    error: null,
+  },
 };
 
 const recipesSlice = createSlice({
@@ -133,6 +145,33 @@ const recipesSlice = createSlice({
       state.userRecipesHasMore = true;
       state.selectedRecipe = null;
     },
+    setUploadStatus: (
+      state,
+      action: PayloadAction<{ isUploading: boolean; progress: number; statusText: string; error?: string | null }>
+    ) => {
+      const { isUploading, progress, statusText, error = null } = action.payload;
+      state.uploadStatus = { isUploading, progress, statusText, error };
+    },
+    clearUploadStatus: (state) => {
+      state.uploadStatus = {
+        isUploading: false,
+        progress: 0,
+        statusText: '',
+        error: null,
+      };
+    },
+    updateRecipeVideoUrl: (state, action: PayloadAction<{ recipeId: string; videoUrl: string }>) => {
+      const { recipeId, videoUrl } = action.payload;
+      state.recipes = state.recipes.map((r) =>
+        r.id === recipeId ? { ...r, videoUrl } : r
+      );
+      state.userRecipes = state.userRecipes.map((r) =>
+        r.id === recipeId ? { ...r, videoUrl } : r
+      );
+      if (state.selectedRecipe && state.selectedRecipe.id === recipeId) {
+        state.selectedRecipe.videoUrl = videoUrl;
+      }
+    },
   },
 });
 
@@ -149,6 +188,9 @@ export const {
   setRecipes,
   updateChefProfile,
   clearUserSessionState,
+  setUploadStatus,
+  clearUploadStatus,
+  updateRecipeVideoUrl,
 } = recipesSlice.actions;
 
 export default recipesSlice.reducer;
