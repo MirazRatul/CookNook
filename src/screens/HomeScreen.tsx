@@ -28,7 +28,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const insets = useSafeAreaInsets();
   const layout = useResponsiveLayout();
   const isFocused = useIsFocused();
-  const { recipes, favorites, selectedCategory, searchQuery } = useSelector(
+  const { recipes, favorites, selectedCategory, searchQuery, uploadStatus } = useSelector(
     (state: RootState) => state.recipes
   );
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -58,7 +58,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 
   return (
     <View style={{ flex: 1, backgroundColor: Colors.bgLight }}>
-      <SafeAreaView className="flex-1" edges={['top', 'left', 'right']}>
+      <SafeAreaView className="flex-1" edges={uploadStatus.isUploading ? ['left', 'right'] : ['top', 'left', 'right']}>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
       {/* Header */}
       <Animated.View

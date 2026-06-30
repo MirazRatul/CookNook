@@ -24,7 +24,7 @@ export const ExploreScreen: React.FC<ExploreScreenProps> = ({ navigation }) => {
   const insets = useSafeAreaInsets();
   const layout = useResponsiveLayout();
   const isFocused = useIsFocused();
-  const { recipes, favorites, searchQuery, selectedCategory } = useSelector(
+  const { recipes, favorites, searchQuery, selectedCategory, uploadStatus } = useSelector(
     (state: RootState) => state.recipes
   );
 
@@ -45,7 +45,7 @@ export const ExploreScreen: React.FC<ExploreScreenProps> = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={['top', 'left', 'right']}>
+    <SafeAreaView className="flex-1 bg-white" edges={uploadStatus.isUploading ? ['left', 'right'] : ['top', 'left', 'right']}>
       {/* Header Container */}
       <Animated.View
         key={`explore-header-${isFocused}`}

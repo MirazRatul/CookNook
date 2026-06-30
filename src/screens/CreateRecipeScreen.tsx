@@ -222,6 +222,7 @@ export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ navigati
           }));
 
           console.log('🎬 Starting optimized background client-side video compression...');
+          let lastCompressPercent = -1;
           finalVideoUri = await Video.compress(
             recipePayload.video,
             {
@@ -232,11 +233,14 @@ export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ navigati
             },
             (progress) => {
               const compPercent = Math.round(progress * 100);
-              dispatch(setUploadStatus({
-                isUploading: true,
-                progress: Math.round(compPercent * 0.4), // Let compression represent first 40% of bar
-                statusText: t('create.compressing_video_progress', `Compressing video: ${compPercent}%`)
-              }));
+              if (compPercent !== lastCompressPercent) {
+                lastCompressPercent = compPercent;
+                dispatch(setUploadStatus({
+                  isUploading: true,
+                  progress: Math.round(compPercent * 0.4), // Let compression represent first 40% of bar
+                  statusText: t('create.compressing_video_progress', `Compressing video: ${compPercent}%`)
+                }));
+              }
             }
           );
         }
@@ -247,17 +251,21 @@ export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ navigati
           statusText: t('create.uploading_data', 'Uploading details & files: 0%')
         }));
 
+        let lastUploadPercent = -1;
         const response = await createRecipeAPI({
           ...recipePayload,
           video: finalVideoUri,
         }, (percentage) => {
-          // Upload represents the remaining 60% of progress (from 40% to 100%)
-          const overallProgress = Math.round(40 + (percentage * 0.6));
-          dispatch(setUploadStatus({
-            isUploading: true,
-            progress: overallProgress,
-            statusText: t('create.uploading_progress', `Uploading details & files: ${percentage}%`)
-          }));
+          if (percentage !== lastUploadPercent) {
+            lastUploadPercent = percentage;
+            // Upload represents the remaining 60% of progress (from 40% to 100%)
+            const overallProgress = Math.round(40 + (percentage * 0.6));
+            dispatch(setUploadStatus({
+              isUploading: true,
+              progress: overallProgress,
+              statusText: t('create.uploading_progress', `Uploading details & files: ${percentage}%`)
+            }));
+          }
         });
 
         if (response.success && response.data) {

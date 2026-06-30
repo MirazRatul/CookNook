@@ -47,18 +47,21 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({
 
   // Start polling backend if the video is still processing
   useEffect(() => {
-    if (!selectedRecipe || selectedRecipe.videoUrl !== 'processing') return;
+    const isProcessing = selectedRecipe?.videoUrl?.startsWith('processing');
+    if (!selectedRecipe || !isProcessing) return;
 
     const intervalId = setInterval(async () => {
       try {
         console.log(`🔄 Polling backend for recipe ID: ${selectedRecipe.id} video processing status...`);
         const response = await getRecipeByIdAPI(selectedRecipe.id);
         if (response.success && response.data && response.data.video_url) {
-          console.log(`✅ Polling complete! Video URL found: ${response.data.video_url}`);
-          dispatch(updateRecipeVideoUrl({
-            recipeId: selectedRecipe.id,
-            videoUrl: response.data.video_url
-          }));
+          if (response.data.video_url !== selectedRecipe.videoUrl) {
+            console.log(`✅ Syncing Video URL/Status to store: ${response.data.video_url}`);
+            dispatch(updateRecipeVideoUrl({
+              recipeId: selectedRecipe.id,
+              videoUrl: response.data.video_url
+            }));
+          }
         }
       } catch (err) {
         console.error('❌ Error during recipe video polling:', err);
@@ -69,7 +72,7 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({
   }, [selectedRecipe?.id, selectedRecipe?.videoUrl, dispatch]);
 
   const previewPlayer = useVideoPlayer(
-    selectedRecipe?.videoUrl && selectedRecipe.videoUrl !== 'processing'
+    selectedRecipe?.videoUrl && !selectedRecipe.videoUrl.startsWith('processing')
       ? selectedRecipe.videoUrl
       : '',
     (p) => {
@@ -258,17 +261,21 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({
                 {t('details.video_recipe_label', 'Video Recipe Guide')}
               </Text>
               
-              {selectedRecipe.videoUrl === 'processing' ? (
-                <View
-                  className="bg-amber-50/50 border border-amber-100 rounded-3xl p-6 items-center justify-center"
-                  style={{ aspectRatio: 16 / 9, width: '100%' }}
-                >
-                  <ActivityIndicator size="small" color="#f59e0b" />
-                  <Text className="text-amber-800 font-semibold text-xs mt-3">
-                    {t('details.video_processing', 'Guide video is processing on server...')}
-                  </Text>
-                </View>
-              ) : (
+              {selectedRecipe.videoUrl.startsWith('processing') ? (() => {
+                const parts = selectedRecipe.videoUrl.split(':');
+                const percent = parts.length > 1 ? parts[1] : '0';
+                return (
+                  <View
+                    className="bg-amber-50/50 border border-amber-100 rounded-3xl p-6 items-center justify-center"
+                    style={{ aspectRatio: 16 / 9, width: '100%' }}
+                  >
+                    <ActivityIndicator size="small" color="#f59e0b" />
+                    <Text className="text-amber-800 font-semibold text-xs mt-3 text-center">
+                      {t('details.video_processing', 'Guide video is processing on server...')} ({percent}%)
+                    </Text>
+                  </View>
+                );
+              })() : (
                 <TouchableOpacity
                   onPress={() => setIsVideoVisible(true)}
                   activeOpacity={0.9}

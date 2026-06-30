@@ -13,7 +13,8 @@ import { useTranslation } from 'react-i18next';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../store/store';
 import { updateChefProfile } from '../../store/slices/recipesSlice';
 import { Colors } from '../../constants/Colors';
 import { Button } from '../../components/Button';
@@ -66,6 +67,7 @@ export const ProfileScreen: React.FC<any> = ({ navigation }) => {
   const layout = useResponsiveLayout();
   const { showAlert } = useAlert();
   const dispatch = useDispatch();
+  const isUploading = useSelector((state: RootState) => state.recipes.uploadStatus.isUploading);
 
   // Core Form States
   const [name, setName] = useState('');
@@ -286,7 +288,7 @@ export const ProfileScreen: React.FC<any> = ({ navigation }) => {
   const selectedCountry = COUNTRY_CODES.find((c) => c.code === selectedCountryCode) || COUNTRY_CODES[0];
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={['top', 'left', 'right']}>
+    <SafeAreaView className="flex-1 bg-white" edges={isUploading ? ['left', 'right'] : ['top', 'left', 'right']}>
       {/* Premium Header */}
       <View
         className="flex-row items-center justify-between pb-4 border-b border-gray-100"

@@ -28,7 +28,7 @@ export function FavoritesScreen({ navigation }: FavoritesScreenProps) {
   const insets = useSafeAreaInsets();
   const layout = useResponsiveLayout();
   const isFocused = useIsFocused();
-  const { recipes, userRecipes, favorites } = useSelector(
+  const { recipes, userRecipes, favorites, uploadStatus } = useSelector(
     (state: RootState) => state.recipes,
   );
 
@@ -46,7 +46,7 @@ export function FavoritesScreen({ navigation }: FavoritesScreenProps) {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={["top", "left", "right"]}>
+    <SafeAreaView className="flex-1 bg-white" edges={uploadStatus.isUploading ? ["left", "right"] : ["top", "left", "right"]}>
       <Animated.View
         key={`favorites-header-${isFocused}`}
         entering={isFocused ? FadeInDown.duration(800).springify() : undefined}

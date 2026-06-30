@@ -1,5 +1,5 @@
 import React from 'react';
-import { StatusBar } from 'react-native';
+import { StatusBar, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Provider } from 'react-redux';
@@ -15,11 +15,13 @@ export default function App() {
     <Provider store={store}>
       <SafeAreaProvider>
         <CustomAlertProvider>
-          <NavigationContainer>
-            <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+          <View style={{ flex: 1 }}>
             <GlobalUploadOverlay />
-            <RootNavigator />
-          </NavigationContainer>
+            <NavigationContainer>
+              <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+              <RootNavigator />
+            </NavigationContainer>
+          </View>
         </CustomAlertProvider>
       </SafeAreaProvider>
     </Provider>
