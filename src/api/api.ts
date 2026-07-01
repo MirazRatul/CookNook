@@ -2,11 +2,13 @@ import axios from 'axios';
 import { auth } from '../services/firebase';
 import { Platform } from 'react-native';
 
-const API_BASE_URL = Platform.select({
-  android: 'http://192.168.10.24:5001/api/v1',
-  ios: 'http://192.168.10.24:5001/api/v1',
-  default: 'http://localhost:5001/api/v1',
-});
+// const API_BASE_URL = Platform.select({
+//   android: 'http://192.168.10.24:5001/api/v1',
+//   ios: 'http://192.168.10.24:5001/api/v1',
+//   default: 'http://localhost:5001/api/v1',
+// });
+
+const API_BASE_URL = 'https://cooknk.duckdns.org/api/v1';
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,

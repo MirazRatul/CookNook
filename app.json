@@ -5,11 +5,6 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/App_Icon.png",
-    "splash": {
-      "image": "./assets/refresh_logo.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#FFFFFF"
-    },
     "userInterfaceStyle": "light",
     "ios": {
       "bundleIdentifier": "com.mirajulislam.cooknook",
@@ -32,7 +27,21 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-splash-screen",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#FFFFFF",
+          "ios": {
+            "backgroundColor": "#FFFFFF"
+          },
+          "android": {
+            "backgroundColor": "#FFFFFF",
+            "drawable": {
+              "icon": "./assets/blank-splash.xml"
+            }
+          }
+        }
+      ],
       [
         "@react-native-google-signin/google-signin",
         {

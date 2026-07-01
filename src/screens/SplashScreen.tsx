@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { View, Text, Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as SplashScreen from 'expo-splash-screen';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -19,9 +18,6 @@ import { auth } from '../services/firebase';
 import { getAllRecipesAPI, getFavoritesAPI } from '../services/recipeService';
 import { setRecipes, setFavorites, addFavoriteRecipes } from '../store/slices/recipesSlice';
 import { Recipe } from '../constants/mockData';
-
-// Prevent the native splash screen from hiding automatically
-SplashScreen.preventAutoHideAsync().catch(() => {});
 
 export const SplashScreenView: React.FC<RootStackScreenProps<'Splash'>> = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -55,16 +51,11 @@ export const SplashScreenView: React.FC<RootStackScreenProps<'Splash'>> = ({ nav
   }));
 
   useEffect(() => {
-    // 1. Hide native splash screen after a short delay to allow Android layout pass to render and prevent white flash
-    const hideTimer = setTimeout(() => {
-      SplashScreen.hideAsync().catch(() => {});
-    }, 250);
-
-    // 2. Start logo scale and fade animations
+    // Start logo scale and fade animations
     opacity.value = withTiming(1, { duration: 800 });
     scale.value = withSpring(1.0, { damping: 12, stiffness: 90 });
 
-    // 3. Animate app title and subtitle with a delay
+    // Animate app title and subtitle with a delay
     textOpacity.value = withDelay(400, withTiming(1, { duration: 600 }));
 
     // Pre-calculate target screen during the animation delay
@@ -202,7 +193,6 @@ export const SplashScreenView: React.FC<RootStackScreenProps<'Splash'>> = ({ nav
 
     return () => {
       clearTimeout(splashTimer);
-      clearTimeout(hideTimer);
     };
   }, []);
 
@@ -237,4 +227,3 @@ export const SplashScreenView: React.FC<RootStackScreenProps<'Splash'>> = ({ nav
     </Animated.View>
   );
 };
-
