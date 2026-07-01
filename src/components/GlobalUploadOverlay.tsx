@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
     color: '#f59e0b',
     fontSize: 11,
     fontWeight: '800',
-    width: 32,
+    minWidth: 42,
     textAlign: 'right',
   },
 });
