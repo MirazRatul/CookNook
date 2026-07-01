@@ -46,7 +46,7 @@ export const UserRecipeScreen: React.FC<any> = ({ navigation }) => {
   const { showAlert } = useAlert();
 
   // Redux states
-  const { userRecipes, userRecipesNeedsRefresh, userRecipesHasMore, favorites } = useSelector(
+  const { userRecipes, userRecipesNeedsRefresh, userRecipesHasMore, favorites, uploadStatus } = useSelector(
     (state: RootState) => state.recipes
   );
 
@@ -221,7 +221,7 @@ export const UserRecipeScreen: React.FC<any> = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={['top', 'left', 'right']}>
+    <SafeAreaView className="flex-1" edges={uploadStatus.isUploading ? ['left', 'right'] : ['top', 'left', 'right']}>
       {/* Header Panel */}
       <View
         className="flex-row items-center justify-between pb-4 border-b border-gray-100"
