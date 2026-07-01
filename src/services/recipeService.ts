@@ -171,3 +171,20 @@ export const getRecipeByIdAPI = async (recipeId: string) => {
     throw new Error(errorMessage);
   }
 };
+
+/**
+ * Delete a recipe by its ID from the backend database.
+ * @param recipeId The ID of the recipe to delete
+ */
+export const deleteRecipeAPI = async (recipeId: string) => {
+  try {
+    const response = await apiClient.delete(`/recipes/${recipeId}`);
+    return response.data;
+  } catch (error: any) {
+    const errorMessage =
+      error.response?.data?.error?.message ||
+      error.message ||
+      'Failed to delete recipe from the server.';
+    throw new Error(errorMessage);
+  }
+};

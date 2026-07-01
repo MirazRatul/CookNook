@@ -30,8 +30,9 @@ import {
   toggleFavorite,
   setUserRecipes,
   setUserRecipesNeedsRefresh,
+  removeRecipe,
 } from '../../store/slices/recipesSlice';
-import { getUserRecipesAPI } from '../../services/recipeService';
+import { getUserRecipesAPI, deleteRecipeAPI } from '../../services/recipeService';
 import { useAlert } from '../../context/CustomAlertContext';
 import { CustomRefreshIndicator } from '../../components/CustomRefreshIndicator';
 
@@ -211,6 +212,44 @@ export const UserRecipeScreen: React.FC<any> = ({ navigation }) => {
     navigation.navigate('RecipeDetails');
   };
 
+  const handleDeleteRecipe = (recipe: Recipe) => {
+    showAlert(
+      t('my_recipes.delete_title', 'Delete Recipe'),
+      t('my_recipes.delete_message', 'Are you sure you want to delete this recipe? This action cannot be undone.'),
+      [
+        {
+          text: t('common.cancel', 'Cancel'),
+          style: 'cancel',
+        },
+        {
+          text: t('common.delete', 'Delete'),
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await deleteRecipeAPI(recipe.id);
+              dispatch(removeRecipe(recipe.id));
+              showAlert(
+                t('common.success', 'Success'),
+                t('my_recipes.delete_success', 'Recipe deleted successfully.'),
+                undefined,
+                'success'
+              );
+            } catch (error: any) {
+              console.error('Error deleting recipe:', error);
+              showAlert(
+                t('common.error', 'Error'),
+                error.message || 'Failed to delete recipe. Please try again.',
+                undefined,
+                'error'
+              );
+            }
+          },
+        },
+      ],
+      'warning'
+    );
+  };
+
   const renderFooter = () => {
     if (!isMoreLoading) return null;
     return (
@@ -271,6 +310,7 @@ export const UserRecipeScreen: React.FC<any> = ({ navigation }) => {
               renderItem={({ item, index }) => (
                 <Animated.View
                   entering={isRefreshing ? undefined : FadeInDown.delay(Math.min(index, 4) * 50).duration(350)}
+                  style={{ position: 'relative', width: '100%' }}
                 >
                   <RecipeCard
                     recipe={item}
@@ -279,6 +319,13 @@ export const UserRecipeScreen: React.FC<any> = ({ navigation }) => {
                     onToggleFavorite={() => dispatch(toggleFavorite(item.id))}
                     horizontal
                   />
+                  <TouchableOpacity
+                    onPress={() => handleDeleteRecipe(item)}
+                    className="absolute top-2 left-2 bg-red-500 w-8 h-8 rounded-full items-center justify-center z-10 shadow-sm"
+                    activeOpacity={0.75}
+                  >
+                    <Ionicons name="trash-outline" size={16} color="#ffffff" />
+                  </TouchableOpacity>
                 </Animated.View>
               )}
               ListEmptyComponent={

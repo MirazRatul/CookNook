@@ -172,6 +172,12 @@ const recipesSlice = createSlice({
         state.selectedRecipe.videoUrl = videoUrl;
       }
     },
+    removeRecipe: (state, action: PayloadAction<string>) => {
+      const recipeId = action.payload;
+      state.recipes = state.recipes.filter((r) => r.id !== recipeId);
+      state.userRecipes = state.userRecipes.filter((r) => r.id !== recipeId);
+      state.favorites = state.favorites.filter((id) => id !== recipeId);
+    },
   },
 });
 
@@ -191,6 +197,7 @@ export const {
   setUploadStatus,
   clearUploadStatus,
   updateRecipeVideoUrl,
+  removeRecipe,
 } = recipesSlice.actions;
 
 export default recipesSlice.reducer;
