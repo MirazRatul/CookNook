@@ -261,7 +261,19 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({
                 {t('details.video_recipe_label', 'Video Recipe Guide')}
               </Text>
               
-              {selectedRecipe.videoUrl.startsWith('processing') ? (() => {
+              {selectedRecipe.videoUrl.startsWith('error:') ? (
+                <View
+                  className="bg-red-50 border border-red-100 rounded-3xl p-6 items-center justify-center"
+                  style={{ aspectRatio: 16 / 9, width: '100%' }}
+                >
+                  <Ionicons name="alert-circle-outline" size={28} color="#dc2626" />
+                  <Text className="text-red-800 font-bold text-xs mt-3 text-center px-4">
+                    {selectedRecipe.videoUrl === 'error:size'
+                      ? t('details.video_size_error', 'Video size exceeds server limit of 100MB. Please use a shorter clip.')
+                      : t('details.video_error', 'Failed to process guide video on server.')}
+                  </Text>
+                </View>
+              ) : selectedRecipe.videoUrl.startsWith('processing') ? (() => {
                 const parts = selectedRecipe.videoUrl.split(':');
                 const percent = parts.length > 1 ? parts[1] : '0';
                 return (

@@ -227,8 +227,8 @@ export const CreateRecipeScreen: React.FC<CreateRecipeScreenProps> = ({ navigati
             recipePayload.video,
             {
               compressionMethod: 'manual',
-              maxSize: 720, // Limit resolution to 720p for fast compression
-              bitrate: 1500000, // 1.5Mbps for optimized mobile file size
+              maxSize: 540, // 540p is optimized for mobile feeds and compresses 3x faster
+              bitrate: 1000000, // 1.0Mbps keeps a 10-minute video under 75MB
               minimumFileSizeForCompress: 0,
             },
             (progress) => {
