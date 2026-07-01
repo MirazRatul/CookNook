@@ -1,14 +1,23 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView, Image, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, ScrollView, Image, TouchableOpacity, RefreshControl, GestureResponderEvent, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { ProfileDrawer } from '../components/ProfileDrawer';
 import { LanguageBottomSheet } from '../components/LanguageBottomSheet';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import Animated, { FadeInDown, FadeInRight, FadeInUp, LinearTransition } from 'react-native-reanimated';
+import Animated, {
+  FadeInDown,
+  FadeInRight,
+  FadeInUp,
+  LinearTransition,
+  useSharedValue,
+  useAnimatedScrollHandler,
+  withTiming,
+} from 'react-native-reanimated';
 import { useIsFocused } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
-import { toggleFavorite, setSelectedCategory, setSelectedRecipe, setSearchQuery } from '../store/slices/recipesSlice';
+import { toggleFavorite, setSelectedCategory, setSelectedRecipe, setSearchQuery, setRecipes, setFavorites } from '../store/slices/recipesSlice';
+import { getAllRecipesAPI, getFavoritesAPI } from '../services/recipeService';
 import { SearchBar } from '../components/SearchBar';
 import { CategoryBadge } from '../components/CategoryBadge';
 import { RecipeCard } from '../components/RecipeCard';
@@ -19,6 +28,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { IMAGE_URLS } from '../constants/Image_Url';
 import { Colors } from '../constants/Colors';
 import { auth } from '../services/firebase';
+import { CustomRefreshIndicator } from '../components/CustomRefreshIndicator';
 
 type HomeScreenProps = AppTabScreenProps<'Home'>;
 
@@ -33,9 +43,119 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   );
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isLanguageSheetOpen, setIsLanguageSheetOpen] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Reanimated pull-down metrics and refs for CustomRefreshIndicator (matching UserRecipe.tsx)
+  const scrollY = useSharedValue(0);
+  const pullDistance = useSharedValue(0);
+  const androidPullStartY = useRef<number | null>(null);
+  const isAndroidPulling = useRef(false);
+
+  const scrollHandler = useAnimatedScrollHandler({
+    onScroll: (event) => {
+      scrollY.value = event.contentOffset.y;
+      if (Platform.OS === 'ios') {
+        // On iOS, pull distance is derived from negative scrollY
+        pullDistance.value = Math.max(-event.contentOffset.y, 0);
+      }
+    },
+  });
+
+  const resetAndroidPullDistance = () => {
+    if (Platform.OS === 'android' && !isRefreshing) {
+      pullDistance.value = withTiming(0, { duration: 180 });
+    }
+  };
+
+  const handleAndroidTouchStart = (event: GestureResponderEvent) => {
+    if (Platform.OS !== 'android' || isRefreshing) return;
+
+    if (scrollY.value <= 0) {
+      androidPullStartY.current = event.nativeEvent.pageY;
+      isAndroidPulling.current = false;
+    }
+  };
+
+  const handleAndroidTouchMove = (event: GestureResponderEvent) => {
+    if (Platform.OS !== 'android' || androidPullStartY.current === null || scrollY.value > 0) return;
+
+    const dragDistance = event.nativeEvent.pageY - androidPullStartY.current;
+
+    if (dragDistance > 0) {
+      isAndroidPulling.current = true;
+      pullDistance.value = Math.min(dragDistance * 0.65, 110);
+    } else if (isAndroidPulling.current) {
+      pullDistance.value = 0;
+      isAndroidPulling.current = false;
+    }
+  };
+
+  const handleAndroidTouchEnd = () => {
+    if (Platform.OS !== 'android') return;
+
+    const shouldRefresh = isAndroidPulling.current && pullDistance.value >= 70; // 70px trigger distance
+
+    androidPullStartY.current = null;
+    isAndroidPulling.current = false;
+
+    if (shouldRefresh) {
+      handleRefresh();
+      return;
+    }
+
+    resetAndroidPullDistance();
+  };
+
+  useEffect(() => {
+    if (Platform.OS === 'android' && !isRefreshing) {
+      pullDistance.value = withTiming(0, { duration: 180 });
+    }
+  }, [isRefreshing]);
 
   const currentUser = auth().currentUser;
   const userPhoto = currentUser?.photoURL ? { uri: currentUser.photoURL } : { uri: IMAGE_URLS.profiles.chefRatul };
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      console.log('🔄 Pull-to-refresh: Fetching latest recipes and favorites from DB...');
+      const recipesResponse = await getAllRecipesAPI(1, 100);
+      if (recipesResponse && recipesResponse.success && recipesResponse.data) {
+        const mappedRecipes = recipesResponse.data.recipes.map((r: any): Recipe => ({
+          id: r.id.toString(),
+          title: r.title,
+          description: r.description,
+          image: r.images[0] || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c',
+          duration: r.duration,
+          difficulty: r.difficulty,
+          calories: r.calories,
+          rating: 5.0,
+          reviewsCount: 1,
+          chefName: r.chef_name,
+          chefAvatar: r.chef_avatar || 'https://images.unsplash.com/photo-1577219491135-ce391730fb2c',
+          category: r.category,
+          ingredients: r.ingredients || [],
+          instructions: r.instructions || [],
+          images: r.images || [],
+          userId: r.user_id || undefined,
+          videoUrl: r.video_url || undefined,
+        }));
+        dispatch(setRecipes(mappedRecipes));
+      }
+
+      const favResponse = await getFavoritesAPI();
+      if (favResponse && favResponse.success && favResponse.data) {
+        const { favoriteIds } = favResponse.data;
+        if (Array.isArray(favoriteIds)) {
+          dispatch(setFavorites(favoriteIds));
+        }
+      }
+    } catch (error) {
+      console.error('❌ Pull-to-refresh home data failed:', error);
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
 
   // Filter recipes based on category
   const filteredRecipes = recipes.filter((recipe) => {
@@ -59,7 +179,24 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   return (
     <View style={{ flex: 1, backgroundColor: Colors.bgLight }}>
       <SafeAreaView className="flex-1" edges={uploadStatus.isUploading ? ['left', 'right'] : ['top', 'left', 'right']}>
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+      <Animated.ScrollView
+        className="flex-1"
+        showsVerticalScrollIndicator={false}
+        onScroll={scrollHandler}
+        scrollEventThrottle={16}
+        onTouchStart={handleAndroidTouchStart}
+        onTouchMove={handleAndroidTouchMove}
+        onTouchEnd={handleAndroidTouchEnd}
+        onTouchCancel={handleAndroidTouchEnd}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={handleRefresh}
+            tintColor="transparent"
+            colors={['transparent']}
+          />
+        }
+      >
       {/* Header */}
       <Animated.View
         key={`header-${isFocused}`}
@@ -229,7 +366,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           </Animated.View>
         )}
       </Animated.View>
-      </ScrollView>
+      </Animated.ScrollView>
+      <CustomRefreshIndicator pullDistance={pullDistance} refreshing={isRefreshing} />
       </SafeAreaView>
       <ProfileDrawer
         isOpen={isDrawerOpen}
