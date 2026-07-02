@@ -11,6 +11,7 @@ import { getAllRecipesAPI } from '../services/recipeService';
 import { SearchBar } from '../components/SearchBar';
 import { CategoryBadge } from '../components/CategoryBadge';
 import { RecipeCard } from '../components/RecipeCard';
+import { LoadingIndicator } from '../components/LoadingIndicator';
 import { CATEGORIES, Recipe } from '../constants/mockData';
 import { useResponsiveLayout } from '../hooks/useResponsiveLayout';
 import { AppTabScreenProps } from '../navigation/types';
@@ -227,7 +228,7 @@ export const ExploreScreen: React.FC<ExploreScreenProps> = ({ navigation }) => {
       <View className="flex-1" style={{ backgroundColor: Colors.bgLight }}>
         {isInitialLoading ? (
           <View className="flex-1 items-center justify-center">
-            <ActivityIndicator size="large" color={Colors.primary[500]} />
+            <LoadingIndicator fullscreen={false} message="Searching..." />
           </View>
         ) : exploreRecipes.length > 0 ? (
           <FlatList
