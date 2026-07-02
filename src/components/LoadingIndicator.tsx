@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, Text, StyleSheet, Image, Platform } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -106,7 +106,7 @@ export const LoadingIndicator: React.FC<LoadingIndicatorProps> = ({
         <Text
           className={
             fullscreen
-              ? "text-white font-extrabold mt-6 text-base tracking-wider text-center"
+              ? "text-gray-800 font-extrabold mt-6 text-base tracking-wider text-center"
               : "text-amber-700 font-bold mt-5 text-sm tracking-wide bg-amber-50/80 px-4 py-1.5 rounded-full border border-amber-100/40"
           }
         >
@@ -119,11 +119,17 @@ export const LoadingIndicator: React.FC<LoadingIndicatorProps> = ({
   if (fullscreen) {
     return (
       <View style={StyleSheet.absoluteFill} className="justify-center items-center z-[99999]">
-        <BlurView
-          intensity={85}
-          tint="dark"
-          style={StyleSheet.absoluteFill}
-        />
+        {Platform.OS === 'ios' ? (
+          <BlurView
+            intensity={65}
+            tint="light"
+            style={StyleSheet.absoluteFill}
+          />
+        ) : (
+          <View
+            style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(255, 255, 255, 0.85)' }]}
+          />
+        )}
         {indicatorContent}
       </View>
     );
