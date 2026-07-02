@@ -1,58 +1,8 @@
-import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Recipe, MOCK_RECIPES } from '../../constants/mockData';
-import { toggleFavoriteAPI, toggleLikeAPI, getUserLikesAPI } from '../../services/recipeService';
-
-export const toggleFavorite = createAsyncThunk(
-  'recipes/toggleFavoriteStatus',
-  async (recipeId: string, { dispatch, rejectWithValue }) => {
-    // Perform optimistic local toggle
-    dispatch(recipesSlice.actions.toggleFavoriteLocal(recipeId));
-    try {
-      await toggleFavoriteAPI(recipeId);
-    } catch (error: any) {
-      console.error('❌ Failed to toggle favorite in database, reverting:', error.message);
-      // Revert local toggle on error
-      dispatch(recipesSlice.actions.toggleFavoriteLocal(recipeId));
-      return rejectWithValue(error.message);
-    }
-  }
-) as any;
-
-export const toggleLike = createAsyncThunk(
-  'recipes/toggleLikeStatus',
-  async (recipeId: string, { dispatch, rejectWithValue }) => {
-    // Perform optimistic local toggle
-    dispatch(recipesSlice.actions.toggleLikeLocal(recipeId));
-    try {
-      await toggleLikeAPI(recipeId);
-    } catch (error: any) {
-      console.error('❌ Failed to toggle like in database, reverting:', error.message);
-      // Revert local toggle on error
-      dispatch(recipesSlice.actions.toggleLikeLocal(recipeId));
-      return rejectWithValue(error.message);
-    }
-  }
-) as any;
-
-export const fetchUserLikes = createAsyncThunk(
-  'recipes/fetchUserLikes',
-  async (_, { dispatch, rejectWithValue }) => {
-    try {
-      const response = await getUserLikesAPI();
-      if (response.success && response.data?.likedRecipeIds) {
-        dispatch(recipesSlice.actions.setLikedRecipeIds(response.data.likedRecipeIds));
-      }
-    } catch (error: any) {
-      console.error('❌ Failed to fetch user likes:', error.message);
-      return rejectWithValue(error.message);
-    }
-  }
-) as any;
 
 interface RecipesState {
   recipes: Recipe[];
-  favorites: string[];
-  likedRecipeIds: string[];
   searchQuery: string;
   selectedCategory: string;
   selectedRecipe: Recipe | null;
@@ -69,8 +19,6 @@ interface RecipesState {
 
 const initialState: RecipesState = {
   recipes: MOCK_RECIPES,
-  favorites: [],
-  likedRecipeIds: [],
   searchQuery: '',
   selectedCategory: 'All',
   selectedRecipe: null,
@@ -89,44 +37,6 @@ const recipesSlice = createSlice({
   name: 'recipes',
   initialState,
   reducers: {
-    toggleFavoriteLocal: (state, action: PayloadAction<string>) => {
-      const id = action.payload;
-      const index = state.favorites.indexOf(id);
-      if (index > -1) {
-        state.favorites.splice(index, 1);
-      } else {
-        state.favorites.push(id);
-      }
-    },
-    toggleLikeLocal: (state, action: PayloadAction<string>) => {
-      const id = action.payload;
-      const index = state.likedRecipeIds.indexOf(id);
-      const isAddingLike = index === -1;
-
-      if (isAddingLike) {
-        state.likedRecipeIds.push(id);
-      } else {
-        state.likedRecipeIds.splice(index, 1);
-      }
-
-      const updateLikes = (recipe: Recipe) => {
-        if (recipe.id === id) {
-          const currentCount = recipe.likesCount || 0;
-          recipe.likesCount = isAddingLike 
-            ? currentCount + 1 
-            : Math.max(0, currentCount - 1);
-        }
-      };
-
-      state.recipes.forEach(updateLikes);
-      state.userRecipes.forEach(updateLikes);
-      if (state.selectedRecipe) {
-        updateLikes(state.selectedRecipe);
-      }
-    },
-    setLikedRecipeIds: (state, action: PayloadAction<string[]>) => {
-      state.likedRecipeIds = action.payload;
-    },
     setSearchQuery: (state, action: PayloadAction<string>) => {
       state.searchQuery = action.payload;
     },
@@ -161,9 +71,6 @@ const recipesSlice = createSlice({
     setUserRecipesNeedsRefresh: (state, action: PayloadAction<boolean>) => {
       state.userRecipesNeedsRefresh = action.payload;
     },
-    setFavorites: (state, action: PayloadAction<string[]>) => {
-      state.favorites = action.payload;
-    },
     addFavoriteRecipes: (state, action: PayloadAction<Recipe[]>) => {
       const existingIds = new Set(state.recipes.map((r) => r.id));
       const newRecipes = action.payload.filter((r) => !existingIds.has(r.id));
@@ -171,6 +78,32 @@ const recipesSlice = createSlice({
     },
     setRecipes: (state, action: PayloadAction<Recipe[]>) => {
       state.recipes = action.payload;
+    },
+    incrementRecipeLikesCount: (state, action: PayloadAction<string>) => {
+      const id = action.payload;
+      const updateLikes = (recipe: Recipe) => {
+        if (recipe.id === id) {
+          recipe.likesCount = (recipe.likesCount || 0) + 1;
+        }
+      };
+      state.recipes.forEach(updateLikes);
+      state.userRecipes.forEach(updateLikes);
+      if (state.selectedRecipe) {
+        updateLikes(state.selectedRecipe);
+      }
+    },
+    decrementRecipeLikesCount: (state, action: PayloadAction<string>) => {
+      const id = action.payload;
+      const updateLikes = (recipe: Recipe) => {
+        if (recipe.id === id) {
+          recipe.likesCount = Math.max(0, (recipe.likesCount || 0) - 1);
+        }
+      };
+      state.recipes.forEach(updateLikes);
+      state.userRecipes.forEach(updateLikes);
+      if (state.selectedRecipe) {
+        updateLikes(state.selectedRecipe);
+      }
     },
     updateChefProfile: (state, action: PayloadAction<{ chefName: string; chefAvatar: string; userId: string }>) => {
       const { chefName, chefAvatar, userId } = action.payload;
@@ -202,8 +135,6 @@ const recipesSlice = createSlice({
     },
     clearUserSessionState: (state) => {
       state.userRecipes = [];
-      state.favorites = [];
-      state.likedRecipeIds = [];
       state.userRecipesNeedsRefresh = true;
       state.userRecipesHasMore = true;
       state.selectedRecipe = null;
@@ -239,24 +170,21 @@ const recipesSlice = createSlice({
       const recipeId = action.payload;
       state.recipes = state.recipes.filter((r) => r.id !== recipeId);
       state.userRecipes = state.userRecipes.filter((r) => r.id !== recipeId);
-      state.favorites = state.favorites.filter((id) => id !== recipeId);
     },
   },
 });
 
 export const {
-  toggleFavoriteLocal,
-  toggleLikeLocal,
-  setLikedRecipeIds,
   setSearchQuery,
   setSelectedCategory,
   setSelectedRecipe,
   addRecipe,
   setUserRecipes,
   setUserRecipesNeedsRefresh,
-  setFavorites,
   addFavoriteRecipes,
   setRecipes,
+  incrementRecipeLikesCount,
+  decrementRecipeLikesCount,
   updateChefProfile,
   clearUserSessionState,
   setUploadStatus,

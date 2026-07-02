@@ -15,11 +15,9 @@ import { Recipe } from "../constants/mockData";
 import { useResponsiveLayout } from "../hooks/useResponsiveLayout";
 import { AppTabScreenProps } from "../navigation/types";
 import { RootState } from "../store/store";
-import {
-  setSelectedRecipe,
-  toggleFavorite,
-  toggleLike,
-} from "../store/slices/recipesSlice";
+import { setSelectedRecipe } from "../store/slices/recipesSlice";
+import { toggleFavorite } from "../store/slices/favoritesSlice";
+import { toggleLike } from "../store/slices/likesSlice";
 
 type FavoritesScreenProps = AppTabScreenProps<"Favorites">;
 
@@ -29,9 +27,11 @@ export function FavoritesScreen({ navigation }: FavoritesScreenProps) {
   const insets = useSafeAreaInsets();
   const layout = useResponsiveLayout();
   const isFocused = useIsFocused();
-  const { recipes, userRecipes, favorites, likedRecipeIds, uploadStatus } = useSelector(
+  const { recipes, userRecipes, uploadStatus } = useSelector(
     (state: RootState) => state.recipes,
   );
+  const favorites = useSelector((state: RootState) => state.favorites.favorites);
+  const likedRecipeIds = useSelector((state: RootState) => state.likes.likedRecipeIds);
 
   const allRecipes = [...recipes, ...userRecipes];
   const uniqueRecipes = allRecipes.filter(

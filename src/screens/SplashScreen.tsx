@@ -16,7 +16,9 @@ import { REFRESH_LOGO } from '../constants/Image_Url';
 import { useDispatch } from 'react-redux';
 import { auth } from '../services/firebase';
 import { getAllRecipesAPI, getFavoritesAPI } from '../services/recipeService';
-import { setRecipes, setFavorites, addFavoriteRecipes, fetchUserLikes } from '../store/slices/recipesSlice';
+import { setRecipes, addFavoriteRecipes } from '../store/slices/recipesSlice';
+import { setFavorites } from '../store/slices/favoritesSlice';
+import { fetchUserLikes } from '../store/slices/likesSlice';
 import { Recipe } from '../constants/mockData';
 
 export const SplashScreenView: React.FC<RootStackScreenProps<'Splash'>> = ({ navigation }) => {

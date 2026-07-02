@@ -13,7 +13,9 @@ import { MainTabParamList } from './types';
 import { useDispatch } from 'react-redux';
 import { auth } from '../services/firebase';
 import { getFavoritesAPI, getAllRecipesAPI, getUserLikesAPI } from '../services/recipeService';
-import { setFavorites, addFavoriteRecipes, setRecipes, fetchUserLikes } from '../store/slices/recipesSlice';
+import { addFavoriteRecipes, setRecipes } from '../store/slices/recipesSlice';
+import { setFavorites } from '../store/slices/favoritesSlice';
+import { fetchUserLikes } from '../store/slices/likesSlice';
 import { Recipe } from '../constants/mockData';
 
 type IconName = keyof typeof Ionicons.glyphMap;

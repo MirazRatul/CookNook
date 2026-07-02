@@ -16,7 +16,9 @@ import Animated, {
 import { useIsFocused } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
-import { toggleFavorite, toggleLike, setSelectedCategory, setSelectedRecipe, setSearchQuery, setRecipes, setFavorites } from '../store/slices/recipesSlice';
+import { setSelectedCategory, setSelectedRecipe, setSearchQuery, setRecipes } from '../store/slices/recipesSlice';
+import { toggleFavorite, setFavorites } from '../store/slices/favoritesSlice';
+import { toggleLike } from '../store/slices/likesSlice';
 import { getAllRecipesAPI, getFavoritesAPI, getUserLikesAPI } from '../services/recipeService';
 
 import { CategoryBadge } from '../components/CategoryBadge';
@@ -62,9 +64,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const insets = useSafeAreaInsets();
   const layout = useResponsiveLayout();
   const isFocused = useIsFocused();
-  const { recipes, favorites, likedRecipeIds, selectedCategory, searchQuery, uploadStatus } = useSelector(
+  const { recipes, selectedCategory, searchQuery, uploadStatus } = useSelector(
     (state: RootState) => state.recipes
   );
+  const favorites = useSelector((state: RootState) => state.favorites.favorites);
+  const likedRecipeIds = useSelector((state: RootState) => state.likes.likedRecipeIds);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isLanguageSheetOpen, setIsLanguageSheetOpen] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);

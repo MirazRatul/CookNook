@@ -27,12 +27,12 @@ import { useResponsiveLayout } from '../../hooks/useResponsiveLayout';
 import { RootState } from '../../store/store';
 import {
   setSelectedRecipe,
-  toggleFavorite,
-  toggleLike,
   setUserRecipes,
   setUserRecipesNeedsRefresh,
   removeRecipe,
 } from '../../store/slices/recipesSlice';
+import { toggleFavorite } from '../../store/slices/favoritesSlice';
+import { toggleLike } from '../../store/slices/likesSlice';
 import { getUserRecipesAPI, deleteRecipeAPI } from '../../services/recipeService';
 import { useAlert } from '../../context/CustomAlertContext';
 import { CustomRefreshIndicator } from '../../components/CustomRefreshIndicator';
@@ -48,9 +48,11 @@ export const UserRecipeScreen: React.FC<any> = ({ navigation }) => {
   const { showAlert } = useAlert();
 
   // Redux states
-  const { userRecipes, userRecipesNeedsRefresh, userRecipesHasMore, favorites, likedRecipeIds, uploadStatus } = useSelector(
+  const { userRecipes, userRecipesNeedsRefresh, userRecipesHasMore, uploadStatus } = useSelector(
     (state: RootState) => state.recipes
   );
+  const favorites = useSelector((state: RootState) => state.favorites.favorites);
+  const likedRecipeIds = useSelector((state: RootState) => state.likes.likedRecipeIds);
 
   // Local Pagination/Loading states
   const [isRefreshing, setIsRefreshing] = useState(false);

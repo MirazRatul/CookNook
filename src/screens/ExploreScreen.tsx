@@ -6,7 +6,9 @@ import Animated, { FadeInDown, FadeInRight, FadeInUp, LinearTransition } from 'r
 import { useIsFocused } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
-import { toggleFavorite, toggleLike, setSelectedRecipe, setSearchQuery, setSelectedCategory } from '../store/slices/recipesSlice';
+import { setSelectedRecipe, setSearchQuery, setSelectedCategory } from '../store/slices/recipesSlice';
+import { toggleFavorite } from '../store/slices/favoritesSlice';
+import { toggleLike } from '../store/slices/likesSlice';
 import { getAllRecipesAPI } from '../services/recipeService';
 import { SearchBar } from '../components/SearchBar';
 import { CategoryBadge } from '../components/CategoryBadge';
@@ -70,9 +72,11 @@ export const ExploreScreen: React.FC<ExploreScreenProps> = ({ navigation }) => {
   const insets = useSafeAreaInsets();
   const layout = useResponsiveLayout();
   const isFocused = useIsFocused();
-  const { recipes, favorites, likedRecipeIds, searchQuery, selectedCategory, uploadStatus } = useSelector(
+  const { recipes, searchQuery, selectedCategory, uploadStatus } = useSelector(
     (state: RootState) => state.recipes
   );
+  const favorites = useSelector((state: RootState) => state.favorites.favorites);
+  const likedRecipeIds = useSelector((state: RootState) => state.likes.likedRecipeIds);
   const [exploreRecipes, setExploreRecipes] = useState<Recipe[]>(recipes);
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(searchQuery);
   const [currentPage, setCurrentPage] = useState(1);

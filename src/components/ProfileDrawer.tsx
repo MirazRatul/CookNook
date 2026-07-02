@@ -18,7 +18,9 @@ import { IMAGE_URLS } from '../constants/Image_Url';
 import { useDispatch } from 'react-redux';
 import { auth } from '../services/firebase';
 import { logOutUser } from '../services/authService';
-import { clearUserSessionState } from '../store/slices/recipesSlice';
+import { clearUserSessionState as clearRecipesSessionState } from '../store/slices/recipesSlice';
+import { clearUserSessionState as clearFavoritesSessionState } from '../store/slices/favoritesSlice';
+import { clearUserSessionState as clearLikesSessionState } from '../store/slices/likesSlice';
 
 interface ProfileDrawerProps {
   isOpen: boolean;
@@ -97,7 +99,9 @@ export const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
         onClose();
         try {
           await logOutUser();
-          dispatch(clearUserSessionState());
+          dispatch(clearRecipesSessionState());
+          dispatch(clearFavoritesSessionState());
+          dispatch(clearLikesSessionState());
           navigation.reset({
             index: 0,
             routes: [{ name: 'SignIn' }],

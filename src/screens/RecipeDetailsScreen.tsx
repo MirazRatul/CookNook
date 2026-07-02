@@ -12,7 +12,8 @@ import Animated, {
 } from "react-native-reanimated";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../store/store";
-import { toggleFavorite, updateRecipeVideoUrl } from "../store/slices/recipesSlice";
+import { updateRecipeVideoUrl } from "../store/slices/recipesSlice";
+import { toggleFavorite } from "../store/slices/favoritesSlice";
 import { useResponsiveLayout } from "../hooks/useResponsiveLayout";
 import { RootStackScreenProps } from "../navigation/types";
 import { Ionicons } from "@expo/vector-icons";
@@ -35,7 +36,7 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({
   const selectedRecipe = useSelector(
     (state: RootState) => state.recipes.selectedRecipe,
   );
-  const favorites = useSelector((state: RootState) => state.recipes.favorites);
+  const favorites = useSelector((state: RootState) => state.favorites.favorites);
 
   const [activeTab, setActiveTab] = useState<"ingredients" | "instructions">(
     "ingredients",
