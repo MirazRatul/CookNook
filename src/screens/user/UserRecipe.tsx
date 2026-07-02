@@ -28,6 +28,7 @@ import { RootState } from '../../store/store';
 import {
   setSelectedRecipe,
   toggleFavorite,
+  toggleLike,
   setUserRecipes,
   setUserRecipesNeedsRefresh,
   removeRecipe,
@@ -47,7 +48,7 @@ export const UserRecipeScreen: React.FC<any> = ({ navigation }) => {
   const { showAlert } = useAlert();
 
   // Redux states
-  const { userRecipes, userRecipesNeedsRefresh, userRecipesHasMore, favorites, uploadStatus } = useSelector(
+  const { userRecipes, userRecipesNeedsRefresh, userRecipesHasMore, favorites, likedRecipeIds, uploadStatus } = useSelector(
     (state: RootState) => state.recipes
   );
 
@@ -169,6 +170,7 @@ export const UserRecipeScreen: React.FC<any> = ({ navigation }) => {
           images: r.images || [],
           userId: r.user_id || undefined,
           videoUrl: r.video_url || undefined,
+          likesCount: r.likesCount || 0,
         }));
 
         dispatch(
@@ -315,8 +317,10 @@ export const UserRecipeScreen: React.FC<any> = ({ navigation }) => {
                   <RecipeCard
                     recipe={item}
                     isFavorite={favorites.includes(item.id)}
+                    isLiked={likedRecipeIds.includes(item.id)}
                     onPress={() => handleRecipePress(item)}
                     onToggleFavorite={() => dispatch(toggleFavorite(item.id))}
+                    onToggleLike={() => dispatch(toggleLike(item.id))}
                     horizontal
                   />
                   <TouchableOpacity

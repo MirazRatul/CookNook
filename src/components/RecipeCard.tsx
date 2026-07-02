@@ -5,20 +5,25 @@ import { Colors } from '../constants/Colors';
 import { Recipe } from '../constants/mockData';
 import { useResponsiveLayout } from '../hooks/useResponsiveLayout';
 import { HeartButton } from './HeartButton';
+import { LikeButton } from './LikeButton';
 
 interface RecipeCardProps {
   recipe: Recipe;
   isFavorite: boolean;
+  isLiked: boolean;
   onPress: () => void;
   onToggleFavorite: () => void;
+  onToggleLike: () => void;
   horizontal?: boolean;
 }
 
 export const RecipeCard: React.FC<RecipeCardProps> = ({
   recipe,
   isFavorite,
+  isLiked,
   onPress,
   onToggleFavorite,
+  onToggleLike,
   horizontal = false,
 }) => {
   const layout = useResponsiveLayout();
@@ -54,7 +59,7 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({
             {recipe.title}
           </Text>
           <Text className="text-xs text-gray-500 mt-0.5">by {recipe.chefName}</Text>
-          <View className="flex-row items-center justify-between mt-2">
+          <View className="flex-row items-center justify-between mt-2 flex-wrap">
             <View className="flex-row items-center">
               <Ionicons name="star" size={13} color={Colors.primary[500]} />
               <Text className="text-xs font-bold text-gray-700 ml-1">{recipe.rating}</Text>
@@ -66,6 +71,14 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({
             <View className="flex-row items-center">
               <Ionicons name="flame-outline" size={13} color={Colors.gray[500]} />
               <Text className="text-xs text-gray-500 ml-1">{recipe.calories} kcal</Text>
+            </View>
+            <View className="flex-row items-center">
+              <LikeButton
+                isLiked={isLiked}
+                onPress={onToggleLike}
+                size={13}
+              />
+              <Text className="text-xs text-gray-500 ml-1 font-bold">{recipe.likesCount || 0}</Text>
             </View>
           </View>
         </View>
@@ -128,6 +141,14 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({
           <View className="flex-row items-center">
             <Ionicons name="flame-outline" size={14} color={Colors.gray[500]} />
             <Text className="text-xs text-gray-600 font-semibold ml-1">{recipe.calories} kcal</Text>
+          </View>
+          <View className="flex-row items-center">
+            <LikeButton
+              isLiked={isLiked}
+              onPress={onToggleLike}
+              size={14}
+            />
+            <Text className="text-xs text-gray-600 font-semibold ml-1">{recipe.likesCount || 0}</Text>
           </View>
         </View>
       </View>

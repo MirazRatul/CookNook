@@ -12,8 +12,8 @@ import { useResponsiveLayout } from '../hooks/useResponsiveLayout';
 import { MainTabParamList } from './types';
 import { useDispatch } from 'react-redux';
 import { auth } from '../services/firebase';
-import { getFavoritesAPI, getAllRecipesAPI } from '../services/recipeService';
-import { setFavorites, addFavoriteRecipes, setRecipes } from '../store/slices/recipesSlice';
+import { getFavoritesAPI, getAllRecipesAPI, getUserLikesAPI } from '../services/recipeService';
+import { setFavorites, addFavoriteRecipes, setRecipes, fetchUserLikes } from '../store/slices/recipesSlice';
 import { Recipe } from '../constants/mockData';
 
 type IconName = keyof typeof Ionicons.glyphMap;
@@ -154,6 +154,7 @@ export function MainTabs() {
             images: r.images || [],
             userId: r.user_id || undefined,
             videoUrl: r.video_url || undefined,
+            likesCount: r.likesCount || 0,
           }));
           dispatch(setRecipes(mappedRecipes));
         }
@@ -185,10 +186,13 @@ export function MainTabs() {
               images: r.images || [],
               userId: r.user_id || undefined,
               videoUrl: r.video_url || undefined,
+              likesCount: r.likesCount || 0,
             }));
             dispatch(addFavoriteRecipes(mappedFavRecipes));
           }
         }
+        console.log('🔄 Fetching user likes from database...');
+        dispatch(fetchUserLikes());
       } catch (error) {
         console.error('❌ Error initializing app data on MainTabs mount:', error);
       }

@@ -16,6 +16,7 @@ export interface Recipe {
   images?: string[];
   userId?: string;
   videoUrl?: string;
+  likesCount?: number;
 }
 
 export const CATEGORIES = [
@@ -43,7 +44,7 @@ export const CATEGORIES = [
 
 export const MOCK_RECIPES: Recipe[] = [
   {
-    id: '1',
+    id: '2',
     title: 'Garlic Butter Shrimp',
     description: 'Juicy, plump shrimp seared in a rich garlic butter sauce, finished with fresh parsley and a splash of lemon juice. A quick gourmet dish!',
     image: 'https://images.unsplash.com/photo-1625938146369-adc83368bda7?auto=format&fit=crop&q=80&w=600',
@@ -74,7 +75,7 @@ export const MOCK_RECIPES: Recipe[] = [
     ]
   },
   {
-    id: '2',
+    id: '3',
     title: 'Creamy Tuscan Chicken',
     description: 'Tender chicken breasts simmered in a luscious cream sauce filled with sun-dried tomatoes, spinach, and garlic. Pure comfort food.',
     image: 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&q=80&w=600',
@@ -107,7 +108,7 @@ export const MOCK_RECIPES: Recipe[] = [
     ]
   },
   {
-    id: '3',
+    id: '4',
     title: 'Vegan Avocado Toast',
     description: 'Crispy sourdough bread topped with creamy mashed avocado, cherry tomatoes, microgreens, and a sprinkle of chili flakes.',
     image: 'https://images.unsplash.com/photo-1541532713592-79a0317b6b77?auto=format&fit=crop&q=80&w=600',
@@ -137,7 +138,7 @@ export const MOCK_RECIPES: Recipe[] = [
     ]
   },
   {
-    id: '4',
+    id: '5',
     title: 'Spicy Beef Tacos',
     description: 'Perfectly seasoned ground beef served in warm tortillas, topped with shredded cheddar, fresh salsa, guacamole, and a drizzle of lime cream.',
     image: 'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?auto=format&fit=crop&q=80&w=600',
@@ -168,7 +169,7 @@ export const MOCK_RECIPES: Recipe[] = [
     ]
   },
   {
-    id: '5',
+    id: '6',
     title: 'Molten Chocolate Lava Cake',
     description: 'Decadent chocolate cakes with a rich, molten chocolate center. Served warm with a dusting of powdered sugar and vanilla ice cream.',
     image: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&q=80&w=600',
@@ -200,7 +201,7 @@ export const MOCK_RECIPES: Recipe[] = [
     ]
   },
   {
-    id: '6',
+    id: '7',
     title: 'Iced Matcha Green Tea Latte',
     description: 'Ceremonial grade matcha whisked with warm water, sweetened with honey, and poured over ice with creamy oat milk.',
     image: 'https://images.unsplash.com/photo-1536256263959-770b48d82b0a?auto=format&fit=crop&q=80&w=600',

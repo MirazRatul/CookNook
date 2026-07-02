@@ -197,3 +197,36 @@ export const deleteRecipeAPI = async (recipeId: string) => {
     throw new Error(errorMessage);
   }
 };
+
+/**
+ * Toggle like status of a recipe in the backend.
+ * @param recipeId The ID of the recipe to toggle like status for
+ */
+export const toggleLikeAPI = async (recipeId: string) => {
+  try {
+    const response = await apiClient.post('/recipes/likes/toggle', { recipeId });
+    return response.data;
+  } catch (error: any) {
+    const errorMessage =
+      error.response?.data?.error?.message ||
+      error.message ||
+      'Failed to toggle recipe like on the server.';
+    throw new Error(errorMessage);
+  }
+};
+
+/**
+ * Retrieve all liked recipe IDs of the logged-in user.
+ */
+export const getUserLikesAPI = async () => {
+  try {
+    const response = await apiClient.get('/recipes/likes');
+    return response.data;
+  } catch (error: any) {
+    const errorMessage =
+      error.response?.data?.error?.message ||
+      error.message ||
+      'Failed to load liked recipes from the server.';
+    throw new Error(errorMessage);
+  }
+};

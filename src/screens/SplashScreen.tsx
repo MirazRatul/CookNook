@@ -16,7 +16,7 @@ import { REFRESH_LOGO } from '../constants/Image_Url';
 import { useDispatch } from 'react-redux';
 import { auth } from '../services/firebase';
 import { getAllRecipesAPI, getFavoritesAPI } from '../services/recipeService';
-import { setRecipes, setFavorites, addFavoriteRecipes } from '../store/slices/recipesSlice';
+import { setRecipes, setFavorites, addFavoriteRecipes, fetchUserLikes } from '../store/slices/recipesSlice';
 import { Recipe } from '../constants/mockData';
 
 export const SplashScreenView: React.FC<RootStackScreenProps<'Splash'>> = ({ navigation }) => {
@@ -119,6 +119,7 @@ export const SplashScreenView: React.FC<RootStackScreenProps<'Splash'>> = ({ nav
                 images: r.images || [],
                 userId: r.user_id || undefined,
                 videoUrl: r.video_url || undefined,
+                likesCount: r.likesCount || 0,
               }));
               dispatch(setRecipes(mappedRecipes));
             }
@@ -149,10 +150,14 @@ export const SplashScreenView: React.FC<RootStackScreenProps<'Splash'>> = ({ nav
                   images: r.images || [],
                   userId: r.user_id || undefined,
                   videoUrl: r.video_url || undefined,
+                  likesCount: r.likesCount || 0,
                 }));
                 dispatch(addFavoriteRecipes(mappedFavRecipes));
               }
             }
+
+            console.log('🔄 [Splash] Pre-fetching user likes from database...');
+            dispatch(fetchUserLikes());
           } catch (fetchErr) {
             console.error('❌ Error pre-fetching database data on splash:', fetchErr);
           }

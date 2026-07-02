@@ -6,7 +6,7 @@ import Animated, { FadeInDown, FadeInRight, FadeInUp, LinearTransition } from 'r
 import { useIsFocused } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
-import { toggleFavorite, setSelectedRecipe, setSearchQuery, setSelectedCategory } from '../store/slices/recipesSlice';
+import { toggleFavorite, toggleLike, setSelectedRecipe, setSearchQuery, setSelectedCategory } from '../store/slices/recipesSlice';
 import { getAllRecipesAPI } from '../services/recipeService';
 import { SearchBar } from '../components/SearchBar';
 import { CategoryBadge } from '../components/CategoryBadge';
@@ -39,6 +39,7 @@ const mapBackendRecipe = (r: any): Recipe => ({
   images: r.images || [],
   userId: r.user_id || undefined,
   videoUrl: r.video_url || undefined,
+  likesCount: r.likesCount || 0,
 });
 
 const recipeMatchesFilters = (recipe: Recipe, search: string, category: string) => {
@@ -69,7 +70,7 @@ export const ExploreScreen: React.FC<ExploreScreenProps> = ({ navigation }) => {
   const insets = useSafeAreaInsets();
   const layout = useResponsiveLayout();
   const isFocused = useIsFocused();
-  const { recipes, favorites, searchQuery, selectedCategory, uploadStatus } = useSelector(
+  const { recipes, favorites, likedRecipeIds, searchQuery, selectedCategory, uploadStatus } = useSelector(
     (state: RootState) => state.recipes
   );
   const [exploreRecipes, setExploreRecipes] = useState<Recipe[]>(recipes);
@@ -254,8 +255,10 @@ export const ExploreScreen: React.FC<ExploreScreenProps> = ({ navigation }) => {
                 <RecipeCard
                   recipe={item}
                   isFavorite={favorites.includes(item.id)}
+                  isLiked={likedRecipeIds.includes(item.id)}
                   onPress={() => handleRecipePress(item)}
                   onToggleFavorite={() => dispatch(toggleFavorite(item.id))}
+                  onToggleLike={() => dispatch(toggleLike(item.id))}
                   horizontal
                 />
               </Animated.View>

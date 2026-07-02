@@ -16,8 +16,8 @@ import Animated, {
 import { useIsFocused } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
-import { toggleFavorite, setSelectedCategory, setSelectedRecipe, setSearchQuery, setRecipes, setFavorites } from '../store/slices/recipesSlice';
-import { getAllRecipesAPI, getFavoritesAPI } from '../services/recipeService';
+import { toggleFavorite, toggleLike, setSelectedCategory, setSelectedRecipe, setSearchQuery, setRecipes, setFavorites } from '../store/slices/recipesSlice';
+import { getAllRecipesAPI, getFavoritesAPI, getUserLikesAPI } from '../services/recipeService';
 
 import { CategoryBadge } from '../components/CategoryBadge';
 import { RecipeCard } from '../components/RecipeCard';
@@ -53,6 +53,7 @@ const mapBackendRecipe = (r: any): Recipe => ({
   images: r.images || [],
   userId: r.user_id || undefined,
   videoUrl: r.video_url || undefined,
+  likesCount: r.likesCount || 0,
 });
 
 export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
@@ -61,7 +62,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const insets = useSafeAreaInsets();
   const layout = useResponsiveLayout();
   const isFocused = useIsFocused();
-  const { recipes, favorites, selectedCategory, searchQuery, uploadStatus } = useSelector(
+  const { recipes, favorites, likedRecipeIds, selectedCategory, searchQuery, uploadStatus } = useSelector(
     (state: RootState) => state.recipes
   );
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -347,8 +348,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                         <RecipeCard
                           recipe={recipe}
                           isFavorite={favorites.includes(recipe.id)}
+                          isLiked={likedRecipeIds.includes(recipe.id)}
                           onPress={() => handleRecipePress(recipe)}
                           onToggleFavorite={() => dispatch(toggleFavorite(recipe.id))}
+                          onToggleLike={() => dispatch(toggleLike(recipe.id))}
                         />
                       </Animated.View>
                     ))}
@@ -384,8 +387,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                 <RecipeCard
                   recipe={recipe}
                   isFavorite={favorites.includes(recipe.id)}
+                  isLiked={likedRecipeIds.includes(recipe.id)}
                   onPress={() => handleRecipePress(recipe)}
                   onToggleFavorite={() => dispatch(toggleFavorite(recipe.id))}
+                  onToggleLike={() => dispatch(toggleLike(recipe.id))}
                   horizontal
                 />
               </Animated.View>

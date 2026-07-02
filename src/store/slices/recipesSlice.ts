@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { Recipe, MOCK_RECIPES } from '../../constants/mockData';
-import { toggleFavoriteAPI } from '../../services/recipeService';
+import { toggleFavoriteAPI, toggleLikeAPI, getUserLikesAPI } from '../../services/recipeService';
 
 export const toggleFavorite = createAsyncThunk(
   'recipes/toggleFavoriteStatus',
@@ -18,9 +18,41 @@ export const toggleFavorite = createAsyncThunk(
   }
 ) as any;
 
+export const toggleLike = createAsyncThunk(
+  'recipes/toggleLikeStatus',
+  async (recipeId: string, { dispatch, rejectWithValue }) => {
+    // Perform optimistic local toggle
+    dispatch(recipesSlice.actions.toggleLikeLocal(recipeId));
+    try {
+      await toggleLikeAPI(recipeId);
+    } catch (error: any) {
+      console.error('❌ Failed to toggle like in database, reverting:', error.message);
+      // Revert local toggle on error
+      dispatch(recipesSlice.actions.toggleLikeLocal(recipeId));
+      return rejectWithValue(error.message);
+    }
+  }
+) as any;
+
+export const fetchUserLikes = createAsyncThunk(
+  'recipes/fetchUserLikes',
+  async (_, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await getUserLikesAPI();
+      if (response.success && response.data?.likedRecipeIds) {
+        dispatch(recipesSlice.actions.setLikedRecipeIds(response.data.likedRecipeIds));
+      }
+    } catch (error: any) {
+      console.error('❌ Failed to fetch user likes:', error.message);
+      return rejectWithValue(error.message);
+    }
+  }
+) as any;
+
 interface RecipesState {
   recipes: Recipe[];
   favorites: string[];
+  likedRecipeIds: string[];
   searchQuery: string;
   selectedCategory: string;
   selectedRecipe: Recipe | null;
@@ -38,6 +70,7 @@ interface RecipesState {
 const initialState: RecipesState = {
   recipes: MOCK_RECIPES,
   favorites: [],
+  likedRecipeIds: [],
   searchQuery: '',
   selectedCategory: 'All',
   selectedRecipe: null,
@@ -64,6 +97,35 @@ const recipesSlice = createSlice({
       } else {
         state.favorites.push(id);
       }
+    },
+    toggleLikeLocal: (state, action: PayloadAction<string>) => {
+      const id = action.payload;
+      const index = state.likedRecipeIds.indexOf(id);
+      const isAddingLike = index === -1;
+
+      if (isAddingLike) {
+        state.likedRecipeIds.push(id);
+      } else {
+        state.likedRecipeIds.splice(index, 1);
+      }
+
+      const updateLikes = (recipe: Recipe) => {
+        if (recipe.id === id) {
+          const currentCount = recipe.likesCount || 0;
+          recipe.likesCount = isAddingLike 
+            ? currentCount + 1 
+            : Math.max(0, currentCount - 1);
+        }
+      };
+
+      state.recipes.forEach(updateLikes);
+      state.userRecipes.forEach(updateLikes);
+      if (state.selectedRecipe) {
+        updateLikes(state.selectedRecipe);
+      }
+    },
+    setLikedRecipeIds: (state, action: PayloadAction<string[]>) => {
+      state.likedRecipeIds = action.payload;
     },
     setSearchQuery: (state, action: PayloadAction<string>) => {
       state.searchQuery = action.payload;
@@ -141,6 +203,7 @@ const recipesSlice = createSlice({
     clearUserSessionState: (state) => {
       state.userRecipes = [];
       state.favorites = [];
+      state.likedRecipeIds = [];
       state.userRecipesNeedsRefresh = true;
       state.userRecipesHasMore = true;
       state.selectedRecipe = null;
@@ -183,6 +246,8 @@ const recipesSlice = createSlice({
 
 export const {
   toggleFavoriteLocal,
+  toggleLikeLocal,
+  setLikedRecipeIds,
   setSearchQuery,
   setSelectedCategory,
   setSelectedRecipe,

@@ -18,6 +18,7 @@ import { RootState } from "../store/store";
 import {
   setSelectedRecipe,
   toggleFavorite,
+  toggleLike,
 } from "../store/slices/recipesSlice";
 
 type FavoritesScreenProps = AppTabScreenProps<"Favorites">;
@@ -28,7 +29,7 @@ export function FavoritesScreen({ navigation }: FavoritesScreenProps) {
   const insets = useSafeAreaInsets();
   const layout = useResponsiveLayout();
   const isFocused = useIsFocused();
-  const { recipes, userRecipes, favorites, uploadStatus } = useSelector(
+  const { recipes, userRecipes, favorites, likedRecipeIds, uploadStatus } = useSelector(
     (state: RootState) => state.recipes,
   );
 
@@ -84,8 +85,10 @@ export function FavoritesScreen({ navigation }: FavoritesScreenProps) {
                 <RecipeCard
                   recipe={recipe}
                   isFavorite={true}
+                  isLiked={likedRecipeIds.includes(recipe.id)}
                   onPress={() => handleRecipePress(recipe)}
                   onToggleFavorite={() => dispatch(toggleFavorite(recipe.id))}
+                  onToggleLike={() => dispatch(toggleLike(recipe.id))}
                   horizontal
                 />
               </Animated.View>
