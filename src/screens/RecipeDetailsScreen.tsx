@@ -209,7 +209,7 @@ export const RecipeDetailsScreen: React.FC<RecipeDetailsScreenProps> = ({
 
         {/* Content Container */}
         <Animated.View
-          entering={FadeInDown.delay(400).duration(1200)}
+          entering={FadeInDown.delay(100).duration(400)}
           className="bg-white rounded-t-[40px] -mt-10 px-6 pt-8"
           style={{
             paddingBottom: insets.bottom + 40,

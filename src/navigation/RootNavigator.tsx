@@ -33,7 +33,10 @@ export function RootNavigator() {
       <Stack.Screen
         name="RecipeDetails"
         component={RecipeDetailsScreen}
-        options={{ animation: "fade" }}
+        options={{ 
+          animation: "fade",
+          animationDuration: 200,
+        }}
       />
     </Stack.Navigator>
   );
