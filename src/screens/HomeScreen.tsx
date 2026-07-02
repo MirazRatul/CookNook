@@ -226,6 +226,36 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   return (
     <View style={{ flex: 1, backgroundColor: Colors.bgLight }}>
       <SafeAreaView className="flex-1" edges={uploadStatus.isUploading ? ['left', 'right'] : ['top', 'left', 'right']}>
+        {/* Fixed Header */}
+        <Animated.View
+          key={`header-${isFocused}`}
+          entering={isFocused ? FadeInDown.duration(800).springify() : undefined}
+          className="pt-2 pb-4 flex-row items-center justify-between"
+          style={{
+            paddingHorizontal: layout.spacing.screen,
+            width: '100%',
+            maxWidth: layout.contentMaxWidth,
+            alignSelf: 'center',
+          }}
+        >
+          <View>
+            <Text numberOfLines={1} className="text-gray-400 text-sm font-semibold tracking-wide">{t('home.hello_chef')}</Text>
+            <Text numberOfLines={1} className="text-2xl font-extrabold text-gray-900 mt-0.5">{t('home.what_cooking')}</Text>
+          </View>
+          <TouchableOpacity
+            onPress={() => {
+              console.log('Profile picture clicked, opening drawer');
+              setIsDrawerOpen(true);
+            }}
+            activeOpacity={0.85}
+          >
+            <Image
+              source={userPhoto}
+              className="w-12 h-12 rounded-full border-2 border-white shadow-sm"
+            />
+          </TouchableOpacity>
+        </Animated.View>
+
         <View className="flex-1 relative" style={{ backgroundColor: Colors.bgLight }}>
           <Animated.FlatList
             data={filteredRecipes}
@@ -254,36 +284,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             ) : undefined}
             ListHeaderComponent={
               <>
-                {/* Header */}
-                <Animated.View
-                  key={`header-${isFocused}`}
-                  entering={isFocused ? FadeInDown.duration(800).springify() : undefined}
-                  className="pt-2 pb-4 flex-row items-center justify-between"
-                  style={{
-                    paddingHorizontal: layout.spacing.screen,
-                    width: '100%',
-                    maxWidth: layout.contentMaxWidth,
-                    alignSelf: 'center',
-                  }}
-                >
-                  <View>
-                    <Text numberOfLines={1} className="text-gray-400 text-sm font-semibold tracking-wide">{t('home.hello_chef')}</Text>
-                    <Text numberOfLines={1} className="text-2xl font-extrabold text-gray-900 mt-0.5">{t('home.what_cooking')}</Text>
-                  </View>
-                  <TouchableOpacity
-                    onPress={() => {
-                      console.log('Profile picture clicked, opening drawer');
-                      setIsDrawerOpen(true);
-                    }}
-                    activeOpacity={0.85}
-                  >
-                    <Image
-                      source={userPhoto}
-                      className="w-12 h-12 rounded-full border-2 border-white shadow-sm"
-                    />
-                  </TouchableOpacity>
-                </Animated.View>
-
                 {/* Fake SearchBar Container (Tapping redirects to Explore) */}
                 <Animated.View
                   key={`search-${isFocused}`}
