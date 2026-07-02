@@ -140,10 +140,19 @@ export const getFavoritesAPI = async () => {
  * @param page The page number (default 1)
  * @param limit The number of items per batch (default 5)
  */
-export const getAllRecipesAPI = async (page: number = 1, limit: number = 5) => {
+export const getAllRecipesAPI = async (
+  page: number = 1,
+  limit: number = 5,
+  filters?: { search?: string; category?: string }
+) => {
   try {
     const response = await apiClient.get('/recipes', {
-      params: { page, limit },
+      params: {
+        page,
+        limit,
+        ...(filters?.search ? { search: filters.search } : {}),
+        ...(filters?.category && filters.category !== 'All' ? { category: filters.category } : {}),
+      },
     });
     return response.data;
   } catch (error: any) {
