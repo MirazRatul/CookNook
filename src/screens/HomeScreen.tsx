@@ -256,7 +256,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         <View className="flex-1 relative" style={{ backgroundColor: Colors.bgLight }}>
           <Animated.FlatList
             data={filteredRecipes}
-            keyExtractor={(item) => `home-recommend-${item.id}`}
+            keyExtractor={(item) => `home-recommend-${item.id}-${isFocused}`}
             className="flex-1"
             showsVerticalScrollIndicator={false}
             onScroll={scrollHandler}
@@ -373,8 +373,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             }
             renderItem={({ item: recipe, index }) => (
               <Animated.View
-                entering={isFocused ? FadeInDown.delay(index * 120).duration(600).springify() : undefined}
-                layout={LinearTransition.springify()}
+                entering={isFocused ? FadeInRight.delay(400 + index * 120).duration(600).springify() : undefined}
                 style={{
                   paddingHorizontal: layout.spacing.screen,
                   width: '100%',
