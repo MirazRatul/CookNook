@@ -373,7 +373,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             }
             renderItem={({ item: recipe, index }) => (
               <Animated.View
-                entering={isFocused ? FadeInRight.delay(400 + index * 120).duration(600).springify() : undefined}
+                entering={isFocused ? FadeInRight.delay(index < 5 ? (400 + index * 120) : (Math.min(index % 5, 2) * 60)).duration(600).springify() : undefined}
                 style={{
                   paddingHorizontal: layout.spacing.screen,
                   width: '100%',

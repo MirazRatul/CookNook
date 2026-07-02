@@ -248,8 +248,7 @@ export const ExploreScreen: React.FC<ExploreScreenProps> = ({ navigation }) => {
             renderItem={({ item, index }) => (
               <Animated.View
                 key={`explore-card-${item.id}-${index}-${isFocused}`}
-                entering={isFocused ? FadeInDown.delay(index * 100).duration(600).springify() : undefined}
-                layout={LinearTransition.springify()}
+                entering={isFocused ? FadeInDown.delay(Math.min(index, 3) * 60).duration(350).springify() : undefined}
               >
                 <RecipeCard
                   recipe={item}
