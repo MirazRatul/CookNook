@@ -18,7 +18,28 @@ export interface Recipe {
   videoUrl?: string;
 }
 
-export const CATEGORIES = ['All', 'Breakfast', 'Italian', 'Mexican', 'Desserts', 'Seafood', 'Drinks'];
+export const CATEGORIES = [
+  'All',
+  'Breakfast',
+  'Brunch',
+  'Lunch',
+  'Dinner',
+  'Snack',
+  'Appetizer',
+  'Side Dish',
+  'Main Course',
+  'Dessert',
+  'Soup',
+  'Salad',
+  'Beverage',
+  'Sauce & Dip',
+  'Bread',
+  'Pasta',
+  'Pizza',
+  'Sandwich',
+  'Burger',
+  'BBQ & Grill',
+];
 
 export const MOCK_RECIPES: Recipe[] = [
   {
@@ -33,7 +54,7 @@ export const MOCK_RECIPES: Recipe[] = [
     reviewsCount: 142,
     chefName: 'Chef Giovanni',
     chefAvatar: 'https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&q=80&w=150',
-    category: 'Seafood',
+    category: 'Dinner',
     ingredients: [
       '1 lb large shrimp, peeled and deveined',
       '4 tbsp unsalted butter',
@@ -64,7 +85,7 @@ export const MOCK_RECIPES: Recipe[] = [
     reviewsCount: 328,
     chefName: 'Chef Isabella',
     chefAvatar: 'https://images.unsplash.com/photo-1583394838336-acd977736f90?auto=format&fit=crop&q=80&w=150',
-    category: 'Italian',
+    category: 'Dinner',
     ingredients: [
       '2 large chicken breasts, halved horizontally',
       '1 tbsp olive oil',
@@ -127,7 +148,7 @@ export const MOCK_RECIPES: Recipe[] = [
     reviewsCount: 215,
     chefName: 'Chef Mateo',
     chefAvatar: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=150',
-    category: 'Mexican',
+    category: 'Lunch',
     ingredients: [
       '1 lb lean ground beef',
       '1 packet taco seasoning (or chili powder, cumin, oregano mix)',
@@ -158,7 +179,7 @@ export const MOCK_RECIPES: Recipe[] = [
     reviewsCount: 412,
     chefName: 'Chef Marcus',
     chefAvatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=150',
-    category: 'Desserts',
+    category: 'Dessert',
     ingredients: [
       '4 oz high-quality semi-sweet chocolate, chopped',
       '1/2 cup unsalted butter',
@@ -190,7 +211,7 @@ export const MOCK_RECIPES: Recipe[] = [
     reviewsCount: 95,
     chefName: 'Chef Yuki',
     chefAvatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=150',
-    category: 'Drinks',
+    category: 'Beverage',
     ingredients: [
       '1.5 tsp ceremonial grade matcha powder',
       '2 tbsp warm water (not boiling)',
