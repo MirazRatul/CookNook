@@ -99,7 +99,7 @@ export const SplashScreenView: React.FC<RootStackScreenProps<'Splash'>> = ({ nav
         if (isLoggedIn) {
           try {
             console.log('🔄 [Splash] Pre-fetching recipes from database...');
-            const recipesResponse = await getAllRecipesAPI(1, 100);
+            const recipesResponse = await getAllRecipesAPI(1, 5);
             if (recipesResponse && recipesResponse.success && recipesResponse.data) {
               const mappedRecipes = recipesResponse.data.recipes.map((r: any): Recipe => ({
                 id: r.id.toString(),

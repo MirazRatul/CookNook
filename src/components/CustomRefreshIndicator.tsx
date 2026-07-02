@@ -16,11 +16,15 @@ import { REFRESH_LOGO } from '../constants/Image_Url';
 interface CustomRefreshIndicatorProps {
   pullDistance: SharedValue<number>;
   refreshing: boolean;
+  topOffset?: number;
+  prominent?: boolean;
 }
 
 export const CustomRefreshIndicator: React.FC<CustomRefreshIndicatorProps> = ({
   pullDistance,
   refreshing,
+  topOffset = 0,
+  prominent = false,
 }) => {
   const rotation = useSharedValue(0);
   const refreshingProgress = useSharedValue(0);
@@ -48,18 +52,21 @@ export const CustomRefreshIndicator: React.FC<CustomRefreshIndicatorProps> = ({
   }, [refreshing]);
 
   const animatedContainerStyle = useAnimatedStyle(() => {
-    // Determine pull-based opacity, scale, and translateY (primarily used on iOS)
-    const pullOpacity = interpolate(pullDistance.value, [0, 60], [0, 1], Extrapolate.CLAMP);
-    const pullScale = interpolate(pullDistance.value, [0, 80], [0.6, 1.1], Extrapolate.CLAMP);
-    const pullTranslateY = interpolate(pullDistance.value, [0, 80], [-40, 20], Extrapolate.CLAMP);
+    const opacityDistance = prominent ? 36 : 60;
+    const scaleDistance = prominent ? 58 : 80;
+    const translateDistance = prominent ? 70 : 80;
+    const inactiveScale = prominent ? 0.82 : 0.6;
+    const activeScale = prominent ? 1.08 : 1.0;
+    const hiddenTranslateY = prominent ? -18 : -40;
+    const activeTranslateY = prominent ? 28 : 20;
 
-    // Target values when refreshing is active
-    const activeOpacity = 1;
-    const activeScale = 1.0;
-    const activeTranslateY = 20;
+    // Determine pull-based opacity, scale, and translateY (primarily used on iOS)
+    const pullOpacity = interpolate(pullDistance.value, [0, opacityDistance], [0, 1], Extrapolate.CLAMP);
+    const pullScale = interpolate(pullDistance.value, [0, scaleDistance], [inactiveScale, 1.12], Extrapolate.CLAMP);
+    const pullTranslateY = interpolate(pullDistance.value, [0, translateDistance], [hiddenTranslateY, activeTranslateY], Extrapolate.CLAMP);
 
     // Blend values smoothly using refreshingProgress to prevent snapping on Android/iOS when starting or ending refresh
-    const opacity = interpolate(refreshingProgress.value, [0, 1], [pullOpacity, activeOpacity]);
+    const opacity = interpolate(refreshingProgress.value, [0, 1], [pullOpacity, 1]);
     const scale = interpolate(refreshingProgress.value, [0, 1], [pullScale, activeScale]);
     const translateY = interpolate(refreshingProgress.value, [0, 1], [pullTranslateY, activeTranslateY]);
 
@@ -89,6 +96,7 @@ export const CustomRefreshIndicator: React.FC<CustomRefreshIndicatorProps> = ({
     <Animated.View
       style={[
         styles.container,
+        { top: topOffset },
         animatedContainerStyle,
       ]}
     >

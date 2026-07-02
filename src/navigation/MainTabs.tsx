@@ -134,7 +134,7 @@ export function MainTabs() {
         if (!user) return;
 
         console.log('🔄 Fetching all recipes from database...');
-        const recipesResponse = await getAllRecipesAPI(1, 100);
+        const recipesResponse = await getAllRecipesAPI(1, 5);
         if (recipesResponse && recipesResponse.success && recipesResponse.data) {
           const mappedRecipes = recipesResponse.data.recipes.map((r: any): Recipe => ({
             id: r.id.toString(),

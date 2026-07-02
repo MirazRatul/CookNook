@@ -138,9 +138,9 @@ export const getFavoritesAPI = async () => {
 /**
  * Retrieve all recipes from the database (seeded mock + user created).
  * @param page The page number (default 1)
- * @param limit The number of items per batch (default 100)
+ * @param limit The number of items per batch (default 5)
  */
-export const getAllRecipesAPI = async (page: number = 1, limit: number = 100) => {
+export const getAllRecipesAPI = async (page: number = 1, limit: number = 5) => {
   try {
     const response = await apiClient.get('/recipes', {
       params: { page, limit },
