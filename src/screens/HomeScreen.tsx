@@ -18,7 +18,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
 import { toggleFavorite, setSelectedCategory, setSelectedRecipe, setSearchQuery, setRecipes, setFavorites } from '../store/slices/recipesSlice';
 import { getAllRecipesAPI, getFavoritesAPI } from '../services/recipeService';
-import { SearchBar } from '../components/SearchBar';
+
 import { CategoryBadge } from '../components/CategoryBadge';
 import { RecipeCard } from '../components/RecipeCard';
 import { CATEGORIES, Recipe } from '../constants/mockData';
@@ -219,9 +219,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     navigation.navigate('RecipeDetails');
   };
 
-  const handleSearchFocus = () => {
-    navigation.navigate('Explore');
-  };
 
   return (
     <View style={{ flex: 1, backgroundColor: Colors.bgLight }}>
@@ -284,29 +281,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             ) : undefined}
             ListHeaderComponent={
               <>
-                {/* Fake SearchBar Container (Tapping redirects to Explore) */}
-                <Animated.View
-                  key={`search-${isFocused}`}
-                  entering={isFocused ? FadeInDown.duration(800).delay(150).springify() : undefined}
-                  className="my-4"
-                  style={{
-                    paddingHorizontal: layout.spacing.screen,
-                    width: '100%',
-                    maxWidth: layout.contentMaxWidth,
-                    alignSelf: 'center',
-                  }}
-                >
-                  <TouchableOpacity activeOpacity={0.9} onPress={handleSearchFocus}>
-                    <SearchBar
-                      value={searchQuery}
-                      onChangeText={(text) => {
-                        dispatch(setSearchQuery(text));
-                        navigation.navigate('Explore');
-                      }}
-                      placeholder={t('explore.search_placeholder')}
-                    />
-                  </TouchableOpacity>
-                </Animated.View>
+
 
                 {/* Categories */}
                 <Animated.View
